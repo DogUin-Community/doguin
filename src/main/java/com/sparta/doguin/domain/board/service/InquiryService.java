@@ -17,10 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class NoticeService implements BoardService{
+public class InquiryService implements BoardService{
 
     private final BoardRepository boardRepository;
-    private final BoardType boardType = BoardType.BOARD_NOTICE;
+    private final BoardType boardType = BoardType.BOARD_INQUIRY;
 
     @Override
     @Transactional
@@ -33,9 +33,9 @@ public class NoticeService implements BoardService{
     @Transactional
     public Board update(Long boardId, BoardRequest boardRequest) {
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.NOTICE_NOT_FOUND));
+                .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.INQUIRY_NOT_FOUND));
         if(board.getBoardType()!=boardType){
-            throw new InvalidRequestException(ApiResponseBoardEnum.NOTICE_WRONG);
+            throw new InvalidRequestException(ApiResponseBoardEnum.INQUIRY_WRONG);
         }
         board.update(boardRequest.title(),boardRequest.content());
         return board;
@@ -45,9 +45,9 @@ public class NoticeService implements BoardService{
     @Override
     public Board viewOne(Long boardId) {
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.NOTICE_NOT_FOUND));
+                .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.INQUIRY_NOT_FOUND));
         if (board.getBoardType() != boardType) {
-            throw new InvalidRequestException(ApiResponseBoardEnum.NOTICE_WRONG);
+            throw new InvalidRequestException(ApiResponseBoardEnum.INQUIRY_WRONG);
         }
         return  board;
     }
@@ -83,10 +83,12 @@ public class NoticeService implements BoardService{
     public void delete(Long boardId) {
 
         Board board =boardRepository.findById(boardId)
-                .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.NOTICE_NOT_FOUND));
+                .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.INQUIRY_NOT_FOUND));
+
         if(board.getBoardType()!=boardType){
-            throw new InvalidRequestException(ApiResponseBoardEnum.NOTICE_WRONG);
+            throw new InvalidRequestException(ApiResponseBoardEnum.INQUIRY_WRONG);
         }
+
         boardRepository.delete(board);
     }
 }

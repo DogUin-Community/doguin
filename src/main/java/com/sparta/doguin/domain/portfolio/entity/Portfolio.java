@@ -2,11 +2,16 @@ package com.sparta.doguin.domain.portfolio.entity;
 
 import com.sparta.doguin.domain.outsourcing.constans.AreaType;
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 // 외주 엔티티 수정
+@Builder
+@Getter
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Portfolio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

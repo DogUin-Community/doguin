@@ -9,10 +9,10 @@ import org.springframework.data.domain.Pageable;
 
 public interface BoardService {
 
-    Board create(BoardRequest boardRequest,BoardType boardType);
+    Board create(BoardRequest boardRequest);
     Board update(Long boardId, BoardRequest boardRequest);
     Board viewOne(Long boardId);
-    Page<BoardResponse> viewAll(int page, int size, BoardType boardType);
-    Page<BoardResponse> search(int page,int size,String title,BoardType boardType);
+    Page<BoardResponse> viewAll(int page, int size);
+    Page<BoardResponse> search(int page,int size,String title);
     void delete(Long bardId);
 }
