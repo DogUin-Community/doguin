@@ -21,7 +21,7 @@ import org.springframework.web.servlet.function.EntityResponse;
 public class NoticeController implements BoardController{
 
     private final BoardService boardService;
-    private final BoardType boardType = BoardType.BOARD_NOTICE;
+
 
     public NoticeController(NoticeService boardService) {
         this.boardService = boardService;
@@ -29,7 +29,7 @@ public class NoticeController implements BoardController{
     @PostMapping
     @Override
     public ResponseEntity<ApiResponse<BoardResponse>> create(@RequestBody BoardRequest boardRequest){
-        BoardResponse response = BoardResponse.from(boardService.create(boardRequest,boardType));
+        BoardResponse response = BoardResponse.from(boardService.create(boardRequest));
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.NOTICE_CREATE_SUCCESS, response));
     }
 
@@ -51,7 +51,7 @@ public class NoticeController implements BoardController{
     @GetMapping
     public ResponseEntity<ApiResponse<Page<BoardResponse>>> viewAll(@RequestParam(defaultValue = "1") int page,
                                @RequestParam(defaultValue = "10") int size) {
-        Page<BoardResponse> responses = boardService.viewAll(page, size,boardType);
+        Page<BoardResponse> responses = boardService.viewAll(page, size);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.NOTICE_FIND_ALL_SUCCESS, responses));
 
     }
@@ -61,7 +61,7 @@ public class NoticeController implements BoardController{
     public ResponseEntity<ApiResponse<Page<BoardResponse>>> search(@RequestParam(defaultValue = "1") int page,
                                       @RequestParam(defaultValue = "10") int size,
                                       @RequestParam String title) {
-        Page<BoardResponse> responses = boardService.search(page,size,title,boardType);
+        Page<BoardResponse> responses = boardService.search(page,size,title);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.NOTICE_SEARCH_SUCCESS, responses));
     }
 
