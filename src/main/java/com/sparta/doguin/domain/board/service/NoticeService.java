@@ -71,6 +71,7 @@ public class NoticeService implements BoardService{
     }
 
     @Override
+    @Transactional
     public void delete(Long boardId) {
 
         Board board =boardRepository.findById(boardId)
