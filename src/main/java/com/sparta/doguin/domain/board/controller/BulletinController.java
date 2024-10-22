@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.*;
 public class BulletinController implements BoardController{
 
     private final BoardService boardService;
-    private final BoardType boardType = BoardType.BOARD_BULLETIN;
-
     public BulletinController(BulletinService boardService) {
         this.boardService = boardService;
     }
@@ -27,7 +25,7 @@ public class BulletinController implements BoardController{
     @PostMapping
     @Override
     public ResponseEntity<ApiResponse<BoardResponse>> create(@RequestBody BoardRequest boardRequest){
-        BoardResponse response = BoardResponse.from(boardService.create(boardRequest,boardType));
+        BoardResponse response = BoardResponse.from(boardService.create(boardRequest));
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.BULLETIN_CREATE_SUCCESS, response));
     }
 
@@ -49,7 +47,7 @@ public class BulletinController implements BoardController{
     @GetMapping
     public ResponseEntity<ApiResponse<Page<BoardResponse>>> viewAll(@RequestParam(defaultValue = "1") int page,
                                                                     @RequestParam(defaultValue = "10") int size) {
-        Page<BoardResponse> responses = boardService.viewAll(page, size, boardType);
+        Page<BoardResponse> responses = boardService.viewAll(page, size);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.BULLETIN_FIND_ALL_SUCCESS, responses));
 
     }
@@ -59,7 +57,7 @@ public class BulletinController implements BoardController{
     public ResponseEntity<ApiResponse<Page<BoardResponse>>> search(@RequestParam(defaultValue = "1") int page,
                                                                    @RequestParam(defaultValue = "10") int size,
                                                                    @RequestParam String title) {
-        Page<BoardResponse> responses = boardService.search(page,size,title,boardType);
+        Page<BoardResponse> responses = boardService.search(page,size,title);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.BULLETIN_SEARCH_SUCCESS, responses));
     }
 

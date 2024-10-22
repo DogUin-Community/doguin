@@ -33,8 +33,12 @@ public enum ApiResponseBoardEnum implements ApiResponseEnum {
     INQUIRY_FIND_ONE_SUCCESS(HttpStatus.OK,"문의 조회(단건)에 성공하였습니다."),
     INQUIRY_FIND_ALL_SUCCESS(HttpStatus.OK,"문의 조회(전체)에 성공하였습니다."),
     INQUIRY_SEARCH_SUCCESS(HttpStatus.OK,"문의 검색에 성공하였습니다."),
-    // 400
 
+    // 400
+    NOTICE_WRONG(HttpStatus.BAD_REQUEST,"공지만 접근이 가능합니다."),
+    BULLETIN_WRONG(HttpStatus.BAD_REQUEST,"일반 게시물만 접근이 가능합니다."),
+    EVENT_WRONG(HttpStatus.BAD_REQUEST,"이벤트만 접근이 가능합니다."),
+    INQUIRY_WRONG(HttpStatus.BAD_REQUEST,"문의만 접근이 가능합니다."),
 
 
     // 403

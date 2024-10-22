@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class InquiryController implements BoardController{
 
     private final BoardService boardService;
-    private final BoardType boardType = BoardType.BOARD_INQUIRY;
+
 
     public InquiryController(InquiryService boardService) {
         this.boardService = boardService;
@@ -26,30 +26,30 @@ public class InquiryController implements BoardController{
     @PostMapping
     @Override
     public ResponseEntity<ApiResponse<BoardResponse>> create(@RequestBody BoardRequest boardRequest){
-        BoardResponse response = BoardResponse.from(boardService.create(boardRequest,boardType));
-        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.NOTICE_CREATE_SUCCESS, response));
+        BoardResponse response = BoardResponse.from(boardService.create(boardRequest));
+        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.INQUIRY_CREATE_SUCCESS, response));
     }
 
     @Override
     @PutMapping("{boardId}")
     public ResponseEntity<ApiResponse<BoardResponse>> update(@PathVariable Long boardId,@RequestBody BoardRequest boardRequest) {
         BoardResponse response = BoardResponse.from(boardService.update(boardId,boardRequest));
-        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.NOTICE_UPDATE_SUCCESS, response));
+        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.INQUIRY_UPDATE_SUCCESS, response));
     }
 
     @Override
     @GetMapping("{boardId}")
     public ResponseEntity<ApiResponse<BoardResponse>> viewOne(@PathVariable Long boardId) {
         BoardResponse response = BoardResponse.from(boardService.viewOne(boardId));
-        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.NOTICE_FIND_ONE_SUCCESS, response));
+        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.INQUIRY_FIND_ONE_SUCCESS, response));
     }
 
     @Override
     @GetMapping
     public ResponseEntity<ApiResponse<Page<BoardResponse>>> viewAll(@RequestParam(defaultValue = "1") int page,
                                @RequestParam(defaultValue = "10") int size) {
-        Page<BoardResponse> responses = boardService.viewAll(page, size,boardType);
-        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.NOTICE_FIND_ALL_SUCCESS, responses));
+        Page<BoardResponse> responses = boardService.viewAll(page, size);
+        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.INQUIRY_FIND_ALL_SUCCESS, responses));
 
     }
 
@@ -58,14 +58,14 @@ public class InquiryController implements BoardController{
     public ResponseEntity<ApiResponse<Page<BoardResponse>>> search(@RequestParam(defaultValue = "1") int page,
                                       @RequestParam(defaultValue = "10") int size,
                                       @RequestParam String title) {
-        Page<BoardResponse> responses = boardService.search(page,size,title,boardType);
-        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.NOTICE_SEARCH_SUCCESS, responses));
+        Page<BoardResponse> responses = boardService.search(page,size,title);
+        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.INQUIRY_SEARCH_SUCCESS, responses));
     }
 
     @Override
     @DeleteMapping("{boardId}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long boardId) {
         boardService.delete(boardId);
-        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.NOTICE_DELETE_SUCCESS));
+        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.INQUIRY_DELETE_SUCCESS));
     }
 }
