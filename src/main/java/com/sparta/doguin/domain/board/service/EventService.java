@@ -53,12 +53,12 @@ public class EventService implements BoardService{
     }
 
     @Override
-    public Page<BoardResponse> viewAll(int page, int size) {
+    public Page<BoardResponse.BoardCommonResponse> viewAll(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        Page<Board> boards = boardRepository.findAllByBoardType(pageable,boardType);
+        Page<Board> boards = boardRepository.findAllByBoardType(pageable, boardType);
 
-        return boards.map(notice -> new BoardResponse(
+        return boards.map(notice -> new BoardResponse.BoardCommonResponse(
                 notice.getId(),
                 notice.getTitle(),
                 notice.getContent()
@@ -67,11 +67,11 @@ public class EventService implements BoardService{
     }
 
     @Override
-    public Page<BoardResponse> search(int page,int size,String title) {
+    public Page<BoardResponse.BoardCommonResponse> search(int page, int size, String title) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Board> boards = boardRepository.findAllByTitleAndBoardType(pageable,title,boardType);
+        Page<Board> boards = boardRepository.findAllByTitleAndBoardType(pageable, title, boardType);
 
-        return boards.map(notice -> new BoardResponse(
+        return boards.map(notice -> new BoardResponse.BoardCommonResponse(
                 notice.getId(),
                 notice.getTitle(),
                 notice.getContent()

@@ -23,40 +23,40 @@ public class EventController implements BoardController{
 
     @PostMapping
     @Override
-    public ResponseEntity<ApiResponse<BoardResponse>> create(@RequestBody BoardRequest boardRequest){
-        BoardResponse response = BoardResponse.from(boardService.create(boardRequest));
+    public ResponseEntity<ApiResponse<BoardResponse.BoardCommonResponse>> create(@RequestBody BoardRequest boardRequest){
+        BoardResponse.BoardCommonResponse response = BoardResponse.BoardCommonResponse.from(boardService.create(boardRequest));
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.EVENT_CREATE_SUCCESS, response));
     }
 
     @Override
     @PutMapping("{boardId}")
-    public ResponseEntity<ApiResponse<BoardResponse>> update(@PathVariable Long boardId,@RequestBody BoardRequest boardRequest) {
-        BoardResponse response = BoardResponse.from(boardService.update(boardId,boardRequest));
+    public ResponseEntity<ApiResponse<BoardResponse.BoardCommonResponse>> update(@PathVariable Long boardId, @RequestBody BoardRequest boardRequest) {
+        BoardResponse.BoardCommonResponse response = BoardResponse.BoardCommonResponse.from(boardService.update(boardId,boardRequest));
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.EVENT_UPDATE_SUCCESS, response));
     }
 
     @Override
     @GetMapping("{boardId}")
-    public ResponseEntity<ApiResponse<BoardResponse>> viewOne(@PathVariable Long boardId) {
-        BoardResponse response = BoardResponse.from(boardService.viewOne(boardId));
+    public ResponseEntity<ApiResponse<BoardResponse.BoardCommonResponse>> viewOne(@PathVariable Long boardId) {
+        BoardResponse.BoardCommonResponse response = BoardResponse.BoardCommonResponse.from(boardService.viewOne(boardId));
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.EVENT_FIND_ONE_SUCCESS, response));
     }
 
     @Override
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<BoardResponse>>> viewAll(@RequestParam(defaultValue = "1") int page,
-                                                                    @RequestParam(defaultValue = "10") int size) {
-        Page<BoardResponse> responses = boardService.viewAll(page, size);
+    public ResponseEntity<ApiResponse<Page<BoardResponse.BoardCommonResponse>>> viewAll(@RequestParam(defaultValue = "1") int page,
+                                                                                        @RequestParam(defaultValue = "10") int size) {
+        Page<BoardResponse.BoardCommonResponse> responses = boardService.viewAll(page, size);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.EVENT_FIND_ALL_SUCCESS, responses));
 
     }
 
     @Override
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<Page<BoardResponse>>> search(@RequestParam(defaultValue = "1") int page,
-                                                                   @RequestParam(defaultValue = "10") int size,
-                                                                   @RequestParam String title) {
-        Page<BoardResponse> responses = boardService.search(page,size,title);
+    public ResponseEntity<ApiResponse<Page<BoardResponse.BoardCommonResponse>>> search(@RequestParam(defaultValue = "1") int page,
+                                                                                       @RequestParam(defaultValue = "10") int size,
+                                                                                       @RequestParam String title) {
+        Page<BoardResponse.BoardCommonResponse> responses = boardService.search(page,size,title);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.EVENT_SEARCH_SUCCESS, responses));
     }
 

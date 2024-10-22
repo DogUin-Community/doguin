@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.sparta.doguin.domain.board.dto.response.BoardResponse.BoardCommonResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -53,12 +54,12 @@ public class BulletinService implements BoardService {
     }
 
     @Override
-    public Page<BoardResponse> viewAll(int page, int size) {
+    public Page<BoardCommonResponse> viewAll(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
         Page<Board> boards = boardRepository.findAllByBoardType(pageable, boardType);
 
-        return boards.map(notice -> new BoardResponse(
+        return boards.map(notice -> new BoardResponse.BoardCommonResponse(
                 notice.getId(),
                 notice.getTitle(),
                 notice.getContent()
@@ -67,11 +68,11 @@ public class BulletinService implements BoardService {
     }
 
     @Override
-    public Page<BoardResponse> search(int page, int size, String title) {
+    public Page<BoardCommonResponse> search(int page, int size, String title) {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Board> boards = boardRepository.findAllByTitleAndBoardType(pageable, title, boardType);
 
-        return boards.map(notice -> new BoardResponse(
+        return boards.map(notice -> new BoardResponse.BoardCommonResponse(
                 notice.getId(),
                 notice.getTitle(),
                 notice.getContent()
