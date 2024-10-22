@@ -30,7 +30,7 @@ public class Portfolio extends Timestamped {
     private String work_type;
 
     // 프로젝트 이력
-    private String proejct_history;
+    private String project_history;
 
     // 지역
     @Enumerated(value = EnumType.STRING)
