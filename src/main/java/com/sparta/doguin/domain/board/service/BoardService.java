@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 public interface BoardService {
 
     Board create(BoardRequest boardRequest);
-    Board update(BoardRequest boardRequest);
+    Board update(Long boardId, BoardRequest boardRequest);
     Board viewOne(Long boardId);
     Page<Board> viewAll(Pageable pageable);
     Page<Board> search(String title, Pageable pageable);

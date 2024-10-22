@@ -25,9 +25,14 @@ public class NoticeService implements BoardService{
     }
 
     @Override
-    public Board update(BoardRequest boardRequest) {
-        return null;
+    @Transactional
+    public Board update(Long boardId, BoardRequest boardRequest) {
+        Board notice = boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("없읍니다."));
+        notice.update(boardRequest.title(),boardRequest.content());
+        return notice;
     }
+
 
     @Override
     public Board viewOne(Long boardId) {

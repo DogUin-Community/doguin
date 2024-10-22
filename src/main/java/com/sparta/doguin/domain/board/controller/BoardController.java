@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 
 public interface BoardController {
     BoardResponse create(BoardRequest boardRequest);
-    BoardResponse update();
+    BoardResponse update(Long boardId,BoardRequest boardRequest);
     BoardResponse viewOne();
     Page<Board> viewAll();
     Page<Board> search();

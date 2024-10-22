@@ -6,10 +6,7 @@ import com.sparta.doguin.domain.board.entity.Board;
 import com.sparta.doguin.domain.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,13 +16,15 @@ public class NoticeController implements BoardController{
     private final BoardService noticeService;
 
     @PostMapping
+    @Override
     public BoardResponse create(@RequestBody BoardRequest boardRequest){
         return BoardResponse.from(noticeService.create(boardRequest));
     }
 
     @Override
-    public BoardResponse update() {
-        return null;
+    @PutMapping("{boardId}")
+    public BoardResponse update(@PathVariable Long boardId,@RequestBody BoardRequest boardRequest) {
+        return BoardResponse.from(noticeService.update(boardId,boardRequest));
     }
 
     @Override
