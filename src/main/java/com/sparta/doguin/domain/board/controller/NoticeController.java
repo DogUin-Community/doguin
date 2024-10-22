@@ -34,12 +34,14 @@ public class NoticeController implements BoardController{
     }
 
     @Override
-    public Page<Board> viewAll() {
-        return null;
+    @GetMapping
+    public Page<BoardResponse> viewAll(@RequestParam(defaultValue = "1") int page,
+                               @RequestParam(defaultValue = "10") int size) {
+        return noticeService.viewAll(page, size);
     }
 
     @Override
-    public Page<Board> search() {
+    public Page<BoardResponse> search() {
         return null;
     }
 

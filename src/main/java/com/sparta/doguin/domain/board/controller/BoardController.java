@@ -9,7 +9,7 @@ public interface BoardController {
     BoardResponse create(BoardRequest boardRequest);
     BoardResponse update(Long boardId,BoardRequest boardRequest);
     BoardResponse viewOne(Long boardId);
-    Page<Board> viewAll();
-    Page<Board> search();
+    Page<BoardResponse> viewAll(int page, int size);
+    Page<BoardResponse> search();
     void delete();
 }
