@@ -11,7 +11,7 @@ import jakarta.persistence.*;
 public class Matching {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long portfolio_id;
+    private Long matching_id;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "user_id")
