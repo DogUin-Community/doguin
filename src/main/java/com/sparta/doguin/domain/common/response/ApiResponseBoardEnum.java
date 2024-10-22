@@ -26,6 +26,13 @@ public enum ApiResponseBoardEnum implements ApiResponseEnum {
     EVENT_FIND_ONE_SUCCESS(HttpStatus.OK,"이벤트 조회(단건)에 성공하였습니다."),
     EVENT_FIND_ALL_SUCCESS(HttpStatus.OK,"이벤트 조회(전체)에 성공하였습니다."),
     EVENT_SEARCH_SUCCESS(HttpStatus.OK,"이벤트 검색에 성공하였습니다."),
+
+    INQUIRY_CREATE_SUCCESS(HttpStatus.OK,"문의 등록에 성공하였습니다."),
+    INQUIRY_UPDATE_SUCCESS(HttpStatus.OK,"문의 수정에 성공하였습니다."),
+    INQUIRY_DELETE_SUCCESS(HttpStatus.OK,"문의 삭제에 성공하였습니다."),
+    INQUIRY_FIND_ONE_SUCCESS(HttpStatus.OK,"문의 조회(단건)에 성공하였습니다."),
+    INQUIRY_FIND_ALL_SUCCESS(HttpStatus.OK,"문의 조회(전체)에 성공하였습니다."),
+    INQUIRY_SEARCH_SUCCESS(HttpStatus.OK,"문의 검색에 성공하였습니다."),
     // 400
 
 
@@ -36,6 +43,7 @@ public enum ApiResponseBoardEnum implements ApiResponseEnum {
     // 404
     NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "공지를 찾을 수 없습니다."),
     EVENT_NOT_FOUND(HttpStatus.NOT_FOUND, "이벤트를 찾을 수 없습니다."),
+    INQUIRY_NOT_FOUND(HttpStatus.NOT_FOUND, "문의를 찾을 수 없습니다."),
     BULLETIN_NOT_FOUND(HttpStatus.NOT_FOUND, "일반 게시글을 찾을 수 없습니다.");
 
 
