@@ -1,4 +1,4 @@
-package com.sparta.doguin.common.config;
+package com.sparta.doguin.config;
 
 import com.sparta.doguin.domain.user.enums.UserRole;
 import io.jsonwebtoken.Claims;

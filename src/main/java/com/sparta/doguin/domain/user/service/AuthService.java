@@ -1,6 +1,9 @@
 package com.sparta.doguin.domain.user.service;
 
-import com.sparta.doguin.common.config.JwtUtil;
+import com.sparta.doguin.config.JwtUtil;
+import com.sparta.doguin.domain.common.response.ApiResponse;
+import com.sparta.doguin.domain.common.response.ApiResponseEnum;
+import com.sparta.doguin.domain.common.response.ApiResponseUserEnum;
 import com.sparta.doguin.domain.user.dto.request.SigninRequest;
 import com.sparta.doguin.domain.user.dto.request.SignupRequest;
 import com.sparta.doguin.domain.user.entity.User;
@@ -19,18 +22,20 @@ public class AuthService {
     private final JwtUtil jwtUtil;
 
     @Transactional
-    public String signup(SignupRequest signupRequest) {
+    public ApiResponse<String> signup(SignupRequest signupRequest) {
         User newUser = new User(signupRequest.getEmail(), signupRequest.getPassword(), UserRole.of(signupRequest.getUserRole()));
         User saveduser = userRepository.save(newUser);
+        ApiResponseEnum apiResponse = ApiResponseUserEnum.USER_CREATE_SUCCESS;
 
-        return jwtUtil.createToken(saveduser.getId(), saveduser.getEmail(), saveduser.getUserRole());
+        return ApiResponse.of(apiResponse, jwtUtil.createToken(saveduser.getId(), saveduser.getEmail(), saveduser.getUserRole()));
     }
 
     @Transactional(readOnly = true)
-    public String signin(SigninRequest signinRequest) {
+    public ApiResponse<String> signin(SigninRequest signinRequest) {
         User user = userRepository.findByEmail(signinRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        ApiResponseEnum apiResponse = ApiResponseUserEnum.USER_LOGIN_SUCCESS;
 
-        return jwtUtil.createToken(user.getId(), user.getEmail(), user.getUserRole());
+        return ApiResponse.of(apiResponse, jwtUtil.createToken(user.getId(), user.getEmail(), user.getUserRole()));
     }
 }

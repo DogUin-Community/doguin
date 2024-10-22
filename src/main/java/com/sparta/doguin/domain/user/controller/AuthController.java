@@ -1,5 +1,6 @@
 package com.sparta.doguin.domain.user.controller;
 
+import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.user.dto.request.SigninRequest;
 import com.sparta.doguin.domain.user.dto.request.SignupRequest;
 import com.sparta.doguin.domain.user.service.AuthService;
@@ -18,14 +19,14 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("signup")
-    public ResponseEntity<Void> signup(@RequestBody SignupRequest signupRequest) {
-        String bearerToken = authService.signup(signupRequest);
-        return ResponseEntity.ok().header("Authorization", bearerToken).build();
+    public ResponseEntity<ApiResponse<String>> signup(@RequestBody SignupRequest signupRequest) {
+        ApiResponse<String> apiResponse = authService.signup(signupRequest);
+        return ApiResponse.of(apiResponse);
     }
 
     @PostMapping("signin")
-    public ResponseEntity<Void> signin(@RequestBody SigninRequest signinRequest) {
-        String bearerToken = authService.signin(signinRequest);
-        return ResponseEntity.ok().header("Authorization", bearerToken).build();
+    public ResponseEntity<ApiResponse<String>> signin(@RequestBody SigninRequest signinRequest) {
+        ApiResponse<String> apiResponse = authService.signin(signinRequest);
+        return ApiResponse.of(apiResponse);
     }
 }
