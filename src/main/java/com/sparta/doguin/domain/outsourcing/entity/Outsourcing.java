@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class Outsourcing {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long outsourcing_id;
+    private Long id;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "user_id")
