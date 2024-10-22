@@ -1,21 +1,26 @@
 package com.sparta.doguin.domain.matching.entity;
 
 import com.sparta.doguin.domain.matching.constans.MathingStatusType;
-import com.sparta.doguin.domain.outsourcing.constans.AreaType;
 import com.sparta.doguin.domain.outsourcing.entity.Outsourcing;
 import com.sparta.doguin.domain.portfolio.entity.Portfolio;
+import com.sparta.doguin.domain.user.entity.User;
 import jakarta.persistence.*;
+import lombok.*;
 
 // 외주 엔티티 수정
+@Getter
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
+@Builder
 @Entity
 public class Matching {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "portfolio_id")
