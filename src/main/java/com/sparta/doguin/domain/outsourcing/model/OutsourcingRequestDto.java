@@ -1,27 +1,12 @@
-package com.sparta.doguin.domain.outsourcing.entity;
+package com.sparta.doguin.domain.outsourcing.model;
 
 import com.sparta.doguin.domain.outsourcing.constans.AreaType;
-import com.sparta.doguin.domain.user.entity.User;
-import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-// 외주 엔티티 수정
 @Getter
-@Entity
-@AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
-public class Outsourcing {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
-
+public class OutsourcingRequestDto {
     private String title;
     private String content;
     // 우대 사항
@@ -46,6 +31,6 @@ public class Outsourcing {
     private LocalDateTime work_end_date;
 
     // 지역
-    @Enumerated(value = EnumType.STRING)
     private AreaType area;
+
 }
