@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
+// 외주 엔티티 수정
 @Entity
 public class Outsourcing {
     @Id
