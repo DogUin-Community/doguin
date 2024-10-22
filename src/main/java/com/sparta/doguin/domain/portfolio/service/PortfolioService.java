@@ -9,5 +9,4 @@ public interface PortfolioService {
     ApiResponse<Void> createPortfolio(PortfolioRequestDto portfolioRequest);
     ApiResponse<Void> updatePortfolio(Long portfolioId, PortfolioRequestDto portfolioRequest);
     ApiResponse<Void> deletePortfolio(Long portfolioId);
-
 }
