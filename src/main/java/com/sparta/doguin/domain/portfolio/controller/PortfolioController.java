@@ -21,13 +21,13 @@ public class PortfolioController {
     }
 
     @PostMapping
-    ResponseEntity<ApiResponse<Void>> getPortfolio(PortfolioRequestDto portfolioRequestDto) {
+    ResponseEntity<ApiResponse<Void>> getPortfolio(@RequestBody PortfolioRequestDto portfolioRequestDto) {
         ApiResponse<Void> apiResponse = portfolioService.createPortfolio(portfolioRequestDto);
         return ApiResponse.of(apiResponse);
     }
 
     @PutMapping("/{portfolioId}")
-    ResponseEntity<ApiResponse<Void>> updatePortfolio(@PathVariable Long portfolioId, PortfolioRequestDto portfolioRequestDto) {
+    ResponseEntity<ApiResponse<Void>> updatePortfolio(@PathVariable Long portfolioId, @RequestBody PortfolioRequestDto portfolioRequestDto) {
         ApiResponse<Void> apiResponse = portfolioService.updatePortfolio(portfolioId,portfolioRequestDto);
         return ApiResponse.of(apiResponse);
     }

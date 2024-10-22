@@ -2,7 +2,7 @@ package com.sparta.doguin.domain.portfolio.service;
 
 import com.sparta.doguin.domain.common.exception.PortfolioException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
-import com.sparta.doguin.domain.common.response.ApiResponsePortfolio;
+import com.sparta.doguin.domain.common.response.ApiResponsePortfolioEnum;
 import com.sparta.doguin.domain.portfolio.entity.Portfolio;
 import com.sparta.doguin.domain.portfolio.model.PortfolioRequestDto;
 import com.sparta.doguin.domain.portfolio.model.PortfolioResponse;
@@ -10,7 +10,7 @@ import com.sparta.doguin.domain.portfolio.repository.PortfolioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import static com.sparta.doguin.domain.common.response.ApiResponsePortfolio.PORTFOLIO_NOT_FOUND;
+import static com.sparta.doguin.domain.common.response.ApiResponsePortfolioEnum.PORTFOLIO_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -20,12 +20,12 @@ public class PortfolioServiceImpl implements PortfolioService {
     @Override
     public ApiResponse<PortfolioResponse> getPortfolio(Long portfolioId) {
         Portfolio portfolio = findById(portfolioId);
-//        PortfolioResponse portfolioResponse = new PortfolioResponseDto(portfolio);
-        ApiResponsePortfolio apiResponsePortfolio = ApiResponsePortfolio.PORTFOLIO_OK;
-//        return ApiResponse.of(apiResponsePortfolio,portfolioResponse);
-        return null;
+        PortfolioResponse portfolioResponse = PortfolioResponse.PortfolioResponseDto.of(portfolio);
+        ApiResponsePortfolioEnum apiResponsePortfolio = ApiResponsePortfolioEnum.PORTFOLIO_OK;
+        return ApiResponse.of(apiResponsePortfolio,portfolioResponse);
     }
 
+    // TODO: 유저 추가해야함
     @Override
     public ApiResponse<Void> createPortfolio(PortfolioRequestDto portfolioRequest) {
         Portfolio portfolio = Portfolio.builder()
@@ -37,10 +37,11 @@ public class PortfolioServiceImpl implements PortfolioService {
                 .area(portfolioRequest.getArea())
                 .build();
         portfolioRepository.save(portfolio);
-        ApiResponsePortfolio apiResponsePortfolio = ApiResponsePortfolio.PORTFOLIO_OK;
+        ApiResponsePortfolioEnum apiResponsePortfolio = ApiResponsePortfolioEnum.PORTFOLIO_OK;
         return ApiResponse.of(apiResponsePortfolio);
     }
 
+    // TODO: 유저 추가해야함
     @Override
     public ApiResponse<Void> updatePortfolio(Long portfolioId, PortfolioRequestDto portfolioRequest) {
         Portfolio getPortfolio = findById(portfolioId);
@@ -54,7 +55,7 @@ public class PortfolioServiceImpl implements PortfolioService {
                 .area(portfolioRequest.getArea())
                 .build();
         portfolioRepository.save(portfolio);
-        ApiResponsePortfolio apiResponsePortfolio = ApiResponsePortfolio.PORTFOLIO_OK;
+        ApiResponsePortfolioEnum apiResponsePortfolio = ApiResponsePortfolioEnum.PORTFOLIO_OK;
         return ApiResponse.of(apiResponsePortfolio);
     }
 
@@ -62,7 +63,7 @@ public class PortfolioServiceImpl implements PortfolioService {
     public ApiResponse<Void> deletePortfolio(Long portfolioId) {
         Portfolio getPortfolio = findById(portfolioId);
         portfolioRepository.delete(getPortfolio);
-        ApiResponsePortfolio apiResponsePortfolio = ApiResponsePortfolio.PORTFOLIO_OK;
+        ApiResponsePortfolioEnum apiResponsePortfolio = ApiResponsePortfolioEnum.PORTFOLIO_OK;
         return ApiResponse.of(apiResponsePortfolio);
     }
 
