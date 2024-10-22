@@ -28,8 +28,9 @@ public class NoticeController implements BoardController{
     }
 
     @Override
-    public BoardResponse viewOne() {
-        return null;
+    @GetMapping("{boardId}")
+    public BoardResponse viewOne(@PathVariable Long boardId) {
+        return BoardResponse.from(noticeService.viewOne(boardId));
     }
 
     @Override

@@ -36,7 +36,8 @@ public class NoticeService implements BoardService{
 
     @Override
     public Board viewOne(Long boardId) {
-        return null;
+        return boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("없읍니다."));
     }
 
     @Override

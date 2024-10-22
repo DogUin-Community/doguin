@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page;
 public interface BoardController {
     BoardResponse create(BoardRequest boardRequest);
     BoardResponse update(Long boardId,BoardRequest boardRequest);
-    BoardResponse viewOne();
+    BoardResponse viewOne(Long boardId);
     Page<Board> viewAll();
     Page<Board> search();
     void delete();
