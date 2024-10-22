@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: doguin
+  profiles:
+    active: local
