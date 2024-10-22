@@ -1,8 +1,7 @@
 package com.sparta.doguin.domain.outsourcing.controller;
 
 import com.sparta.doguin.domain.common.response.ApiResponse;
-import com.sparta.doguin.domain.outsourcing.model.OutsourcingRequestDto;
-import com.sparta.doguin.domain.outsourcing.model.OutsourctingResponse;
+import com.sparta.doguin.domain.outsourcing.model.OutsourctingDto;
 import com.sparta.doguin.domain.outsourcing.service.OutsourcingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,19 +14,19 @@ public class OutsourcingController {
     private final OutsourcingService outsourcingService;
 
     @GetMapping("/{outsourcingId}")
-    public ResponseEntity<ApiResponse<OutsourctingResponse>> getOutsourcing(@PathVariable Long outsourcingId){
-        ApiResponse<OutsourctingResponse> apiResponse = outsourcingService.getOutsourcing(outsourcingId);
+    public ResponseEntity<ApiResponse<OutsourctingDto>> getOutsourcing(@PathVariable Long outsourcingId){
+        ApiResponse<OutsourctingDto> apiResponse = outsourcingService.getOutsourcing(outsourcingId);
         return ApiResponse.of(apiResponse);
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Void>> createOutsourcing(@RequestBody OutsourcingRequestDto requestDto){
-        ApiResponse<Void> apiResponse = outsourcingService.createOutsourcing(requestDto);
+    public ResponseEntity<ApiResponse<Void>> createOutsourcing(@RequestBody OutsourctingDto.OutsourcingRequest reqDto){
+        ApiResponse<Void> apiResponse = outsourcingService.createOutsourcing(reqDto);
         return ApiResponse.of(apiResponse);
     }
 
     @PutMapping("/{outsourcingId}")
-    public ResponseEntity<ApiResponse<Void>> updateOutsourcing(@PathVariable Long outsourcingId,  OutsourcingRequestDto reqDto){
+    public ResponseEntity<ApiResponse<Void>> updateOutsourcing(@PathVariable Long outsourcingId, @RequestBody OutsourctingDto.OutsourcingRequest reqDto){
         ApiResponse<Void> apiResponse = outsourcingService.updateOutsourcing(outsourcingId,reqDto);
         return ApiResponse.of(apiResponse);
     }

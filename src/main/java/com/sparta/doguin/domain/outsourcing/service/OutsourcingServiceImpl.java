@@ -4,8 +4,7 @@ import com.sparta.doguin.domain.common.exception.OutsourcingException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseOutsourcingEnum;
 import com.sparta.doguin.domain.outsourcing.entity.Outsourcing;
-import com.sparta.doguin.domain.outsourcing.model.OutsourcingRequestDto;
-import com.sparta.doguin.domain.outsourcing.model.OutsourctingResponse;
+import com.sparta.doguin.domain.outsourcing.model.OutsourctingDto;
 import com.sparta.doguin.domain.outsourcing.repository.OutsourcingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,27 +15,27 @@ public class OutsourcingServiceImpl implements OutsourcingService {
     private final OutsourcingRepository outsourcingRepository;
 
     @Override
-    public ApiResponse<OutsourctingResponse> getOutsourcing(Long outsourcingId) {
+    public ApiResponse<OutsourctingDto> getOutsourcing(Long outsourcingId) {
         Outsourcing outsourcing = findById(outsourcingId);
         ApiResponseOutsourcingEnum apiResponseOutsourcingEnum = ApiResponseOutsourcingEnum.OUTSOURCING_SUCCESS;
-        OutsourctingResponse outsourctingResponse = OutsourctingResponse.OutsourcingResponseDto.of(outsourcing);
+        OutsourctingDto outsourctingResponse = OutsourctingDto.OutsourcingResponse.of(outsourcing);
         return ApiResponse.of(apiResponseOutsourcingEnum,outsourctingResponse);
     }
 
     // TODO: 유저 추가해야함
     @Override
-    public ApiResponse<Void> createOutsourcing(OutsourcingRequestDto reqDto) {
+    public ApiResponse<Void> createOutsourcing(OutsourctingDto.OutsourcingRequest reqDto) {
         Outsourcing outsourcing = Outsourcing.builder()
-                .title(reqDto.getTitle())
-                .content(reqDto.getContent())
-                .preferential(reqDto.getPreferential())
-                .work_type(reqDto.getWork_type())
-                .price(reqDto.getPrice())
-                .recruit_start_date(reqDto.getRecruit_start_date())
-                .recruit_end_date(reqDto.getRecruit_end_date())
-                .work_start_date(reqDto.getWork_start_date())
-                .work_end_date(reqDto.getWork_end_date())
-                .area(reqDto.getArea())
+                .title(reqDto.title())
+                .content(reqDto.content())
+                .preferential(reqDto.preferential())
+                .work_type(reqDto.work_type())
+                .price(reqDto.price())
+                .recruit_start_date(reqDto.recruit_start_date())
+                .recruit_end_date(reqDto.recruit_end_date())
+                .work_start_date(reqDto.work_start_date())
+                .work_end_date(reqDto.work_end_date())
+                .area(reqDto.area())
                 .build();
         outsourcingRepository.save(outsourcing);
         return ApiResponse.of(ApiResponseOutsourcingEnum.OUTSOURCING_SUCCESS);
@@ -44,20 +43,20 @@ public class OutsourcingServiceImpl implements OutsourcingService {
 
     // TODO: 유저 추가해야함
     @Override
-    public ApiResponse<Void> updateOutsourcing(Long outsourcingId, OutsourcingRequestDto reqDto) {
+    public ApiResponse<Void> updateOutsourcing(Long outsourcingId, OutsourctingDto.OutsourcingRequest reqDto) {
         Outsourcing findOutsourcing = findById(outsourcingId);
         Outsourcing updateOutsourcing = Outsourcing.builder()
                 .id(findOutsourcing.getId())
-                .title(reqDto.getTitle())
-                .content(reqDto.getContent())
-                .preferential(reqDto.getPreferential())
-                .work_type(reqDto.getWork_type())
-                .price(reqDto.getPrice())
-                .recruit_start_date(reqDto.getRecruit_start_date())
-                .recruit_end_date(reqDto.getRecruit_end_date())
-                .work_start_date(reqDto.getWork_start_date())
-                .work_end_date(reqDto.getWork_end_date())
-                .area(reqDto.getArea())
+                .title(reqDto.title())
+                .content(reqDto.content())
+                .preferential(reqDto.preferential())
+                .work_type(reqDto.work_type())
+                .price(reqDto.price())
+                .recruit_start_date(reqDto.recruit_start_date())
+                .recruit_end_date(reqDto.recruit_end_date())
+                .work_start_date(reqDto.work_start_date())
+                .work_end_date(reqDto.work_end_date())
+                .area(reqDto.area())
                 .build();
         outsourcingRepository.save(updateOutsourcing);
         return ApiResponse.of(ApiResponseOutsourcingEnum.OUTSOURCING_SUCCESS);
