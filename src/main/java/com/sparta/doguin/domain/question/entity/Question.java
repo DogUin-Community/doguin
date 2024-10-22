@@ -1,6 +1,7 @@
 package com.sparta.doguin.domain.question.entity;
 
 import com.sparta.doguin.domain.answer.entity.Answer;
+import com.sparta.doguin.domain.question.dto.QuestionRequest;
 import com.sparta.doguin.domain.question.enums.FirstCategory;
 import com.sparta.doguin.domain.question.enums.LastCategory;
 import com.sparta.doguin.domain.question.enums.QuestionStatus;
@@ -43,4 +44,20 @@ public class Question {
 
 //    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
 //    private List<Bookmark> bookmarkList = new ArrayList<>();
+
+    public Question(String title, String content, FirstCategory firstCategory, SecondCategory secondCategory, LastCategory lastCategory) {
+        this.title = title;
+        this.content = content;
+        this.firstCategory = firstCategory;
+        this.secondCategory = secondCategory;
+        this.lastCategory = lastCategory;
+    }
+
+    public void update(QuestionRequest.UpdateQuestion request) {
+        this.title = request.title();
+        this.content = request.content();
+        this.firstCategory = request.firstCategory();
+        this.secondCategory = request.secondCategory();
+        this.lastCategory = request.lastCategory();
+    }
 }
