@@ -4,6 +4,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.sparta.doguin.domain.board.BoardType;
 import com.sparta.doguin.domain.board.entity.Board;
 import com.sparta.doguin.domain.board.entity.QBoard;
 import org.springframework.data.domain.Page;
@@ -23,7 +24,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
 
     @Override
-    public Page<Board> findAllByTitle(Pageable pageable, String title) {
+    public Page<Board> findAllByBoardType(Pageable pageable, BoardType boardType) {
         List<Board> result = jpaQueryFactory
                 .select(Projections.constructor(Board.class,
                         board.id,
@@ -33,7 +34,33 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
                 .distinct()
                 .from(board)
                 .where(
-                        eqTitle(title)
+                        eqType(boardType)
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        Long count = jpaQueryFactory
+                .select(Wildcard.count)
+                .from(board)
+                .fetchOne();
+
+        return new PageImpl<>(result, pageable, count);
+    }
+
+    @Override
+    public Page<Board> findAllByTitleAndBoardType(Pageable pageable, String title, BoardType boardType) {
+        List<Board> result = jpaQueryFactory
+                .select(Projections.constructor(Board.class,
+                        board.id,
+                        board.title,
+                        board.content
+                ))
+                .distinct()
+                .from(board)
+                .where(
+                        eqTitle(title),
+                        eqType(boardType)
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -50,4 +77,9 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     private BooleanExpression eqTitle(String title){
         return (title!=null && !title.isEmpty()) ? board.title.containsIgnoreCase(title) : null;
     }
+
+    private BooleanExpression eqType(BoardType boardType) {
+        return board.boardType.eq(boardType);
+    }
+
 }

@@ -16,15 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class NoticeService implements BoardService{
-
-
+public class BulletinService implements BoardService{
     private final BoardRepository boardRepository;
 
     @Override
     @Transactional
     public Board create(BoardRequest boardRequest,BoardType boardType) {
-        Board board = new Board(boardRequest.title(), boardRequest.content(), boardType);
+        Board board = new Board(boardRequest.title(), boardRequest.content(),boardType);
         return boardRepository.save(board);
     }
 
@@ -32,7 +30,7 @@ public class NoticeService implements BoardService{
     @Transactional
     public Board update(Long boardId, BoardRequest boardRequest) {
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.NOTICE_NOT_FOUND));
+                .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.BULLETIN_NOT_FOUND));
         board.update(boardRequest.title(),boardRequest.content());
         return board;
     }
@@ -41,7 +39,7 @@ public class NoticeService implements BoardService{
     @Override
     public Board viewOne(Long boardId) {
         return boardRepository.findById(boardId)
-                .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.NOTICE_NOT_FOUND));
+                .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.BULLETIN_NOT_FOUND));
     }
 
     @Override
