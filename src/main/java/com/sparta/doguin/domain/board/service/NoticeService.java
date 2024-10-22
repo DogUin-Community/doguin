@@ -57,8 +57,15 @@ public class NoticeService implements BoardService{
     }
 
     @Override
-    public Page<BoardResponse> search(String title, int page,int size) {
-        return null;
+    public Page<BoardResponse> search(int page,int size,String title) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Board> notices = boardRepository.findAllByTitle(pageable,title);
+
+        return notices.map(notice -> new BoardResponse(
+                notice.getId(),
+                notice.getTitle(),
+                notice.getContent()
+        ));
     }
 
     @Override

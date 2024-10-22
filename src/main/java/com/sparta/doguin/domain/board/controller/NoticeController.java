@@ -41,8 +41,11 @@ public class NoticeController implements BoardController{
     }
 
     @Override
-    public Page<BoardResponse> search() {
-        return null;
+    @GetMapping("/search")
+    public Page<BoardResponse> search(@RequestParam(defaultValue = "1") int page,
+                                      @RequestParam(defaultValue = "10") int size,
+                                      @RequestParam String title) {
+        return noticeService.search(page,size,title);
     }
 
     @Override

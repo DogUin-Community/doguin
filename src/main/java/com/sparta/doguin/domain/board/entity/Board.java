@@ -28,6 +28,12 @@ public class Board extends Timestamped {
         this.boardType = boardType;
     }
 
+    public Board(Long id, String title, String content) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+    }
+
     public void update(String title, String content){
         this.title=title;
         this.content = content;

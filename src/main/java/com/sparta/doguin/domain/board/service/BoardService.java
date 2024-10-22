@@ -12,6 +12,6 @@ public interface BoardService {
     Board update(Long boardId, BoardRequest boardRequest);
     Board viewOne(Long boardId);
     Page<BoardResponse> viewAll(int page, int size);
-    Page<BoardResponse> search(String title, int page,int size);
+    Page<BoardResponse> search(int page,int size,String title);
     void delete(Long bardId);
 }

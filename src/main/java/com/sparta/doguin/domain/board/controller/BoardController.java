@@ -10,6 +10,6 @@ public interface BoardController {
     BoardResponse update(Long boardId,BoardRequest boardRequest);
     BoardResponse viewOne(Long boardId);
     Page<BoardResponse> viewAll(int page, int size);
-    Page<BoardResponse> search();
+    Page<BoardResponse> search(int page, int size,String title);
     void delete();
 }
