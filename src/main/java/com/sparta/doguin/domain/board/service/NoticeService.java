@@ -5,6 +5,8 @@ import com.sparta.doguin.domain.board.dto.request.BoardRequest;
 import com.sparta.doguin.domain.board.dto.response.BoardResponse;
 import com.sparta.doguin.domain.board.entity.Board;
 import com.sparta.doguin.domain.board.repository.BoardRepository;
+import com.sparta.doguin.domain.common.exception.HandleNotFound;
+import com.sparta.doguin.domain.common.response.ApiResponseBoardEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,7 +32,7 @@ public class NoticeService implements BoardService{
     @Transactional
     public Board update(Long boardId, BoardRequest boardRequest) {
         Board notice = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("없읍니다."));
+                .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.NOTICE_NOT_FOUND));
         notice.update(boardRequest.title(),boardRequest.content());
         return notice;
     }
@@ -39,7 +41,7 @@ public class NoticeService implements BoardService{
     @Override
     public Board viewOne(Long boardId) {
         return boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("없읍니다."));
+                .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.NOTICE_NOT_FOUND));
     }
 
     @Override
@@ -72,7 +74,7 @@ public class NoticeService implements BoardService{
     public void delete(Long boardId) {
 
         Board board =boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("없읍니다."));
+                .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.NOTICE_NOT_FOUND));
 
         boardRepository.delete(board);
     }
