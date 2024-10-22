@@ -12,6 +12,13 @@ public enum ApiResponseBoardEnum implements ApiResponseEnum {
     NOTICE_FIND_ONE_SUCCESS(HttpStatus.OK,"공지 조회(단건)에 성공하였습니다."),
     NOTICE_FIND_ALL_SUCCESS(HttpStatus.OK,"공지 조회(전체)에 성공하였습니다."),
     NOTICE_SEARCH_SUCCESS(HttpStatus.OK,"공지 검색에 성공하였습니다."),
+
+    BULLETIN_CREATE_SUCCESS(HttpStatus.OK,"일반 게시글 등록에 성공하였습니다."),
+    BULLETIN_UPDATE_SUCCESS(HttpStatus.OK,"일반 게시글 수정에 성공하였습니다."),
+    BULLETIN_DELETE_SUCCESS(HttpStatus.OK,"일반 게시글 삭제에 성공하였습니다."),
+    BULLETIN_FIND_ONE_SUCCESS(HttpStatus.OK,"일반 게시글 조회(단건)에 성공하였습니다."),
+    BULLETIN_FIND_ALL_SUCCESS(HttpStatus.OK,"일반 게시글 조회(전체)에 성공하였습니다."),
+    BULLETIN_SEARCH_SUCCESS(HttpStatus.OK,"일반 게시글 검색에 성공하였습니다."),
     // 400
 
 
@@ -20,7 +27,8 @@ public enum ApiResponseBoardEnum implements ApiResponseEnum {
 
 
     // 404
-    NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "공지를 찾을 수 없습니다.");
+    NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "공지를 찾을 수 없습니다."),
+    BULLETIN_NOT_FOUND(HttpStatus.NOT_FOUND, "일반 게시글을 찾을 수 없습니다.");
 
 
     private final HttpStatus httpStatus;

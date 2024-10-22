@@ -1,5 +1,6 @@
 package com.sparta.doguin.domain.board.controller;
 
+import com.sparta.doguin.domain.board.BoardType;
 import com.sparta.doguin.domain.board.dto.request.BoardRequest;
 import com.sparta.doguin.domain.board.dto.response.BoardResponse;
 import com.sparta.doguin.domain.board.service.BulletinService;
@@ -8,8 +9,7 @@ import com.sparta.doguin.domain.common.response.ApiResponseBoardEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,35 +17,51 @@ import org.springframework.web.bind.annotation.RestController;
 public class BulletinController implements BoardController{
 
     private final BulletinService bulletinService;
+    private final BoardType boardType = BoardType.BOARD_BULLETIN;
 
+    @PostMapping
     @Override
-    public ResponseEntity<ApiResponse<BoardResponse>> create(BoardRequest boardRequest) {
-        BoardResponse response = BoardResponse.from(bulletinService.create(boardRequest));
-        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.NOTICE_CREATE_SUCCESS, response));
+    public ResponseEntity<ApiResponse<BoardResponse>> create(@RequestBody BoardRequest boardRequest){
+        BoardResponse response = BoardResponse.from(bulletinService.create(boardRequest,boardType));
+        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.BULLETIN_CREATE_SUCCESS, response));
     }
 
     @Override
-    public ResponseEntity<ApiResponse<BoardResponse>> update(Long boardId, BoardRequest boardRequest) {
-        return null;
+    @PutMapping("{boardId}")
+    public ResponseEntity<ApiResponse<BoardResponse>> update(@PathVariable Long boardId,@RequestBody BoardRequest boardRequest) {
+        BoardResponse response = BoardResponse.from(bulletinService.update(boardId,boardRequest));
+        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.BULLETIN_UPDATE_SUCCESS, response));
     }
 
     @Override
-    public ResponseEntity<ApiResponse<BoardResponse>> viewOne(Long boardId) {
-        return null;
+    @GetMapping("{boardId}")
+    public ResponseEntity<ApiResponse<BoardResponse>> viewOne(@PathVariable Long boardId) {
+        BoardResponse response = BoardResponse.from(bulletinService.viewOne(boardId));
+        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.BULLETIN_FIND_ONE_SUCCESS, response));
     }
 
     @Override
-    public ResponseEntity<ApiResponse<Page<BoardResponse>>> viewAll(int page, int size) {
-        return null;
+    @GetMapping
+    public ResponseEntity<ApiResponse<Page<BoardResponse>>> viewAll(@RequestParam(defaultValue = "1") int page,
+                                                                    @RequestParam(defaultValue = "10") int size) {
+        Page<BoardResponse> responses = bulletinService.viewAll(page, size, boardType);
+        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.BULLETIN_FIND_ALL_SUCCESS, responses));
+
     }
 
     @Override
-    public ResponseEntity<ApiResponse<Page<BoardResponse>>> search(int page, int size, String title) {
-        return null;
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<Page<BoardResponse>>> search(@RequestParam(defaultValue = "1") int page,
+                                                                   @RequestParam(defaultValue = "10") int size,
+                                                                   @RequestParam String title) {
+        Page<BoardResponse> responses = bulletinService.search(page,size,title,boardType);
+        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.BULLETIN_SEARCH_SUCCESS, responses));
     }
 
     @Override
-    public ResponseEntity<ApiResponse<Void>> delete(Long boardId) {
-        return null;
+    @DeleteMapping("{boardId}")
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long boardId) {
+        bulletinService.delete(boardId);
+        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.BULLETIN_DELETE_SUCCESS));
     }
 }

@@ -23,18 +23,18 @@ public class NoticeService implements BoardService{
 
     @Override
     @Transactional
-    public Board create(BoardRequest boardRequest) {
-        Board newNotice = new Board(boardRequest.title(), boardRequest.content(), BoardType.BOARD_NOTICE);
-        return boardRepository.save(newNotice);
+    public Board create(BoardRequest boardRequest,BoardType boardType) {
+        Board board = new Board(boardRequest.title(), boardRequest.content(), boardType);
+        return boardRepository.save(board);
     }
 
     @Override
     @Transactional
     public Board update(Long boardId, BoardRequest boardRequest) {
-        Board notice = boardRepository.findById(boardId)
+        Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.NOTICE_NOT_FOUND));
-        notice.update(boardRequest.title(),boardRequest.content());
-        return notice;
+        board.update(boardRequest.title(),boardRequest.content());
+        return board;
     }
 
 
@@ -45,12 +45,12 @@ public class NoticeService implements BoardService{
     }
 
     @Override
-    public Page<BoardResponse> viewAll(int page, int size) {
+    public Page<BoardResponse> viewAll(int page, int size, BoardType boardType) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        Page<Board> notices = boardRepository.findAll(pageable);
+        Page<Board> boards = boardRepository.findAllByBoardType(pageable,boardType);
 
-        return notices.map(notice -> new BoardResponse(
+        return boards.map(notice -> new BoardResponse(
                 notice.getId(),
                 notice.getTitle(),
                 notice.getContent()
@@ -59,11 +59,11 @@ public class NoticeService implements BoardService{
     }
 
     @Override
-    public Page<BoardResponse> search(int page,int size,String title) {
+    public Page<BoardResponse> search(int page,int size,String title, BoardType boardType) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Board> notices = boardRepository.findAllByTitle(pageable,title);
+        Page<Board> boards = boardRepository.findAllByTitleAndBoardType(pageable,title,boardType);
 
-        return notices.map(notice -> new BoardResponse(
+        return boards.map(notice -> new BoardResponse(
                 notice.getId(),
                 notice.getTitle(),
                 notice.getContent()
