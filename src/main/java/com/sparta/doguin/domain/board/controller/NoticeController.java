@@ -49,7 +49,9 @@ public class NoticeController implements BoardController{
     }
 
     @Override
-    public void delete() {
+    @DeleteMapping("{boardId}")
+    public void delete(@PathVariable Long boardId) {
+        noticeService.delete(boardId);
 
     }
 }

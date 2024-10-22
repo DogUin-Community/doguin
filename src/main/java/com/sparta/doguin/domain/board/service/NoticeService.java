@@ -69,7 +69,11 @@ public class NoticeService implements BoardService{
     }
 
     @Override
-    public void delete(Long bardId) {
+    public void delete(Long boardId) {
 
+        Board board =boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("없읍니다."));
+
+        boardRepository.delete(board);
     }
 }

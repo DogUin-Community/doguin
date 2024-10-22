@@ -11,5 +11,5 @@ public interface BoardController {
     BoardResponse viewOne(Long boardId);
     Page<BoardResponse> viewAll(int page, int size);
     Page<BoardResponse> search(int page, int size,String title);
-    void delete();
+    void delete(Long boardId);
 }
