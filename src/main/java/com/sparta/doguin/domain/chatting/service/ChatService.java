@@ -50,7 +50,7 @@ public class ChatService {
     }
 
     // 메시지 저장 및 전송
-    public ChatResponse.MessageResponse sendMessage(ChatRequest.MessageRequest messageRequest, AuthUser authUser) {
+    public void sendMessage(ChatRequest.MessageRequest messageRequest, AuthUser authUser) {
         ChatRoom chatRoom = findChatRoomById(messageRequest.chatRoomId());
 
         // 채팅방 인원 제한 체크
@@ -64,8 +64,6 @@ public class ChatService {
         // WebSocket을 통한 메시지 전송 및 Redis 저장
         sendMessageToTopic(messageRequest.chatRoomId(), authUser.getNickname(), messageRequest.content(), message.getCreatedAt());
         saveMessageToRedis(messageRequest.chatRoomId(), message);
-
-        return new ChatResponse.MessageResponse(messageRequest.chatRoomId(), messageRequest.content());
     }
 
     // 입장 메시지 처리

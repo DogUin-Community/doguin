@@ -1,6 +1,6 @@
 package com.sparta.doguin.domain.chatting.dto;
 
-public sealed interface ChatResponse permits ChatResponse.ChatRoomResponse, ChatResponse.MessageResponse, ChatResponse.ChatMessageResponse {
+public sealed interface ChatResponse permits ChatResponse.ChatRoomResponse, ChatResponse.MessageResponse, ChatResponse.ChatMessageResponse,  ChatResponse.ErrorMessage {
 
     record ChatRoomResponse(Long id, String title) implements ChatResponse {}
 
@@ -11,4 +11,7 @@ public sealed interface ChatResponse permits ChatResponse.ChatRoomResponse, Chat
                                String content,
                                Long chatRoomId,
                                String timestamp) implements ChatResponse {}
+
+    record ErrorMessage(String errorMessage) implements ChatResponse {}
+
 }

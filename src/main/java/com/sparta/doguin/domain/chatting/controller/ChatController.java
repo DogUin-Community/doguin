@@ -4,11 +4,13 @@ import com.sparta.doguin.config.AuthUser;
 import com.sparta.doguin.domain.chatting.dto.ChatRequest;
 import com.sparta.doguin.domain.chatting.dto.ChatResponse;
 import com.sparta.doguin.domain.chatting.service.ChatService;
+import com.sparta.doguin.domain.common.exception.ChatException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseChatEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ChatController {
 
     private final ChatService chatService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     // 채팅방 생성
     @PostMapping
@@ -34,20 +37,37 @@ public class ChatController {
     @MessageMapping("/chat.sendMessage")
     public void sendMessage(@RequestBody ChatRequest.MessageRequest messageRequest) {
         AuthUser authUser = (AuthUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        chatService.sendMessage(messageRequest, authUser);
+        try {
+            chatService.sendMessage(messageRequest, authUser);
+        } catch (ChatException e) {
+            sendErrorMessage(e);
+        }
     }
 
     // 채팅방 입장
     @MessageMapping("/chat.enterRoom")
     public void enterRoom(@RequestBody ChatRequest.MessageRequest messageRequest) {
         AuthUser authUser = (AuthUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        chatService.userEnter(messageRequest.chatRoomId(), authUser);
+        try {
+            chatService.userEnter(messageRequest.chatRoomId(), authUser);
+        } catch (ChatException e) {
+            sendErrorMessage(e);
+        }
     }
 
     // 채팅방 퇴장
     @MessageMapping("/chat.leaveRoom")
     public void leaveRoom(@RequestBody ChatRequest.MessageRequest messageRequest) {
         AuthUser authUser = (AuthUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        chatService.userExit(messageRequest.chatRoomId(), authUser);
+        try {
+            chatService.userExit(messageRequest.chatRoomId(), authUser);
+        } catch (ChatException e) {
+            sendErrorMessage(e);
+        }
+    }
+
+    private void sendErrorMessage(ChatException e) {
+        messagingTemplate.convertAndSend("/topic/errors",
+                new ChatResponse.ErrorMessage(e.getApiResponseEnum().getMessage()));
     }
 }
