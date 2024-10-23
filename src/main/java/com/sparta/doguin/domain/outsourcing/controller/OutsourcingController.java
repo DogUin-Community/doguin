@@ -3,8 +3,8 @@ package com.sparta.doguin.domain.outsourcing.controller;
 import com.sparta.doguin.config.AuthUser;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.outsourcing.constans.AreaType;
-import com.sparta.doguin.domain.outsourcing.model.OutsourctingRequest;
-import com.sparta.doguin.domain.outsourcing.model.OutsourctingResponse;
+import com.sparta.doguin.domain.outsourcing.model.OutsourcingRequest;
+import com.sparta.doguin.domain.outsourcing.model.OutsourcingResponse;
 import com.sparta.doguin.domain.outsourcing.service.OutsourcingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +23,8 @@ public class OutsourcingController {
     private final OutsourcingService outsourcingService;
 
     @GetMapping("/{outsourcingId}")
-    public ResponseEntity<ApiResponse<OutsourctingResponse>> getOutsourcing(@PathVariable Long outsourcingId){
-        ApiResponse<OutsourctingResponse> apiResponse = outsourcingService.getOutsourcing(outsourcingId);
+    public ResponseEntity<ApiResponse<OutsourcingResponse>> getOutsourcing(@PathVariable Long outsourcingId){
+        ApiResponse<OutsourcingResponse> apiResponse = outsourcingService.getOutsourcing(outsourcingId);
         return ApiResponse.of(apiResponse);
     }
 
@@ -32,7 +32,7 @@ public class OutsourcingController {
      * 전체 외주 공고들 확인 가능
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<OutsourctingResponse>>> getAllOutsourcing(
+    public ResponseEntity<ApiResponse<Page<OutsourcingResponse>>> getAllOutsourcing(
             @RequestParam(defaultValue = "0", required = false) int page,
             @RequestParam(defaultValue = "10", required = false) int size,
             @RequestParam(defaultValue = "desc", required = false) String sort,
@@ -40,20 +40,20 @@ public class OutsourcingController {
     ) {
         Sort.Direction direction = Sort.Direction.fromString(sort);
         Pageable pageable = PageRequest.of(page, size, direction,"createdAt");
-        ApiResponse<Page<OutsourctingResponse>> apiResponse = outsourcingService.getAllOutsourcing(pageable,area);
+        ApiResponse<Page<OutsourcingResponse>> apiResponse = outsourcingService.getAllOutsourcing(pageable,area);
         return ApiResponse.of(apiResponse);
     }
 
 
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Void>> createOutsourcing(@Valid @RequestBody OutsourctingRequest.OutsourcingRequestCreate reqDto, @AuthenticationPrincipal AuthUser authUser){
+    public ResponseEntity<ApiResponse<Void>> createOutsourcing(@Valid @RequestBody OutsourcingRequest.OutsourcingRequestCreate reqDto, @AuthenticationPrincipal AuthUser authUser){
         ApiResponse<Void> apiResponse = outsourcingService.createOutsourcing(reqDto,authUser);
         return ApiResponse.of(apiResponse);
     }
 
     @PutMapping("/{outsourcingId}")
-    public ResponseEntity<ApiResponse<Void>> updateOutsourcing(@PathVariable Long outsourcingId, @RequestBody OutsourctingRequest.OutsourcingRequestUpdate reqDto,@AuthenticationPrincipal AuthUser authUser){
+    public ResponseEntity<ApiResponse<Void>> updateOutsourcing(@PathVariable Long outsourcingId, @RequestBody OutsourcingRequest.OutsourcingRequestUpdate reqDto, @AuthenticationPrincipal AuthUser authUser){
         ApiResponse<Void> apiResponse = outsourcingService.updateOutsourcing(outsourcingId,reqDto,authUser);
         return ApiResponse.of(apiResponse);
     }

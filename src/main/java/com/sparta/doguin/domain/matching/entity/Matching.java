@@ -7,11 +7,13 @@ import com.sparta.doguin.domain.portfolio.entity.Portfolio;
 import com.sparta.doguin.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 // 외주 엔티티 수정
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor
+@DynamicUpdate
 @Builder
 @Entity
 public class Matching extends Timestamped {

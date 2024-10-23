@@ -5,7 +5,7 @@ import com.sparta.doguin.domain.outsourcing.entity.Outsourcing;
 
 import java.time.LocalDateTime;
 
-public sealed interface OutsourctingResponse permits OutsourctingResponse.OutsourcingResponseGet {
+public sealed interface OutsourcingResponse permits OutsourcingResponse.OutsourcingResponseGet {
     record OutsourcingResponseGet(
              Long id,
              Long user_id,
@@ -21,7 +21,7 @@ public sealed interface OutsourctingResponse permits OutsourctingResponse.Outsou
              AreaType area,
              LocalDateTime createdAt,
              LocalDateTime updatedAt
-    ) implements OutsourctingResponse {
+    ) implements OutsourcingResponse {
         public static OutsourcingResponseGet of(Outsourcing outsourcing) {
             return new OutsourcingResponseGet(
                     outsourcing.getId(),
