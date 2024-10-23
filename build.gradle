@@ -58,6 +58,12 @@ dependencies {
     // MySQL
     runtimeOnly 'com.mysql:mysql-connector-j'
 
+    // Jakarta Validation API (Bean Validation)
+    implementation 'jakarta.validation:jakarta.validation-api:3.0.2' // 추가된 부분
+
+    // Hibernate Validator (Jakarta Bean Validation 구현체)
+    implementation 'org.hibernate.validator:hibernate-validator:8.0.0.Final' // 추가된 부분
+
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'

@@ -1,5 +1,7 @@
 package com.sparta.doguin.domain.user.enums;
 
+import com.sparta.doguin.domain.common.exception.UserException;
+import com.sparta.doguin.domain.common.response.ApiResponseUserEnum;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -18,7 +20,7 @@ public enum UserRole {
         return Arrays.stream(UserRole.values())
                 .filter(r -> r.name().equalsIgnoreCase(role))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 UserRole"));
+                .orElseThrow(() -> new UserException(ApiResponseUserEnum.USER_ROLE_INVALID));
     }
 
     public static class Authority {
