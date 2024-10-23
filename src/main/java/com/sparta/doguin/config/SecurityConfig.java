@@ -48,7 +48,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/v1/boards/events").hasAuthority(UserRole.Authority.ADMIN)
                         .requestMatchers(HttpMethod.POST,"/api/v1/boards/notices").hasAuthority(UserRole.Authority.ADMIN)
                         .requestMatchers(HttpMethod.POST,"/api/v1/boards/inquiries").hasAuthority(UserRole.Authority.USER)
-//                        .requestMatchers("/test").hasAuthority(UserRole.Authority.ADMIN) -> 컨트롤러 로직에서 admin 사용자에게만 권한 설정할 때 사용하기 위해 일단 주석처리
                         .anyRequest().authenticated()
                 )
                 .build();
