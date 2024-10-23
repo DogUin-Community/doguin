@@ -5,11 +5,11 @@ import com.sparta.doguin.domain.common.exception.PortfolioException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.outsourcing.constans.AreaType;
 import com.sparta.doguin.domain.portfolio.entity.Portfolio;
-import com.sparta.doguin.domain.portfolio.model.PortfolioDto;
+import com.sparta.doguin.domain.portfolio.model.PortfolioRequest;
+import com.sparta.doguin.domain.portfolio.model.PortfolioResponse;
 import com.sparta.doguin.domain.portfolio.repository.PortfolioRepository;
 import com.sparta.doguin.domain.portfolio.validate.PortfolioValidator;
 import com.sparta.doguin.domain.user.entity.User;
-import com.sparta.doguin.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +24,6 @@ import static com.sparta.doguin.domain.common.response.ApiResponsePortfolioEnum.
 @RequiredArgsConstructor
 public class PortfolioServiceImpl implements PortfolioService {
     private final PortfolioRepository portfolioRepository;
-    private final UserRepository userRepository;
 
     /**
      * ID로 특정 포트폴리오 찾는 메서드
@@ -36,9 +35,9 @@ public class PortfolioServiceImpl implements PortfolioService {
      */
     @Transactional(readOnly = true)
     @Override
-    public ApiResponse<PortfolioDto> getPortfolio(Long portfolioId) {
+    public ApiResponse<PortfolioResponse> getPortfolio(Long portfolioId) {
         Portfolio portfolio = findById(portfolioId);
-        PortfolioDto portfolioResponse = PortfolioDto.PortfolioResponse.of(portfolio);
+        PortfolioResponse portfolioResponse = PortfolioResponse.PortfolioResponseGet.of(portfolio);
         return ApiResponse.of(PORTFOLIO_OK,portfolioResponse);
     }
 
@@ -53,8 +52,8 @@ public class PortfolioServiceImpl implements PortfolioService {
      */
     @Transactional
     @Override
-    public ApiResponse<Void> createPortfolio(PortfolioDto.PortfolioRequest portfolioRequest, AuthUser authUser) {
-        User user = userRepository.findById(Long.parseLong(authUser.getUserId())).orElseThrow();
+    public ApiResponse<Void> createPortfolio(PortfolioRequest.PortfolioRequestCreate portfolioRequest, AuthUser authUser) {
+        User user = User.fromAuthUser(authUser);
         Portfolio portfolio = Portfolio.builder()
                 .user(user)
                 .title(portfolioRequest.title())
@@ -79,10 +78,10 @@ public class PortfolioServiceImpl implements PortfolioService {
      */
     @Transactional
     @Override
-    public ApiResponse<Void> updatePortfolio(Long portfolioId, PortfolioDto.PortfolioRequestUpdate portfolioRequestUpdate,AuthUser authUser) {
-        User user = userRepository.findById(Long.parseLong(authUser.getUserId())).orElseThrow();
+    public ApiResponse<Void> updatePortfolio(Long portfolioId, PortfolioRequest.PortfolioRequestUpdate portfolioRequestUpdate, AuthUser authUser) {
+        User user = User.fromAuthUser(authUser);
         Portfolio findPortfolio = findById(portfolioId);
-        PortfolioValidator.isMe(user.getId(),findPortfolio.getId());
+        PortfolioValidator.isMe(user.getId(),findPortfolio.getUser().getId());
         Portfolio portfolio = Portfolio.builder()
                 .id(findPortfolio.getId())
                 .user(findPortfolio.getUser())
@@ -108,7 +107,7 @@ public class PortfolioServiceImpl implements PortfolioService {
     @Transactional
     @Override
     public ApiResponse<Void> deletePortfolio(Long portfolioId,AuthUser authUser) {
-        User user = userRepository.findById(Long.parseLong(authUser.getUserId())).orElseThrow();
+        User user = User.fromAuthUser(authUser);
         Portfolio portfolio = findById(portfolioId);
         PortfolioValidator.isMe(user.getId(),portfolio.getId());
         portfolioRepository.delete(portfolio);
@@ -117,8 +116,8 @@ public class PortfolioServiceImpl implements PortfolioService {
 
     @Transactional(readOnly = true)
     @Override
-    public ApiResponse<Page<PortfolioDto>> getAllMyPortfolio(Pageable pageable, AreaType area, AuthUser authUser) {
-        User user = userRepository.findById(Long.parseLong(authUser.getUserId())).orElseThrow();
+    public ApiResponse<Page<PortfolioResponse>> getAllMyPortfolio(Pageable pageable, AreaType area,AuthUser authUser) {
+        User user = User.fromAuthUser(authUser);
         Page<Portfolio> pageablePortfolio;
         if (area == null) {
             pageablePortfolio = portfolioRepository.findAllByUser(user,pageable);
@@ -126,13 +125,13 @@ public class PortfolioServiceImpl implements PortfolioService {
             pageablePortfolio = portfolioRepository.findAllByUserAndArea(user,pageable,area);
         }
 
-        Page<PortfolioDto> portfolios = pageablePortfolio.map(PortfolioDto.PortfolioResponse::of);
+        Page<PortfolioResponse> portfolios = pageablePortfolio.map(PortfolioResponse.PortfolioResponseGet::of);
         return ApiResponse.of(PORTFOLIO_OK,portfolios);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public ApiResponse<Page<PortfolioDto>> getAllOtherPortfolio(Pageable pageable, AreaType area) {
+    public ApiResponse<Page<PortfolioResponse>> getAllOtherPortfolio(Pageable pageable, AreaType area) {
         Page<Portfolio> pageablePortfolio;
         if (area == null) {
             pageablePortfolio = portfolioRepository.findAllBy(pageable);
@@ -140,7 +139,7 @@ public class PortfolioServiceImpl implements PortfolioService {
             pageablePortfolio = portfolioRepository.findAllByArea(pageable,area);
         }
 
-        Page<PortfolioDto> portfolios = pageablePortfolio.map(PortfolioDto.PortfolioResponse::of);
+        Page<PortfolioResponse> portfolios = pageablePortfolio.map(PortfolioResponse.PortfolioResponseGet::of);
         return ApiResponse.of(PORTFOLIO_OK,portfolios);
     }
 

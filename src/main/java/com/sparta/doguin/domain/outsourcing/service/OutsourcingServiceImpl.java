@@ -5,11 +5,11 @@ import com.sparta.doguin.domain.common.exception.OutsourcingException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.outsourcing.constans.AreaType;
 import com.sparta.doguin.domain.outsourcing.entity.Outsourcing;
-import com.sparta.doguin.domain.outsourcing.model.OutsourctingDto;
+import com.sparta.doguin.domain.outsourcing.model.OutsourctingRequest;
+import com.sparta.doguin.domain.outsourcing.model.OutsourctingResponse;
 import com.sparta.doguin.domain.outsourcing.repository.OutsourcingRepository;
 import com.sparta.doguin.domain.outsourcing.validate.OutsourcingValidator;
 import com.sparta.doguin.domain.user.entity.User;
-import com.sparta.doguin.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,9 +24,6 @@ import static com.sparta.doguin.domain.common.response.ApiResponseOutsourcingEnu
 public class OutsourcingServiceImpl implements OutsourcingService {
     private final OutsourcingRepository outsourcingRepository;
 
-    // TODO: 바꿔야함
-    private final UserRepository userRepository;
-
     /**
      * 외주 ID로 외주 데이터 반환 하는 메서드
      *
@@ -38,9 +35,9 @@ public class OutsourcingServiceImpl implements OutsourcingService {
      */
     @Transactional(readOnly = true)
     @Override
-    public ApiResponse<OutsourctingDto> getOutsourcing(Long outsourcingId) {
+    public ApiResponse<OutsourctingResponse> getOutsourcing(Long outsourcingId) {
         Outsourcing outsourcing = findById(outsourcingId);
-        OutsourctingDto outsourctingResponse = OutsourctingDto.OutsourcingResponse.of(outsourcing);
+        OutsourctingResponse outsourctingResponse = OutsourctingResponse.OutsourcingResponseGet.of(outsourcing);
         return ApiResponse.of(OUTSOURCING_SUCCESS,outsourctingResponse);
     }
 
@@ -56,8 +53,8 @@ public class OutsourcingServiceImpl implements OutsourcingService {
      */
     @Transactional
     @Override
-    public ApiResponse<Void> createOutsourcing(OutsourctingDto.OutsourcingRequest reqDto, AuthUser authUser) {
-        User user = userRepository.findById(Long.parseLong(authUser.getUserId())).orElseThrow();
+    public ApiResponse<Void> createOutsourcing(OutsourctingRequest.OutsourcingRequestCreate reqDto, AuthUser authUser) {
+        User user = User.fromAuthUser(authUser);
         Outsourcing outsourcing = Outsourcing.builder()
                 .user(user)
                 .title(reqDto.title())
@@ -88,13 +85,10 @@ public class OutsourcingServiceImpl implements OutsourcingService {
      */
     @Transactional
     @Override
-    public ApiResponse<Void> updateOutsourcing(Long outsourcingId, OutsourctingDto.OutsourcingRequestUpdate reqDto, AuthUser authUser) {
-        User user = userRepository.findById(Long.parseLong(authUser.getUserId())).orElseThrow();
+    public ApiResponse<Void> updateOutsourcing(Long outsourcingId, OutsourctingRequest.OutsourcingRequestUpdate reqDto,AuthUser authUser) {
+        User user = User.fromAuthUser(authUser);
         Outsourcing findOutsourcing = findById(outsourcingId);
         OutsourcingValidator.isMe(user.getId(),findOutsourcing.getUser().getId());
-        if (String.valueOf(findOutsourcing.getUser().getId()).equals(authUser.getUserId()) ) {
-            throw new OutsourcingException(OUTSOURCING_NOT_FOUND);
-        }
         Outsourcing updateOutsourcing = Outsourcing.builder()
                 .id(findOutsourcing.getId())
                 .user(findOutsourcing.getUser())
@@ -126,7 +120,7 @@ public class OutsourcingServiceImpl implements OutsourcingService {
     @Transactional
     @Override
     public ApiResponse<Void> deleteOutsourcing(Long outsourcingId,AuthUser authUser) {
-        User user = userRepository.findById(Long.parseLong(authUser.getUserId())).orElseThrow();
+        User user = User.fromAuthUser(authUser);
         Outsourcing outsourcing = findById(outsourcingId);
         OutsourcingValidator.isMe(user.getId(),outsourcing.getUser().getId());
         outsourcingRepository.delete(outsourcing);
@@ -143,7 +137,7 @@ public class OutsourcingServiceImpl implements OutsourcingService {
      */
     @Transactional(readOnly = true)
     @Override
-    public ApiResponse<Page<OutsourctingDto>> getAllOutsourcing(Pageable pageable, AreaType area) {
+    public ApiResponse<Page<OutsourctingResponse>> getAllOutsourcing(Pageable pageable, AreaType area) {
         Page<Outsourcing> pageableBookmarks;
         if (area == null) {
             pageableBookmarks = outsourcingRepository.findAllBy(pageable);
@@ -151,7 +145,7 @@ public class OutsourcingServiceImpl implements OutsourcingService {
             pageableBookmarks = outsourcingRepository.findAllByArea(pageable,area);
         }
 
-        Page<OutsourctingDto> bookmarks = pageableBookmarks.map(OutsourctingDto.OutsourcingResponse::of);
+        Page<OutsourctingResponse> bookmarks = pageableBookmarks.map(OutsourctingResponse.OutsourcingResponseGet::of);
         return ApiResponse.of(OUTSOURCING_SUCCESS,bookmarks);
     }
 
