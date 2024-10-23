@@ -9,4 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
     Page<Bookmark> findBookmarkByUserAndTarget(User user, Pageable pageable, BookmarkTargetType type);
+    Page<Bookmark> findBookmarkByUser(User user, Pageable pageable);
 }
