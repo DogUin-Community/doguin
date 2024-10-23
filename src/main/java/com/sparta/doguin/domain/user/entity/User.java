@@ -100,7 +100,7 @@ public class User {
     public static User fromAuthUser(AuthUser authUser) {
         String roleName = authUser.getAuthorities().iterator().next().getAuthority();
         return User.builder()
-                .id(Long.parseLong(authUser.getUserId()))
+                .id(authUser.getUserId())
                 .email(authUser.getEmail())
                 .userRole(UserRole.of(roleName))
                 .build();  // 선택 필드들은 나중에 설정
