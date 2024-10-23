@@ -2,19 +2,20 @@ package com.sparta.doguin.domain.report.entity;
 
 import com.sparta.doguin.domain.common.Timestamped;
 import com.sparta.doguin.domain.common.exception.InvalidRequestException;
-import com.sparta.doguin.domain.common.response.ApiResponseBoardEnum;
 import com.sparta.doguin.domain.common.response.ApiResponseReportEnum;
 import com.sparta.doguin.domain.report.ReportType;
 import com.sparta.doguin.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import static com.sparta.doguin.domain.report.ReportType.REPORT_NOT_CONFIRMED;
 
 @Entity
 @Getter
 @NoArgsConstructor
+@BatchSize(size = 10)
 public class Report extends Timestamped {
 
     @Id
@@ -33,6 +34,8 @@ public class Report extends Timestamped {
     @JoinColumn(name = "reportee_id")
     private User reportee;
 
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
     private ReportType reportType;
 
 
@@ -51,3 +54,5 @@ public class Report extends Timestamped {
         this.reportType = reportType;
     }
 }
+
+

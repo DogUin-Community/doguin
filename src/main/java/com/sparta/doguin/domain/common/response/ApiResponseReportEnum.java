@@ -20,6 +20,7 @@ public enum ApiResponseReportEnum implements ApiResponseEnum {
 
     // 403
     REPORT_TYPE_WRONG(HttpStatus.FORBIDDEN, "이미 처리된 신고 입니다."),
+    REPORT_ALREADY_EXIST(HttpStatus.FORBIDDEN, "이미 신고 하셨습니다."),
 
     // 404
 

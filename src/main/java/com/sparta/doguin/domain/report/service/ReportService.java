@@ -1,6 +1,7 @@
 package com.sparta.doguin.domain.report.service;
 
 import com.sparta.doguin.domain.common.exception.HandleNotFound;
+import com.sparta.doguin.domain.common.exception.InvalidRequestException;
 import com.sparta.doguin.domain.common.response.ApiResponseReportEnum;
 import com.sparta.doguin.domain.report.dto.ReportRequest;
 import com.sparta.doguin.domain.report.dto.ReportResponse;
@@ -30,6 +31,10 @@ public class ReportService {
     @Transactional
     public void report(User user, ReportRequest.Report reportRequest) {
         User reportee = authService.findById(reportRequest.reporteeId());
+
+        if(reportRepository.findByReporterIdAndReporteeId(user.getId(),reportRequest.reporteeId()).isPresent()){
+            throw new InvalidRequestException(ApiResponseReportEnum.REPORT_ALREADY_EXIST);
+        }
         Report report = new Report(reportRequest.title(), reportRequest.content(), user, reportee, REPORT_NOT_CONFIRMED);
         reportRepository.save(report);
     }
@@ -57,7 +62,7 @@ public class ReportService {
     }
 
     public ReportResponse.ReportView reportSearch(User user, Long reporteeId) {
-        Report report = reportRepository.findByIdWithReporterId(user.getId(),reporteeId).orElseThrow(
+        Report report = reportRepository.findByReporterIdAndReporteeId(user.getId(),reporteeId).orElseThrow(
                 () -> new HandleNotFound(ApiResponseReportEnum.REPORT_NOT_FOUND)
         );
 
