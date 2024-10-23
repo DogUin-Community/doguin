@@ -1,16 +1,16 @@
 package com.sparta.doguin.domain.board.controller;
 
-import com.sparta.doguin.domain.board.BoardType;
+import com.sparta.doguin.config.AuthUser;
 import com.sparta.doguin.domain.board.dto.request.BoardRequest;
 import com.sparta.doguin.domain.board.dto.response.BoardResponse;
 import com.sparta.doguin.domain.board.service.BoardService;
 import com.sparta.doguin.domain.board.service.BulletinService;
-import com.sparta.doguin.domain.board.service.EventService;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseBoardEnum;
-import lombok.RequiredArgsConstructor;
+import com.sparta.doguin.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,15 +24,17 @@ public class BulletinController implements BoardController{
 
     @PostMapping
     @Override
-    public ResponseEntity<ApiResponse<BoardResponse>> create(@RequestBody BoardRequest boardRequest){
-        BoardResponse response = BoardResponse.from(boardService.create(boardRequest));
+    public ResponseEntity<ApiResponse<BoardResponse>> create(@AuthenticationPrincipal AuthUser authUser,@RequestBody BoardRequest boardRequest){
+        User user = User.fromAuthUser(authUser);
+        BoardResponse response = BoardResponse.from(boardService.create(user, boardRequest));
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.BULLETIN_CREATE_SUCCESS, response));
     }
 
     @Override
     @PutMapping("{boardId}")
-    public ResponseEntity<ApiResponse<BoardResponse>> update(@PathVariable Long boardId,@RequestBody BoardRequest boardRequest) {
-        BoardResponse response = BoardResponse.from(boardService.update(boardId,boardRequest));
+    public ResponseEntity<ApiResponse<BoardResponse>> update(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long boardId,@RequestBody BoardRequest boardRequest) {
+        User user = User.fromAuthUser(authUser);
+        BoardResponse response = BoardResponse.from(boardService.update(user,boardId,boardRequest));
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.BULLETIN_UPDATE_SUCCESS, response));
     }
 
@@ -63,8 +65,9 @@ public class BulletinController implements BoardController{
 
     @Override
     @DeleteMapping("{boardId}")
-    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long boardId) {
-        boardService.delete(boardId);
+    public ResponseEntity<ApiResponse<Void>> delete(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long boardId) {
+        User user = User.fromAuthUser(authUser);
+        boardService.delete(user,boardId);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.BULLETIN_DELETE_SUCCESS));
     }
 }

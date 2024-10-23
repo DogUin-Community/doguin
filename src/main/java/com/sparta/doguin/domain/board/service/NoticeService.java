@@ -1,5 +1,6 @@
 package com.sparta.doguin.domain.board.service;
 
+import com.sparta.doguin.config.AuthUser;
 import com.sparta.doguin.domain.board.BoardType;
 import com.sparta.doguin.domain.board.dto.request.BoardRequest;
 import com.sparta.doguin.domain.board.dto.response.BoardResponse;
@@ -8,6 +9,7 @@ import com.sparta.doguin.domain.board.repository.BoardRepository;
 import com.sparta.doguin.domain.common.exception.HandleNotFound;
 import com.sparta.doguin.domain.common.exception.InvalidRequestException;
 import com.sparta.doguin.domain.common.response.ApiResponseBoardEnum;
+import com.sparta.doguin.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,16 +26,19 @@ public class NoticeService implements BoardService{
 
     @Override
     @Transactional
-    public Board create(BoardRequest boardRequest) {
-        Board board = new Board(boardRequest.title(), boardRequest.content(), boardType);
+    public Board create(User user, BoardRequest boardRequest) {
+        Board board = new Board(boardRequest.title(), boardRequest.content(), boardType,user);
         return boardRepository.save(board);
     }
 
     @Override
     @Transactional
-    public Board update(Long boardId, BoardRequest boardRequest) {
+    public Board update(User user,Long boardId, BoardRequest boardRequest) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.NOTICE_NOT_FOUND));
+        if(!board.getUser().getId().equals(user.getId())){
+            throw new InvalidRequestException(ApiResponseBoardEnum.USER_WRONG);
+        }
         if(board.getBoardType()!=boardType){
             throw new InvalidRequestException(ApiResponseBoardEnum.NOTICE_WRONG);
         }
@@ -80,10 +85,13 @@ public class NoticeService implements BoardService{
 
     @Override
     @Transactional
-    public void delete(Long boardId) {
+    public void delete(User user, Long boardId) {
 
         Board board =boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.NOTICE_NOT_FOUND));
+        if(!board.getUser().getId().equals(user.getId())){
+            throw new InvalidRequestException(ApiResponseBoardEnum.USER_WRONG);
+        }
         if(board.getBoardType()!=boardType){
             throw new InvalidRequestException(ApiResponseBoardEnum.NOTICE_WRONG);
         }

@@ -1,5 +1,6 @@
 package com.sparta.doguin.domain.board.controller;
 
+import com.sparta.doguin.config.AuthUser;
 import com.sparta.doguin.domain.board.dto.request.BoardRequest;
 import com.sparta.doguin.domain.board.dto.response.BoardResponse;
 import com.sparta.doguin.domain.board.entity.Board;
@@ -10,10 +11,10 @@ import org.springframework.web.servlet.function.EntityResponse;
 
 public interface BoardController {
 
-    ResponseEntity<ApiResponse<BoardResponse>> create(BoardRequest boardRequest);
-    ResponseEntity<ApiResponse<BoardResponse>> update(Long boardId,BoardRequest boardRequest);
+    ResponseEntity<ApiResponse<BoardResponse>> create(AuthUser authUser,BoardRequest boardRequest);
+    ResponseEntity<ApiResponse<BoardResponse>> update( AuthUser authUser,Long boardId,BoardRequest boardRequest);
     ResponseEntity<ApiResponse<BoardResponse>> viewOne(Long boardId);
     ResponseEntity<ApiResponse<Page<BoardResponse>>> viewAll(int page, int size);
     ResponseEntity<ApiResponse<Page<BoardResponse>>> search(int page, int size,String title);
-    ResponseEntity<ApiResponse<Void>> delete(Long boardId);
+    ResponseEntity<ApiResponse<Void>> delete(AuthUser authUser,Long boardId);
 }

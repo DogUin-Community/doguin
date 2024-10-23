@@ -12,6 +12,9 @@ public enum ApiResponseUserEnum implements ApiResponseEnum {
 
 
 
+
+
+
     private final HttpStatus httpStatus;
     private final int code;
     private final String message;
