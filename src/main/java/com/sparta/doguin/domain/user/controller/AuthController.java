@@ -1,8 +1,7 @@
 package com.sparta.doguin.domain.user.controller;
 
 import com.sparta.doguin.domain.common.response.ApiResponse;
-import com.sparta.doguin.domain.user.dto.request.SigninRequest;
-import com.sparta.doguin.domain.user.dto.request.SignupRequest;
+import com.sparta.doguin.domain.user.dto.UserRequest;
 import com.sparta.doguin.domain.user.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,11 +23,11 @@ public class AuthController {
      *
      * @param signupRequest 회원가입에 필요한 정보를 담은 DTO
      * @return ResponseEntity<ApiResponse<String>> 회원가입 성공 시 JWT 토큰과 함께 응답
-     * @since 1.0
+     * @since 1.1
      * @author 황윤서
      */
     @PostMapping("signup")
-    public ResponseEntity<ApiResponse<String>> signup(@RequestBody @Valid SignupRequest signupRequest) {
+    public ResponseEntity<ApiResponse<String>> signup(@RequestBody @Valid UserRequest.Signup signupRequest) {
         ApiResponse<String> apiResponse = authService.signup(signupRequest);
         return ApiResponse.of(apiResponse);
     }
@@ -38,11 +37,11 @@ public class AuthController {
      *
      * @param signinRequest 로그인에 필요한 정보를 담은 DTO
      * @return ResponseEntity<ApiResponse<String>> 로그인 성공 시 JWT 토큰과 함께 응답
-     * @since 1.0
+     * @since 1.1
      * @author 황윤서
      */
     @PostMapping("signin")
-    public ResponseEntity<ApiResponse<String>> signin(@RequestBody SigninRequest signinRequest) {
+    public ResponseEntity<ApiResponse<String>> signin(@RequestBody UserRequest.Signin signinRequest) {
         ApiResponse<String> apiResponse = authService.signin(signinRequest);
         return ApiResponse.of(apiResponse);
     }
