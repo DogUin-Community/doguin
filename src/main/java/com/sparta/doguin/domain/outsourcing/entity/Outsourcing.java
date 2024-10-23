@@ -1,5 +1,6 @@
 package com.sparta.doguin.domain.outsourcing.entity;
 
+import com.sparta.doguin.domain.common.Timestamped;
 import com.sparta.doguin.domain.outsourcing.constans.AreaType;
 import com.sparta.doguin.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
-public class Outsourcing {
+public class Outsourcing extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

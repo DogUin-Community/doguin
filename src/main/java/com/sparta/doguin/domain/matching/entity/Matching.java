@@ -1,5 +1,6 @@
 package com.sparta.doguin.domain.matching.entity;
 
+import com.sparta.doguin.domain.common.Timestamped;
 import com.sparta.doguin.domain.matching.constans.MathingStatusType;
 import com.sparta.doguin.domain.outsourcing.entity.Outsourcing;
 import com.sparta.doguin.domain.portfolio.entity.Portfolio;
@@ -13,7 +14,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Entity
-public class Matching {
+public class Matching extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
