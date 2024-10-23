@@ -5,12 +5,16 @@ import com.sparta.doguin.domain.outsourcing.constans.AreaType;
 import com.sparta.doguin.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
 
 // 외주 엔티티 수정
 @Getter
 @Entity
+@DynamicInsert
+@DynamicUpdate
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder

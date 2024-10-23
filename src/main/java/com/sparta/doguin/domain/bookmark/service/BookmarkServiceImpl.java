@@ -3,18 +3,18 @@ package com.sparta.doguin.domain.bookmark.service;
 import com.sparta.doguin.config.AuthUser;
 import com.sparta.doguin.domain.bookmark.constans.BookmarkTargetType;
 import com.sparta.doguin.domain.bookmark.entity.Bookmark;
-import com.sparta.doguin.domain.bookmark.model.BookmarkDto;
+import com.sparta.doguin.domain.bookmark.model.BookmarkRequest;
+import com.sparta.doguin.domain.bookmark.model.BookmarkResponse;
 import com.sparta.doguin.domain.bookmark.repository.BookmarkRepository;
 import com.sparta.doguin.domain.bookmark.validator.BookmarkValidator;
 import com.sparta.doguin.domain.common.exception.BookmarkException;
+import com.sparta.doguin.domain.common.exception.HandleNotFound;
 import com.sparta.doguin.domain.common.exception.OutsourcingException;
 import com.sparta.doguin.domain.common.exception.ValidatorException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.outsourcing.service.OutsourcingServiceImpl;
-import com.sparta.doguin.domain.question.repository.QuestionRepository;
+import com.sparta.doguin.domain.question.service.QuestionService;
 import com.sparta.doguin.domain.user.entity.User;
-import com.sparta.doguin.domain.user.repository.UserRepository;
-import com.sparta.doguin.domain.user.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,14 +29,7 @@ import static com.sparta.doguin.domain.common.response.ApiResponseBookmarkEnum.B
 public class BookmarkServiceImpl implements BookmarkService {
     private final BookmarkRepository bookmarkRepository;
     private final OutsourcingServiceImpl outsourcingService;
-    private final AuthService authService;
-    // TODO: 이거 바꿔야함
-    private final QuestionRepository questionRepository;
-
-    // TODO: 이거 나중에 뺴야함
-    private final UserRepository userRepository;
-
-    // TODO: 유저 찾는 메서드 변경해야함
+    private final QuestionService questionService;
 
     /**
      * 북마크 생성 메서드
@@ -45,20 +38,19 @@ public class BookmarkServiceImpl implements BookmarkService {
      * @param authUser / 북마크 생성할 유저
      * @return ApiResponse<Void> / 성공 응답 반환
      * @throws OutsourcingException / 외주가 존재하지않을때 발생되는 예외
-     * @throws QuestionException / 질문이 존재하지않을때 발생되는 예외
+     * @throws HandleNotFound 질문이 존재하지 않을 경우 발생
      * @since 1.0
      * @author 김경민
      */
     @Transactional
     @Override
-    public ApiResponse<Void> createBookmark(BookmarkDto.BookmarkRequest reqDto, AuthUser authUser) {
-        User user = userRepository.findById(Long.parseLong(authUser.getUserId())).orElseThrow();
+    public ApiResponse<Void> createBookmark(BookmarkRequest.BookmarkRequestCreate reqDto, AuthUser authUser) {
+        User user = User.fromAuthUser(authUser);
         Long targetId;
         if (reqDto.target() == BookmarkTargetType.OUTSOURCING) {
             targetId = outsourcingService.findById(reqDto.targetId()).getId();
         } else {
-            // TODO: 질문 서비스로 바꿔야함
-            targetId = questionRepository.findById(reqDto.targetId()).orElseThrow().getId();
+            targetId = questionService.findById(reqDto.targetId()).getId();
         }
         Bookmark bookmark = Bookmark.builder()
                 .user(user)
@@ -82,7 +74,7 @@ public class BookmarkServiceImpl implements BookmarkService {
     @Transactional
     @Override
     public ApiResponse<Void> deleteBookmark(Long matchingId,AuthUser authUser) {
-        User user = userRepository.findById(Long.parseLong(authUser.getUserId())).orElseThrow();
+        User user = User.fromAuthUser(authUser);
         Bookmark bookmark = findById(matchingId);
         BookmarkValidator.isMe(user.getId(),bookmark.getUser().getId());
         bookmarkRepository.delete(bookmark);
@@ -99,8 +91,8 @@ public class BookmarkServiceImpl implements BookmarkService {
      */
     @Transactional(readOnly = true)
     @Override
-    public ApiResponse<Page<BookmarkDto>> getAllBookmarksByUser(Pageable pageable, AuthUser authUser, BookmarkTargetType target) {
-        User user = userRepository.findById(Long.parseLong(authUser.getUserId())).orElseThrow();
+    public ApiResponse<Page<BookmarkResponse>> getAllBookmarksByUser(Pageable pageable, AuthUser authUser, BookmarkTargetType target) {
+        User user = User.fromAuthUser(authUser);
         Page<Bookmark> pageableBookmarks;
         if (target == null) {
             pageableBookmarks = bookmarkRepository.findBookmarkByUser(user, pageable);
@@ -108,7 +100,7 @@ public class BookmarkServiceImpl implements BookmarkService {
             pageableBookmarks = bookmarkRepository.findBookmarkByUserAndTarget(user,pageable,target);
         }
 
-        Page<BookmarkDto> bookmarks = pageableBookmarks.map(BookmarkDto.BookmarkResponse::of);
+        Page<BookmarkResponse> bookmarks = pageableBookmarks.map(BookmarkResponse.BookmarkResponseGet::of);
         return ApiResponse.of(BOOKMARK_OK,bookmarks);
     }
 
@@ -118,6 +110,8 @@ public class BookmarkServiceImpl implements BookmarkService {
      * @param bookmarkId / 찾을 북마크 ID
      * @return Bookmark / 찾은 북마크 데이터 반환
      * @throws BookmarkException / 북마크 없을시 예외처리
+     * @since 1.0
+     * @author 김경민
      */
     @Transactional(readOnly = true)
     public Bookmark findById(Long bookmarkId) {
