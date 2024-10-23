@@ -1,7 +1,6 @@
 package com.sparta.doguin.domain.board.controller;
 
 import com.sparta.doguin.config.AuthUser;
-import com.sparta.doguin.domain.board.BoardType;
 import com.sparta.doguin.domain.board.dto.request.BoardRequest;
 import com.sparta.doguin.domain.board.dto.response.BoardResponse;
 import com.sparta.doguin.domain.board.service.BoardService;

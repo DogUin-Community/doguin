@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class BulletinController implements BoardController{
 
     private final BoardService boardService;
+
     public BulletinController(BulletinService boardService) {
         this.boardService = boardService;
     }
