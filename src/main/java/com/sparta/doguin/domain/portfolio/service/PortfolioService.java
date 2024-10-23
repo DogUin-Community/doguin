@@ -10,8 +10,8 @@ import org.springframework.data.domain.Pageable;
 public interface PortfolioService {
     ApiResponse<PortfolioDto> getPortfolio(Long portfolioId);
     ApiResponse<Void> createPortfolio(PortfolioDto.PortfolioRequest portfolioRequest, AuthUser authUser);
-    ApiResponse<Void> updatePortfolio(Long portfolioId, PortfolioDto.PortfolioRequestUpdate portfolioRequestUpdate);
-    ApiResponse<Void> deletePortfolio(Long portfolioId);
+    ApiResponse<Void> updatePortfolio(Long portfolioId, PortfolioDto.PortfolioRequestUpdate portfolioRequestUpdate,AuthUser authUser);
+    ApiResponse<Void> deletePortfolio(Long portfolioId,AuthUser authUser);
     ApiResponse<Page<PortfolioDto>> getAllMyPortfolio(Pageable pageable, AreaType area,AuthUser authUser);
     ApiResponse<Page<PortfolioDto>> getAllOtherPortfolio(Pageable pageable, AreaType area);
 }

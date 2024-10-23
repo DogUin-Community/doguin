@@ -123,7 +123,7 @@ public class OutsourcingServiceImpl implements OutsourcingService {
      * @since 1.0
      * @author 김경민
      */
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
     public ApiResponse<Void> deleteOutsourcing(Long outsourcingId,AuthUser authUser) {
         User user = userRepository.findById(Long.parseLong(authUser.getUserId())).orElseThrow();
@@ -138,7 +138,10 @@ public class OutsourcingServiceImpl implements OutsourcingService {
      *
      * @param pageable / 전체 조회할 페이지 정보 (페이지,사이즈,정렬여부)
      * @return ApiResponse<Page<OutsourctingDto>> / 조회된 외주 페이지 단위로 반환
+     * @since 1.0
+     * @author 김경민
      */
+    @Transactional(readOnly = true)
     @Override
     public ApiResponse<Page<OutsourctingDto>> getAllOutsourcing(Pageable pageable, AreaType area) {
         Page<Outsourcing> pageableBookmarks;

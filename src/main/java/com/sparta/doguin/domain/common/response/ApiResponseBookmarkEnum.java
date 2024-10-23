@@ -8,6 +8,8 @@ public enum ApiResponseBookmarkEnum implements ApiResponseEnum {
     // 200
     BOOKMARK_OK(HttpStatus.OK,"북마크 작업에 성공 하였습니다"),
 
+    // 403
+    BOOKMARK_IS_NOT_ME(HttpStatus.FORBIDDEN, "자신이 등록한 북마크가 아니기에, 권한이 존재하지 않습니다"),
 
     // 404
     BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND ,"북마크가 존재 하지 않습니다")
