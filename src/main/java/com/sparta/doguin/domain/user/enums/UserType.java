@@ -4,14 +4,16 @@ import com.sparta.doguin.domain.common.exception.UserException;
 import com.sparta.doguin.domain.common.response.ApiResponseUserEnum;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
 
+@Slf4j(topic = "UserType")
 @Getter
 @RequiredArgsConstructor
 public enum UserType {
-    INDIVIDUAL("개인"),
-    COMPANY("기업");
+    INDIVIDUAL("INDIVIDUAL"),
+    COMPANY("COMPANY");
 
     private final String userType;
 
