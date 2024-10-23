@@ -31,7 +31,9 @@ public class ChatController {
     // 메시지 전송
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/{chatRoomId}")
-    public ResponseEntity<ApiResponse<ChatResponse.MessageResponse>> sendMessage(@RequestBody ChatRequest.MessageRequest messageRequest, @AuthenticationPrincipal AuthUser authUser) {
+    public ResponseEntity<ApiResponse<ChatResponse.MessageResponse>> sendMessage(
+            @RequestBody ChatRequest.MessageRequest messageRequest,
+            @AuthenticationPrincipal AuthUser authUser) {
         ChatResponse.MessageResponse response = chatService.sendMessage(messageRequest, authUser);
         ApiResponse<ChatResponse.MessageResponse> apiResponse = new ApiResponse<>(ApiResponseChatEnum.MESSAGE_SEND_SUCCESS, response);
         return ApiResponse.of(apiResponse);

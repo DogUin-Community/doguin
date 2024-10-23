@@ -11,6 +11,8 @@ import com.sparta.doguin.domain.chatting.repository.MessageRepository;
 import com.sparta.doguin.domain.chatting.repository.UserChatRoomRepository;
 import com.sparta.doguin.domain.common.exception.ChatException;
 import com.sparta.doguin.domain.common.response.ApiResponseChatEnum;
+import com.sparta.doguin.domain.user.entity.User;
+import com.sparta.doguin.domain.user.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -27,6 +29,7 @@ public class ChatService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final MessageRepository messageRepository;
+    private final AuthService authService;
     private final UserChatRoomRepository userChatRoomRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final RedisTemplate<String, Object> redisTemplate;
@@ -50,14 +53,17 @@ public class ChatService {
             throw new ChatException(ApiResponseChatEnum.CHATROOM_FULL);
         }
 
+        // AuthUser에서 userId를 이용해 실제 User 객체를 가져옴
+        User user = authService.findById(authUser.getUserId());
+
         try {
             // 메시지 생성 및 저장
-            Message message = new Message(chatRoom,authUser.getUser(), messageRequest.content());
+            Message message = new Message(chatRoom, user, messageRequest.content());
             messageRepository.save(message);
 
             // WebSocket으로 구조화된 DTO 전송
             ChatRequest.ChatMessageRequest chatMessage = new ChatRequest.ChatMessageRequest(
-                    authUser.getEmail(),
+                    authUser.getNickname(),
                     messageRequest.content(),
                     messageRequest.chatRoomId(),
                     message.getCreatedAt().toString()
@@ -75,10 +81,10 @@ public class ChatService {
 
     // 입장 메시지 처리
     public void userEnter(Long chatRoomId, AuthUser authUser) {
-        String email = authUser.getEmail();
+        String nickname = authUser.getNickname();
         ChatRequest.ChatMessageRequest enterMessage = new ChatRequest.ChatMessageRequest(
-                email,
-                email + "님이 입장하셨습니다.",
+                nickname,  // 닉네임 사용
+                nickname + "님이 입장하셨습니다.",
                 chatRoomId,
                 LocalDateTime.now().toString()
         );
@@ -87,10 +93,10 @@ public class ChatService {
 
     // 퇴장 메시지 처리 및 방 삭제 여부 확인
     public void userExit(Long chatRoomId, AuthUser authUser) {
-        String email = authUser.getEmail();
+        String nickname = authUser.getNickname();
         ChatRequest.ChatMessageRequest exitMessage = new ChatRequest.ChatMessageRequest(
-                email,
-                email + "님이 퇴장하셨습니다.",
+                nickname,
+                nickname + "님이 퇴장하셨습니다.",
                 chatRoomId,
                 LocalDateTime.now().toString()
         );
@@ -99,8 +105,8 @@ public class ChatService {
         // 퇴장 후 채팅방 인원 체크 및 삭제 처리
         List<UserChatRoom> userChatRooms = userChatRoomRepository.findByChatRoom_Id(chatRoomId);
         if (userChatRooms.isEmpty()) {
-            chatRoomRepository.deleteById(chatRoomId);
             redisTemplate.delete("chatroom:" + chatRoomId);
+            chatRoomRepository.deleteById(chatRoomId);
         }
     }
 
