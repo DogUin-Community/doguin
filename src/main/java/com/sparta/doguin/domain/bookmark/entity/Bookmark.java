@@ -1,17 +1,23 @@
 package com.sparta.doguin.domain.bookmark.entity;
 
 import com.sparta.doguin.domain.bookmark.constans.BookmarkTargetType;
+import com.sparta.doguin.domain.user.entity.User;
 import jakarta.persistence.*;
+import lombok.*;
 
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 @Entity
 public class Bookmark {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     private Long targetId;
 

@@ -1,20 +1,26 @@
 package com.sparta.doguin.domain.outsourcing.entity;
 
 import com.sparta.doguin.domain.outsourcing.constans.AreaType;
+import com.sparta.doguin.domain.user.entity.User;
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 // 외주 엔티티 수정
+@Getter
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 public class Outsourcing {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     private String title;
     private String content;
