@@ -48,9 +48,12 @@ public class InquiryService implements BoardService{
 
 
     @Override
-    public Board viewOne(Long boardId) {
+    public Board viewOneWithUser(Long boardId,User user) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.INQUIRY_NOT_FOUND));
+        if(!board.getUser().getId().equals(user.getId())){
+            throw new InvalidRequestException(ApiResponseBoardEnum.USER_WRONG);
+        }
         if (board.getBoardType() != boardType) {
             throw new InvalidRequestException(ApiResponseBoardEnum.INQUIRY_WRONG);
         }
@@ -58,10 +61,10 @@ public class InquiryService implements BoardService{
     }
 
     @Override
-    public Page<BoardResponse> viewAll(int page, int size) {
+    public Page<BoardResponse> viewAllWithUser(int page, int size,User user) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        Page<Board> boards = boardRepository.findAllByBoardType(pageable,boardType);
+        Page<Board> boards = boardRepository.findAllByBoardTypeAndUser(pageable,boardType,user);
 
         return boards.map(notice -> new BoardResponse(
                 notice.getId(),
@@ -72,9 +75,9 @@ public class InquiryService implements BoardService{
     }
 
     @Override
-    public Page<BoardResponse> search(int page,int size,String title) {
+    public Page<BoardResponse> searchWithUser(int page,int size,String title,User user) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Board> boards = boardRepository.findAllByTitleAndBoardType(pageable,title,boardType);
+        Page<Board> boards = boardRepository.findAllByTitleAndBoardTypeAndUser(pageable,title,boardType,user);
 
         return boards.map(notice -> new BoardResponse(
                 notice.getId(),

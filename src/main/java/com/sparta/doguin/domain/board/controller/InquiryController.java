@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 
 @RequestMapping("/api/v1/boards/inquiries")
-public class InquiryController implements BoardController{
+public class InquiryController{
 
     private final BoardService boardService;
 
@@ -25,14 +25,12 @@ public class InquiryController implements BoardController{
     }
 
     @PostMapping
-    @Override
     public ResponseEntity<ApiResponse<BoardResponse>> create(@AuthenticationPrincipal AuthUser authUser,@RequestBody BoardRequest boardRequest){
         User user = User.fromAuthUser(authUser);
         BoardResponse response = BoardResponse.from(boardService.create(user,boardRequest));
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.INQUIRY_CREATE_SUCCESS, response));
     }
 
-    @Override
     @PutMapping("{boardId}")
     public ResponseEntity<ApiResponse<BoardResponse>> update(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long boardId,@RequestBody BoardRequest boardRequest) {
         User user = User.fromAuthUser(authUser);
@@ -40,32 +38,33 @@ public class InquiryController implements BoardController{
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.INQUIRY_UPDATE_SUCCESS, response));
     }
 
-    @Override
     @GetMapping("{boardId}")
-    public ResponseEntity<ApiResponse<BoardResponse>> viewOne(@PathVariable Long boardId) {
-        BoardResponse response = BoardResponse.from(boardService.viewOne(boardId));
+    public ResponseEntity<ApiResponse<BoardResponse>> viewOne(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long boardId) {
+        User user = User.fromAuthUser(authUser);
+        BoardResponse response = BoardResponse.from(boardService.viewOneWithUser(boardId,user));
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.INQUIRY_FIND_ONE_SUCCESS, response));
     }
 
-    @Override
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<BoardResponse>>> viewAll(@RequestParam(defaultValue = "1") int page,
+    public ResponseEntity<ApiResponse<Page<BoardResponse>>> viewAll(@AuthenticationPrincipal AuthUser authUser,
+                                                                    @RequestParam(defaultValue = "1") int page,
                                                                     @RequestParam(defaultValue = "10") int size) {
-        Page<BoardResponse> responses = boardService.viewAll(page, size);
+        User user = User.fromAuthUser(authUser);
+        Page<BoardResponse> responses = boardService.viewAllWithUser(page, size,user);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.INQUIRY_FIND_ALL_SUCCESS, responses));
 
     }
 
-    @Override
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<Page<BoardResponse>>> search(@RequestParam(defaultValue = "1") int page,
+    public ResponseEntity<ApiResponse<Page<BoardResponse>>> search(@AuthenticationPrincipal AuthUser authUser,
+                                                                   @RequestParam(defaultValue = "1") int page,
                                                                    @RequestParam(defaultValue = "10") int size,
                                                                    @RequestParam String title) {
-        Page<BoardResponse> responses = boardService.search(page,size,title);
+        User user = User.fromAuthUser(authUser);
+        Page<BoardResponse> responses = boardService.searchWithUser(page,size,title,user);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.INQUIRY_SEARCH_SUCCESS, responses));
     }
 
-    @Override
     @DeleteMapping("{boardId}")
     public ResponseEntity<ApiResponse<Void>> delete(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long boardId) {
         User user = User.fromAuthUser(authUser);
