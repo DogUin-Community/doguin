@@ -40,7 +40,6 @@ public class SecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/signup", "/api/v1/auth/signin").permitAll()
-//                        .requestMatchers("/test").hasAuthority(UserRole.Authority.ADMIN) -> 컨트롤러 로직에서 admin 사용자에게만 권한 설정할 때 사용하기 위해 일단 주석처리
                         .anyRequest().authenticated()
                 )
                 .build();

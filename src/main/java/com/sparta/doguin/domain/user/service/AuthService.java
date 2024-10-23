@@ -9,6 +9,7 @@ import com.sparta.doguin.domain.user.dto.request.SigninRequest;
 import com.sparta.doguin.domain.user.dto.request.SignupRequest;
 import com.sparta.doguin.domain.user.entity.User;
 import com.sparta.doguin.domain.user.enums.UserRole;
+import com.sparta.doguin.domain.user.enums.UserType;
 import com.sparta.doguin.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,7 +25,37 @@ public class AuthService {
 
     @Transactional
     public ApiResponse<String> signup(SignupRequest signupRequest) {
-        User newUser = new User(signupRequest.getEmail(), signupRequest.getPassword(), UserRole.of(signupRequest.getUserRole()));
+        User newUser;
+        // 필수 사항만 입력된 경우
+        if (signupRequest.getProfileImage() == null &&
+                signupRequest.getIntroduce() == null &&
+                signupRequest.getHomeAddress() == null &&
+                signupRequest.getGitAddress() == null &&
+                signupRequest.getBlogAddress() == null) {
+            newUser = new User(
+                    null, // ID는 자동 생성이므로 null 전달
+                    signupRequest.getEmail(),
+                    signupRequest.getPassword(),
+                    signupRequest.getNickname(),
+                    UserType.of(signupRequest.getUserType()),
+                    UserRole.of(signupRequest.getUserRole())
+            );
+        } else {
+            // 필수 + 선택 사항 모두 입력된 경우
+            newUser = new User(
+                    null, // ID는 자동 생성이므로 null 전달
+                    signupRequest.getEmail(),
+                    signupRequest.getPassword(),
+                    signupRequest.getNickname(),
+                    UserType.of(signupRequest.getUserType()),
+                    UserRole.of(signupRequest.getUserRole()),
+                    signupRequest.getProfileImage(),
+                    signupRequest.getIntroduce(),
+                    signupRequest.getHomeAddress(),
+                    signupRequest.getGitAddress(),
+                    signupRequest.getBlogAddress()
+            );
+        }
         User saveduser = userRepository.save(newUser);
         ApiResponseEnum apiResponse = ApiResponseUserEnum.USER_CREATE_SUCCESS;
 

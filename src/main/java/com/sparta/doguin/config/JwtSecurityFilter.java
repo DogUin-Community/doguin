@@ -1,6 +1,7 @@
 package com.sparta.doguin.config;
 
 import com.sparta.doguin.domain.user.enums.UserRole;
+import com.sparta.doguin.domain.user.enums.UserType;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -40,10 +41,12 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
                 Claims claims = jwtUtil.extractClaims(jwt);
                 String userId = claims.getSubject();
                 String email = claims.get("email", String.class);
+                String nickname = claims.get("nickname", String.class);
+                UserType userType = UserType.of(claims.get("userType", String.class));
                 UserRole userRole = UserRole.of(claims.get("userRole", String.class));
 
                 if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    AuthUser authUser = new AuthUser(userId, email, userRole);
+                    AuthUser authUser = new AuthUser(userId, email, nickname, userType, userRole);
 
                     JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(authUser);
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
