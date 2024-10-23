@@ -25,6 +25,14 @@ public class AuthService {
 
     @Transactional
     public ApiResponse<String> signup(SignupRequest signupRequest) {
+        // 중복 이메일 체크
+        if (userRepository.findByEmail(signupRequest.getEmail()).isPresent()) {
+            throw new UserException(ApiResponseUserEnum.USER_ALREADY_EXISTS); // 중복 회원가입 예외 처리
+        }
+
+        // 비밀번호를 암호화
+        String encodedPassword = passwordEncoder.encode(signupRequest.getPassword());
+
         User newUser;
         // 필수 사항만 입력된 경우
         if (signupRequest.getProfileImage() == null &&
@@ -35,7 +43,7 @@ public class AuthService {
             newUser = new User(
                     null, // ID는 자동 생성이므로 null 전달
                     signupRequest.getEmail(),
-                    signupRequest.getPassword(),
+                    encodedPassword,
                     signupRequest.getNickname(),
                     UserType.of(signupRequest.getUserType()),
                     UserRole.of(signupRequest.getUserRole())
@@ -45,7 +53,7 @@ public class AuthService {
             newUser = new User(
                     null, // ID는 자동 생성이므로 null 전달
                     signupRequest.getEmail(),
-                    signupRequest.getPassword(),
+                    encodedPassword,
                     signupRequest.getNickname(),
                     UserType.of(signupRequest.getUserType()),
                     UserRole.of(signupRequest.getUserRole()),
@@ -59,16 +67,27 @@ public class AuthService {
         User saveduser = userRepository.save(newUser);
         ApiResponseEnum apiResponse = ApiResponseUserEnum.USER_CREATE_SUCCESS;
 
-        return ApiResponse.of(apiResponse, jwtUtil.createToken(saveduser.getId(), saveduser.getEmail(), saveduser.getUserRole()));
+        return ApiResponse.of(apiResponse, jwtUtil.createToken(saveduser.getId(), saveduser.getEmail(), saveduser.getNickname(), saveduser.getUserType(), saveduser.getUserRole()));
     }
 
     @Transactional(readOnly = true)
     public ApiResponse<String> signin(SigninRequest signinRequest) {
         User user = userRepository.findByEmail(signinRequest.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new UserException(ApiResponseUserEnum.USER_NOT_FOUND));
+
+        // 비밀번호가 일치하는지 확인하기 위한 예외처리
+        if (!passwordEncoder.matches(signinRequest.getPassword(), user.getPassword())) {
+            throw new UserException(ApiResponseUserEnum.INVALID_PASSWORD);
+        }
+
         ApiResponseEnum apiResponse = ApiResponseUserEnum.USER_LOGIN_SUCCESS;
 
-        return ApiResponse.of(apiResponse, jwtUtil.createToken(user.getId(), user.getEmail(), user.getUserRole()));
+        return ApiResponse.of(apiResponse, jwtUtil.createToken(
+                user.getId(),
+                user.getEmail(),
+                user.getNickname(),
+                user.getUserType(),
+                user.getUserRole()));
     }
 
     public User findById(Long userId){
