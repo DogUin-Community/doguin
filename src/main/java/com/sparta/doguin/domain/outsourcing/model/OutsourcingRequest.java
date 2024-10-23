@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
-public sealed interface OutsourctingRequest permits OutsourctingRequest.OutsourcingRequestCreate, OutsourctingRequest.OutsourcingRequestUpdate {
+public sealed interface OutsourcingRequest permits OutsourcingRequest.OutsourcingRequestCreate, OutsourcingRequest.OutsourcingRequestUpdate {
     record OutsourcingRequestCreate (
             @NotNull String title,
             @NotNull String content,
@@ -18,7 +18,7 @@ public sealed interface OutsourctingRequest permits OutsourctingRequest.Outsourc
             @NotNull LocalDateTime work_start_date,
             @NotNull LocalDateTime work_end_date,
             @NotNull AreaType area
-    ) implements OutsourctingRequest {
+    ) implements OutsourcingRequest {
 
     }
 
@@ -33,7 +33,7 @@ public sealed interface OutsourctingRequest permits OutsourctingRequest.Outsourc
              LocalDateTime work_start_date,
              LocalDateTime work_end_date,
              AreaType area
-    ) implements OutsourctingRequest {
+    ) implements OutsourcingRequest {
 
     }
 }

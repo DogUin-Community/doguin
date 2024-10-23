@@ -5,8 +5,8 @@ import com.sparta.doguin.domain.common.exception.OutsourcingException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.outsourcing.constans.AreaType;
 import com.sparta.doguin.domain.outsourcing.entity.Outsourcing;
-import com.sparta.doguin.domain.outsourcing.model.OutsourctingRequest;
-import com.sparta.doguin.domain.outsourcing.model.OutsourctingResponse;
+import com.sparta.doguin.domain.outsourcing.model.OutsourcingRequest;
+import com.sparta.doguin.domain.outsourcing.model.OutsourcingResponse;
 import com.sparta.doguin.domain.outsourcing.repository.OutsourcingRepository;
 import com.sparta.doguin.domain.outsourcing.validate.OutsourcingValidator;
 import com.sparta.doguin.domain.user.entity.User;
@@ -16,8 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.sparta.doguin.domain.common.response.ApiResponseOutsourcingEnum.OUTSOURCING_NOT_FOUND;
-import static com.sparta.doguin.domain.common.response.ApiResponseOutsourcingEnum.OUTSOURCING_SUCCESS;
+import static com.sparta.doguin.domain.common.response.ApiResponseOutsourcingEnum.*;
 
 @Service
 @RequiredArgsConstructor
@@ -35,9 +34,9 @@ public class OutsourcingServiceImpl implements OutsourcingService {
      */
     @Transactional(readOnly = true)
     @Override
-    public ApiResponse<OutsourctingResponse> getOutsourcing(Long outsourcingId) {
+    public ApiResponse<OutsourcingResponse> getOutsourcing(Long outsourcingId) {
         Outsourcing outsourcing = findById(outsourcingId);
-        OutsourctingResponse outsourctingResponse = OutsourctingResponse.OutsourcingResponseGet.of(outsourcing);
+        OutsourcingResponse outsourctingResponse = OutsourcingResponse.OutsourcingResponseGet.of(outsourcing);
         return ApiResponse.of(OUTSOURCING_SUCCESS,outsourctingResponse);
     }
 
@@ -53,7 +52,7 @@ public class OutsourcingServiceImpl implements OutsourcingService {
      */
     @Transactional
     @Override
-    public ApiResponse<Void> createOutsourcing(OutsourctingRequest.OutsourcingRequestCreate reqDto, AuthUser authUser) {
+    public ApiResponse<Void> createOutsourcing(OutsourcingRequest.OutsourcingRequestCreate reqDto, AuthUser authUser) {
         User user = User.fromAuthUser(authUser);
         Outsourcing outsourcing = Outsourcing.builder()
                 .user(user)
@@ -85,7 +84,7 @@ public class OutsourcingServiceImpl implements OutsourcingService {
      */
     @Transactional
     @Override
-    public ApiResponse<Void> updateOutsourcing(Long outsourcingId, OutsourctingRequest.OutsourcingRequestUpdate reqDto,AuthUser authUser) {
+    public ApiResponse<Void> updateOutsourcing(Long outsourcingId, OutsourcingRequest.OutsourcingRequestUpdate reqDto, AuthUser authUser) {
         User user = User.fromAuthUser(authUser);
         Outsourcing findOutsourcing = findById(outsourcingId);
         OutsourcingValidator.isMe(user.getId(),findOutsourcing.getUser().getId());
@@ -137,15 +136,15 @@ public class OutsourcingServiceImpl implements OutsourcingService {
      */
     @Transactional(readOnly = true)
     @Override
-    public ApiResponse<Page<OutsourctingResponse>> getAllOutsourcing(Pageable pageable, AreaType area) {
-        Page<Outsourcing> pageableBookmarks;
+    public ApiResponse<Page<OutsourcingResponse>> getAllOutsourcing(Pageable pageable, AreaType area) {
+        Page<Outsourcing> pageOutsourcing;
         if (area == null) {
-            pageableBookmarks = outsourcingRepository.findAllBy(pageable);
+            pageOutsourcing = outsourcingRepository.findAllBy(pageable);
         } else {
-            pageableBookmarks = outsourcingRepository.findAllByArea(pageable,area);
+            pageOutsourcing = outsourcingRepository.findAllByArea(pageable,area);
         }
 
-        Page<OutsourctingResponse> bookmarks = pageableBookmarks.map(OutsourctingResponse.OutsourcingResponseGet::of);
+        Page<OutsourcingResponse> bookmarks = pageOutsourcing.map(OutsourcingResponse.OutsourcingResponseGet::of);
         return ApiResponse.of(OUTSOURCING_SUCCESS,bookmarks);
     }
 
