@@ -16,25 +16,25 @@ public class MathchingController {
     private final MatchingService matchingService;
 
     @GetMapping("/{matchingId}")
-    public ResponseEntity<ApiResponse<MatchingDto>> getOutsourcing(@PathVariable Long matchingId) {
+    public ResponseEntity<ApiResponse<MatchingDto>> getMatching(@PathVariable Long matchingId) {
         ApiResponse<MatchingDto> apiResponse = matchingService.getMatching(matchingId);
         return ApiResponse.of(apiResponse);
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Void>> createOutsourcing(@RequestBody MatchingDto.MatchingRequest reqDto,@AuthenticationPrincipal AuthUser authUser){
+    public ResponseEntity<ApiResponse<Void>> createMatching(@RequestBody MatchingDto.MatchingRequest reqDto,@AuthenticationPrincipal AuthUser authUser){
         ApiResponse<Void> apiResponse = matchingService.createMatching(reqDto,authUser);
         return ApiResponse.of(apiResponse);
     }
 
     @PutMapping("/{matchingId}")
-    public ResponseEntity<ApiResponse<Void>> updateOutsourcing(@PathVariable Long matchingId, @RequestBody MatchingDto.MatchingRequestUpdate reqDto){
+    public ResponseEntity<ApiResponse<Void>> updateMatching(@PathVariable Long matchingId, @RequestBody MatchingDto.MatchingRequestUpdate reqDto){
         ApiResponse<Void> apiResponse = matchingService.updateMatching(matchingId,reqDto);
         return ApiResponse.of(apiResponse);
     }
 
     @DeleteMapping("/{matchingId}")
-    public ResponseEntity<ApiResponse<Void>> deleteOutsourcing(@PathVariable Long matchingId){
+    public ResponseEntity<ApiResponse<Void>> deleteMatching(@PathVariable Long matchingId){
         ApiResponse<Void> apiResponse = matchingService.deleteMatching(matchingId);
         return ApiResponse.of(apiResponse);
     }
