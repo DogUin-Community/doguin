@@ -1,6 +1,7 @@
 package com.sparta.doguin.domain.user.service;
 
 import com.sparta.doguin.config.JwtUtil;
+import com.sparta.doguin.domain.common.exception.UserException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseEnum;
 import com.sparta.doguin.domain.common.response.ApiResponseUserEnum;
@@ -37,5 +38,9 @@ public class AuthService {
         ApiResponseEnum apiResponse = ApiResponseUserEnum.USER_LOGIN_SUCCESS;
 
         return ApiResponse.of(apiResponse, jwtUtil.createToken(user.getId(), user.getEmail(), user.getUserRole()));
+    }
+
+    public User findById(Long userId){
+        return userRepository.findById(userId).orElseThrow(() -> new UserException(ApiResponseUserEnum.USER_NOT_FOUND));
     }
 }

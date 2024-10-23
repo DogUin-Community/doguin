@@ -5,9 +5,13 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum ApiResponseUserEnum implements ApiResponseEnum {
-    //200
+    // 200
     USER_CREATE_SUCCESS(HttpStatus.OK,"회원 가입에 성공하였습니다."),
-    USER_LOGIN_SUCCESS(HttpStatus.OK, "로그인에 성공하였습니다.");
+    USER_LOGIN_SUCCESS(HttpStatus.OK, "로그인에 성공하였습니다."),
+
+    // 404
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저를 찾지 못하였습니다.");
+
 
 
 
