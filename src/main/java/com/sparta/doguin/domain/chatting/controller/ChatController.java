@@ -9,9 +9,11 @@ import com.sparta.doguin.domain.common.response.ApiResponseChatEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,29 +32,22 @@ public class ChatController {
 
     // 메시지 전송
     @MessageMapping("/chat.sendMessage")
-    @SendTo("/topic/{chatRoomId}")
-    public ResponseEntity<ApiResponse<ChatResponse.MessageResponse>> sendMessage(
-            @RequestBody ChatRequest.MessageRequest messageRequest,
-            @AuthenticationPrincipal AuthUser authUser) {
-        ChatResponse.MessageResponse response = chatService.sendMessage(messageRequest, authUser);
-        ApiResponse<ChatResponse.MessageResponse> apiResponse = new ApiResponse<>(ApiResponseChatEnum.MESSAGE_SEND_SUCCESS, response);
-        return ApiResponse.of(apiResponse);
+    public void sendMessage(@RequestBody ChatRequest.MessageRequest messageRequest) {
+        AuthUser authUser = (AuthUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        chatService.sendMessage(messageRequest, authUser);
     }
 
     // 채팅방 입장
     @MessageMapping("/chat.enterRoom")
-    @SendTo("/topic/{chatRoomId}")
-    public ResponseEntity<ApiResponse<Void>> enterRoom(@PathVariable Long chatRoomId, @AuthenticationPrincipal AuthUser authUser) {
-        chatService.userEnter(chatRoomId, authUser);
-        ApiResponse<Void> apiResponse = new ApiResponse<>(ApiResponseChatEnum.CHATROOM_ENTER_SUCCESS);
-        return ApiResponse.of(apiResponse);
+    public void enterRoom(@RequestBody ChatRequest.MessageRequest messageRequest) {
+        AuthUser authUser = (AuthUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        chatService.userEnter(messageRequest.chatRoomId(), authUser);
     }
 
     // 채팅방 퇴장
-    @PostMapping("/{chatRoomId}/leave")
-    public ResponseEntity<ApiResponse<Void>> leaveRoom(@PathVariable Long chatRoomId, @AuthenticationPrincipal AuthUser authUser) {
-        chatService.userExit(chatRoomId, authUser);
-        ApiResponse<Void> apiResponse = new ApiResponse<>(ApiResponseChatEnum.CHATROOM_LEAVE_SUCCESS);
-        return ApiResponse.of(apiResponse);
+    @MessageMapping("/chat.leaveRoom")
+    public void leaveRoom(@RequestBody ChatRequest.MessageRequest messageRequest) {
+        AuthUser authUser = (AuthUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        chatService.userExit(messageRequest.chatRoomId(), authUser);
     }
 }

@@ -1,5 +1,6 @@
 package com.sparta.doguin.domain.chatting.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.doguin.domain.common.Timestamped;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -23,9 +24,11 @@ public class ChatRoom extends Timestamped {
     private String title;
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<UserChatRoom> userChatRooms = new ArrayList<>();
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Message> messages = new ArrayList<>();
 
 }
