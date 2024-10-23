@@ -18,12 +18,28 @@ public class AuthController {
 
     private final AuthService authService;
 
+    /**
+     * 회원가입 요청을 처리하는 메서드
+     *
+     * @param signupRequest 회원가입에 필요한 정보를 담은 DTO
+     * @return ResponseEntity<ApiResponse<String>> 회원가입 성공 시 JWT 토큰과 함께 응답
+     * @since 1.0
+     * @author 황윤서
+     */
     @PostMapping("signup")
     public ResponseEntity<ApiResponse<String>> signup(@RequestBody SignupRequest signupRequest) {
         ApiResponse<String> apiResponse = authService.signup(signupRequest);
         return ApiResponse.of(apiResponse);
     }
 
+    /**
+     * 로그인 요청을 처리하는 메서드
+     *
+     * @param signinRequest 로그인에 필요한 정보를 담은 DTO
+     * @return ResponseEntity<ApiResponse<String>> 로그인 성공 시 JWT 토큰과 함께 응답
+     * @since 1.0
+     * @author 황윤서
+     */
     @PostMapping("signin")
     public ResponseEntity<ApiResponse<String>> signin(@RequestBody SigninRequest signinRequest) {
         ApiResponse<String> apiResponse = authService.signin(signinRequest);
