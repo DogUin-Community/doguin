@@ -7,9 +7,9 @@ public enum BookmarkTargetType {
     OUTSOURCING("외주"),
     QUESTION("질문");
 
-    private String type;
+    private final String target;
 
-    BookmarkTargetType(String type) {
-        this.type = type;
+    BookmarkTargetType(String target) {
+        this.target = target;
     }
 }

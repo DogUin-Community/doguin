@@ -9,7 +9,7 @@ public sealed interface BookmarkDto permits BookmarkDto.BookmarkResponse, Bookma
     }
 
     record BookmarkResponse(Long id, Long userId, Long targetId,BookmarkTargetType target) implements BookmarkDto {
-        public static BookmarkResponse of(Bookmark bookmark) {
+        public static BookmarkDto of(Bookmark bookmark) {
             return new BookmarkResponse(
                     bookmark.getId(),
                     bookmark.getUser().getId(),
