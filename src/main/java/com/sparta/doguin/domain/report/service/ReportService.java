@@ -8,7 +8,7 @@ import com.sparta.doguin.domain.report.dto.ReportResponse;
 import com.sparta.doguin.domain.report.entity.Report;
 import com.sparta.doguin.domain.report.repository.ReportRepository;
 import com.sparta.doguin.domain.user.entity.User;
-import com.sparta.doguin.domain.user.service.AuthService;
+import com.sparta.doguin.domain.user.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,12 +20,12 @@ import static com.sparta.doguin.domain.report.ReportType.*;
 @Service
 public class ReportService {
 
-    private final AuthService authService;
     private final ReportRepository reportRepository;
+    private final UserService userService;
 
-    public ReportService(AuthService authService, ReportRepository reportRepository) {
-        this.authService = authService;
+    public ReportService(ReportRepository reportRepository, UserService userService) {
         this.reportRepository = reportRepository;
+        this.userService = userService;
     }
 
     /**
@@ -39,7 +39,7 @@ public class ReportService {
      */
     @Transactional
     public void report(User user, ReportRequest.Report reportRequest) {
-        User reportee = authService.findById(reportRequest.reporteeId());
+        User reportee = userService.findById(reportRequest.reporteeId());
 
         if(reportRepository.findByReporterIdAndReporteeId(user.getId(),reportRequest.reporteeId()).isPresent()){
             throw new InvalidRequestException(ApiResponseReportEnum.REPORT_ALREADY_EXIST);

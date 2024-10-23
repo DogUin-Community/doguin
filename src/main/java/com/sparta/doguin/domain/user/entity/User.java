@@ -1,6 +1,7 @@
 package com.sparta.doguin.domain.user.entity;
 
 import com.sparta.doguin.config.AuthUser;
+import com.sparta.doguin.domain.common.Timestamped;
 import com.sparta.doguin.domain.user.enums.UserGrade;
 import com.sparta.doguin.domain.user.enums.UserRole;
 import com.sparta.doguin.domain.user.enums.UserType;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @Table(name = "users")
-public class User {
+public class User extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

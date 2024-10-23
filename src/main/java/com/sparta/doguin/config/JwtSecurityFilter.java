@@ -39,7 +39,7 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
             String jwt = jwtUtil.substringToken(authorizationHeader);
             try {
                 Claims claims = jwtUtil.extractClaims(jwt);
-                Long userId = Long.parseLong(claims.getId());
+                Long userId = Long.parseLong(claims.getSubject());
                 String email = claims.get("email", String.class);
                 String nickname = claims.get("nickname", String.class);
                 UserType userType = UserType.of(claims.get("userType", String.class));
