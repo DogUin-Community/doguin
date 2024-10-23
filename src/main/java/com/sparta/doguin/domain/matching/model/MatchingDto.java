@@ -12,9 +12,13 @@ public sealed interface MatchingDto permits MatchingDto.MatchingResponse, Matchi
 
     }
 
-    record MatchingResponse(MathingStatusType status) implements MatchingDto {
+    record MatchingResponse(Long id,Long userId, Long portfolioId,Long outsourcingId, MathingStatusType status) implements MatchingDto {
         public static MatchingResponse of(Matching matching) {
             return new MatchingResponse(
+                    matching.getId(),
+                    matching.getUser().getId(),
+                    matching.getPortfolio().getId(),
+                    matching.getOutsourcing().getId(),
                     matching.getStatus()
             );
         }

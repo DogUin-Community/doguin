@@ -5,10 +5,16 @@ import com.sparta.doguin.domain.bookmark.constans.BookmarkTargetType;
 import com.sparta.doguin.domain.bookmark.entity.Bookmark;
 import com.sparta.doguin.domain.bookmark.model.BookmarkDto;
 import com.sparta.doguin.domain.bookmark.repository.BookmarkRepository;
+import com.sparta.doguin.domain.bookmark.validator.BookmarkValidator;
 import com.sparta.doguin.domain.common.exception.BookmarkException;
+import com.sparta.doguin.domain.common.exception.OutsourcingException;
+import com.sparta.doguin.domain.common.exception.ValidatorException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
+import com.sparta.doguin.domain.outsourcing.service.OutsourcingServiceImpl;
+import com.sparta.doguin.domain.question.repository.QuestionRepository;
 import com.sparta.doguin.domain.user.entity.User;
 import com.sparta.doguin.domain.user.repository.UserRepository;
+import com.sparta.doguin.domain.user.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,26 +28,13 @@ import static com.sparta.doguin.domain.common.response.ApiResponseBookmarkEnum.B
 @RequiredArgsConstructor
 public class BookmarkServiceImpl implements BookmarkService {
     private final BookmarkRepository bookmarkRepository;
+    private final OutsourcingServiceImpl outsourcingService;
+    private final AuthService authService;
+    // TODO: 이거 바꿔야함
+    private final QuestionRepository questionRepository;
 
     // TODO: 이거 나중에 뺴야함
     private final UserRepository userRepository;
-
-    /**
-     * 특정 북마크 조회 메서드
-     *
-     * @param bookmarkId / 조회할 북마크 아이디
-     * @return ApiResponse<BookmarkDto> / 반환할 북마크 데이터
-     * @since 1.0
-     * @author 김경민
-     * @throws BookmarkException / 북마크 없을시 예외처리
-     */
-    @Transactional(readOnly = true)
-    @Override
-    public ApiResponse<BookmarkDto> getBookmark(Long bookmarkId) {
-        Bookmark bookmark = findById(bookmarkId);
-        BookmarkDto bookmarkDto = BookmarkDto.BookmarkResponse.of(bookmark);
-        return ApiResponse.of(BOOKMARK_OK,bookmarkDto);
-    }
 
     // TODO: 유저 찾는 메서드 변경해야함
 
@@ -51,6 +44,8 @@ public class BookmarkServiceImpl implements BookmarkService {
      * @param reqDto / 생성할 북마크 데이터
      * @param authUser / 북마크 생성할 유저
      * @return ApiResponse<Void> / 성공 응답 반환
+     * @throws OutsourcingException / 외주가 존재하지않을때 발생되는 예외
+     * @throws QuestionException / 질문이 존재하지않을때 발생되는 예외
      * @since 1.0
      * @author 김경민
      */
@@ -58,9 +53,16 @@ public class BookmarkServiceImpl implements BookmarkService {
     @Override
     public ApiResponse<Void> createBookmark(BookmarkDto.BookmarkRequest reqDto, AuthUser authUser) {
         User user = userRepository.findById(Long.parseLong(authUser.getUserId())).orElseThrow();
+        Long targetId;
+        if (reqDto.target() == BookmarkTargetType.OUTSOURCING) {
+            targetId = outsourcingService.findById(reqDto.targetId()).getId();
+        } else {
+            // TODO: 질문 서비스로 바꿔야함
+            targetId = questionRepository.findById(reqDto.targetId()).orElseThrow().getId();
+        }
         Bookmark bookmark = Bookmark.builder()
                 .user(user)
-                .targetId(reqDto.targetId())
+                .targetId(targetId)
                 .target(reqDto.target())
                 .build();
         bookmarkRepository.save(bookmark);
@@ -73,13 +75,16 @@ public class BookmarkServiceImpl implements BookmarkService {
      * @param matchingId / 취소할 북마크 ID
      * @return ApiResponse<Void> / 성공 응답 반환
      * @throws BookmarkException / 북마크 없을시 예외처리
+     * @throws ValidatorException / 북마크 한 사람이 본인이 아닐경우 예외처리
      * @since 1.0
      * @author 김경민
      */
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
-    public ApiResponse<Void> deleteBookmark(Long matchingId) {
+    public ApiResponse<Void> deleteBookmark(Long matchingId,AuthUser authUser) {
+        User user = userRepository.findById(Long.parseLong(authUser.getUserId())).orElseThrow();
         Bookmark bookmark = findById(matchingId);
+        BookmarkValidator.isMe(user.getId(),bookmark.getUser().getId());
         bookmarkRepository.delete(bookmark);
         return ApiResponse.of(BOOKMARK_OK);
     }
