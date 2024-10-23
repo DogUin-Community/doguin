@@ -1,9 +1,9 @@
 package com.sparta.doguin.domain.board.service;
 
-import com.sparta.doguin.config.AuthUser;
 import com.sparta.doguin.domain.board.BoardType;
-import com.sparta.doguin.domain.board.dto.request.BoardRequest;
-import com.sparta.doguin.domain.board.dto.response.BoardResponse;
+import com.sparta.doguin.domain.board.dto.BoardRequest;
+import com.sparta.doguin.domain.board.dto.BoardRequest.BoardCommonRequest;
+import com.sparta.doguin.domain.board.dto.BoardResponse.BoardCommonResponse;
 import com.sparta.doguin.domain.board.entity.Board;
 import com.sparta.doguin.domain.board.repository.BoardRepository;
 import com.sparta.doguin.domain.common.exception.HandleNotFound;
@@ -26,14 +26,14 @@ public class NoticeService implements BoardService{
 
     @Override
     @Transactional
-    public Board create(User user, BoardRequest boardRequest) {
+    public Board create(User user, BoardCommonRequest boardRequest) {
         Board board = new Board(boardRequest.title(), boardRequest.content(), boardType,user);
         return boardRepository.save(board);
     }
 
     @Override
     @Transactional
-    public Board update(User user,Long boardId, BoardRequest boardRequest) {
+    public Board update(User user,Long boardId, BoardCommonRequest boardRequest) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.NOTICE_NOT_FOUND));
         if(!board.getUser().getId().equals(user.getId())){
@@ -58,12 +58,12 @@ public class NoticeService implements BoardService{
     }
 
     @Override
-    public Page<BoardResponse> viewAll(int page, int size) {
+    public Page<BoardCommonResponse> viewAll(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
         Page<Board> boards = boardRepository.findAllByBoardType(pageable,boardType);
 
-        return boards.map(notice -> new BoardResponse(
+        return boards.map(notice -> new BoardCommonResponse(
                 notice.getId(),
                 notice.getTitle(),
                 notice.getContent()
@@ -72,11 +72,11 @@ public class NoticeService implements BoardService{
     }
 
     @Override
-    public Page<BoardResponse> search(int page,int size,String title) {
+    public Page<BoardCommonResponse> search(int page,int size,String title) {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Board> boards = boardRepository.findAllByTitleAndBoardType(pageable,title,boardType);
 
-        return boards.map(notice -> new BoardResponse(
+        return boards.map(notice -> new BoardCommonResponse(
                 notice.getId(),
                 notice.getTitle(),
                 notice.getContent()
