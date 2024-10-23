@@ -13,8 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.sparta.doguin.domain.common.response.ApiResponseBookmarkEnum.BOOKMARK_NOT_FOUND;
 import static com.sparta.doguin.domain.common.response.ApiResponseBookmarkEnum.BOOKMARK_OK;
@@ -36,6 +35,7 @@ public class BookmarkServiceImpl implements BookmarkService {
      * @author 김경민
      * @throws BookmarkException / 북마크 없을시 예외처리
      */
+    @Transactional(readOnly = true)
     @Override
     public ApiResponse<BookmarkDto> getBookmark(Long bookmarkId) {
         Bookmark bookmark = findById(bookmarkId);
@@ -54,6 +54,7 @@ public class BookmarkServiceImpl implements BookmarkService {
      * @since 1.0
      * @author 김경민
      */
+    @Transactional
     @Override
     public ApiResponse<Void> createBookmark(BookmarkDto.BookmarkRequest reqDto, AuthUser authUser) {
         User user = userRepository.findById(Long.parseLong(authUser.getUserId())).orElseThrow();
@@ -75,6 +76,7 @@ public class BookmarkServiceImpl implements BookmarkService {
      * @since 1.0
      * @author 김경민
      */
+    @Transactional(readOnly = true)
     @Override
     public ApiResponse<Void> deleteBookmark(Long matchingId) {
         Bookmark bookmark = findById(matchingId);
@@ -90,12 +92,18 @@ public class BookmarkServiceImpl implements BookmarkService {
      * @since 1.0
      * @author 김경민
      */
+    @Transactional(readOnly = true)
     @Override
-    public ApiResponse<List<BookmarkDto>> getAllBookmarksByUser(Pageable pageable, AuthUser authUser, BookmarkTargetType target) {
+    public ApiResponse<Page<BookmarkDto>> getAllBookmarksByUser(Pageable pageable, AuthUser authUser, BookmarkTargetType target) {
         User user = userRepository.findById(Long.parseLong(authUser.getUserId())).orElseThrow();
-        Page<Bookmark> pageableBookmarks = bookmarkRepository.findBookmarkByUserAndTarget(user,pageable,target);
-        List<Bookmark> Listbookmarks = pageableBookmarks.getContent();
-        List<BookmarkDto> bookmarks = Listbookmarks.stream().map(BookmarkDto.BookmarkResponse::of).toList();
+        Page<Bookmark> pageableBookmarks;
+        if (target == null) {
+            pageableBookmarks = bookmarkRepository.findBookmarkByUser(user, pageable);
+        } else {
+            pageableBookmarks = bookmarkRepository.findBookmarkByUserAndTarget(user,pageable,target);
+        }
+
+        Page<BookmarkDto> bookmarks = pageableBookmarks.map(BookmarkDto.BookmarkResponse::of);
         return ApiResponse.of(BOOKMARK_OK,bookmarks);
     }
 
@@ -106,6 +114,7 @@ public class BookmarkServiceImpl implements BookmarkService {
      * @return Bookmark / 찾은 북마크 데이터 반환
      * @throws BookmarkException / 북마크 없을시 예외처리
      */
+    @Transactional(readOnly = true)
     public Bookmark findById(Long bookmarkId) {
         return bookmarkRepository.findById(bookmarkId).orElseThrow(() -> new BookmarkException(BOOKMARK_NOT_FOUND));
     }

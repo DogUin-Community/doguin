@@ -6,14 +6,13 @@ import com.sparta.doguin.domain.bookmark.model.BookmarkDto;
 import com.sparta.doguin.domain.bookmark.service.BookmarkService;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,16 +30,16 @@ public class BookmarkController {
      * 로그인 되있는 자신의 북마크들 목록 확인
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<List<BookmarkDto>>> getAllBookmarks(
+    public ResponseEntity<ApiResponse<Page<BookmarkDto>>> getAllBookmarks(
             @RequestParam(defaultValue = "0", required = false) int page,
             @RequestParam(defaultValue = "10", required = false) int size,
             @RequestParam(defaultValue = "desc", required = false) String sort,
-            @RequestParam(defaultValue = "OUTSOURCING", required = false) BookmarkTargetType target,
+            @RequestParam(required = false) BookmarkTargetType target,
             @AuthenticationPrincipal AuthUser authUser
             ) {
         Sort.Direction direction = Sort.Direction.fromString(sort);
         Pageable pageable = PageRequest.of(page, size, direction,"createdAt");
-        ApiResponse<List<BookmarkDto>> apiResponse = bookmarkService.getAllBookmarksByUser(pageable, authUser, target);
+        ApiResponse<Page<BookmarkDto>> apiResponse = bookmarkService.getAllBookmarksByUser(pageable, authUser, target);
         return ApiResponse.of(apiResponse);
     }
 

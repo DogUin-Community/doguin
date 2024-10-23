@@ -20,7 +20,9 @@ public sealed interface OutsourctingDto permits OutsourctingDto.OutsourcingRespo
              LocalDateTime recruit_end_date,
              LocalDateTime work_start_date,
              LocalDateTime work_end_date,
-             AreaType area
+             AreaType area,
+             LocalDateTime createdAt,
+             LocalDateTime updatedAt
     ) implements OutsourctingDto {
         public static OutsourcingResponse of(Outsourcing outsourcing) {
             return new OutsourcingResponse(
@@ -35,7 +37,9 @@ public sealed interface OutsourctingDto permits OutsourctingDto.OutsourcingRespo
                     outsourcing.getRecruit_end_date(),
                     outsourcing.getWork_start_date(),
                     outsourcing.getWork_end_date(),
-                    outsourcing.getArea()
+                    outsourcing.getArea(),
+                    outsourcing.getCreatedAt(),
+                    outsourcing.getUpdatedAt()
             );
         }
     }
