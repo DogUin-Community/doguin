@@ -68,14 +68,14 @@ public class PortfolioController {
 
 
     @PutMapping("/{portfolioId}")
-    ResponseEntity<ApiResponse<Void>> updatePortfolio(@PathVariable Long portfolioId, @RequestBody PortfolioDto.PortfolioRequestUpdate portfolioRequestUpdate) {
-        ApiResponse<Void> apiResponse = portfolioService.updatePortfolio(portfolioId,portfolioRequestUpdate);
+    ResponseEntity<ApiResponse<Void>> updatePortfolio(@PathVariable Long portfolioId, @RequestBody PortfolioDto.PortfolioRequestUpdate portfolioRequestUpdate,@AuthenticationPrincipal AuthUser authUser) {
+        ApiResponse<Void> apiResponse = portfolioService.updatePortfolio(portfolioId,portfolioRequestUpdate,authUser);
         return ApiResponse.of(apiResponse);
     }
 
     @DeleteMapping("/{portfolioId}")
-    ResponseEntity<ApiResponse<Void>> deletePortfolio(@PathVariable Long portfolioId) {
-        ApiResponse<Void> apiResponse = portfolioService.deletePortfolio(portfolioId);
+    ResponseEntity<ApiResponse<Void>> deletePortfolio(@PathVariable Long portfolioId,@AuthenticationPrincipal AuthUser authUser) {
+        ApiResponse<Void> apiResponse = portfolioService.deletePortfolio(portfolioId,authUser);
         return ApiResponse.of(apiResponse);
     }
 

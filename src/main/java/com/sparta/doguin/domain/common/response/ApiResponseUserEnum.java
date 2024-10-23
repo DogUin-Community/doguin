@@ -21,6 +21,9 @@ public enum ApiResponseUserEnum implements ApiResponseEnum {
     // 409 - CONFLICT
     USER_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 이메일입니다.");
 
+
+
+
     private final HttpStatus httpStatus;
     private final int code;
     private final String message;

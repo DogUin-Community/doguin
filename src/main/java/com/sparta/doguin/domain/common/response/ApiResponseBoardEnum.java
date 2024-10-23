@@ -39,6 +39,7 @@ public enum ApiResponseBoardEnum implements ApiResponseEnum {
     BULLETIN_WRONG(HttpStatus.BAD_REQUEST,"일반 게시물만 접근이 가능합니다."),
     EVENT_WRONG(HttpStatus.BAD_REQUEST,"이벤트만 접근이 가능합니다."),
     INQUIRY_WRONG(HttpStatus.BAD_REQUEST,"문의만 접근이 가능합니다."),
+    USER_WRONG(HttpStatus.BAD_REQUEST,"작성자가 아닙니다."),
 
 
     // 403

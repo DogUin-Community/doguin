@@ -7,6 +7,7 @@ import com.sparta.doguin.domain.outsourcing.constans.AreaType;
 import com.sparta.doguin.domain.portfolio.entity.Portfolio;
 import com.sparta.doguin.domain.portfolio.model.PortfolioDto;
 import com.sparta.doguin.domain.portfolio.repository.PortfolioRepository;
+import com.sparta.doguin.domain.portfolio.validate.PortfolioValidator;
 import com.sparta.doguin.domain.user.entity.User;
 import com.sparta.doguin.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -78,9 +79,10 @@ public class PortfolioServiceImpl implements PortfolioService {
      */
     @Transactional
     @Override
-    public ApiResponse<Void> updatePortfolio(Long portfolioId, PortfolioDto.PortfolioRequestUpdate portfolioRequestUpdate) {
-        System.out.println(portfolioRequestUpdate.content());
+    public ApiResponse<Void> updatePortfolio(Long portfolioId, PortfolioDto.PortfolioRequestUpdate portfolioRequestUpdate,AuthUser authUser) {
+        User user = userRepository.findById(Long.parseLong(authUser.getUserId())).orElseThrow();
         Portfolio findPortfolio = findById(portfolioId);
+        PortfolioValidator.isMe(user.getId(),findPortfolio.getId());
         Portfolio portfolio = Portfolio.builder()
                 .id(findPortfolio.getId())
                 .user(findPortfolio.getUser())
@@ -103,11 +105,13 @@ public class PortfolioServiceImpl implements PortfolioService {
      * @since 1.0
      * @author 김경민
      */
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
-    public ApiResponse<Void> deletePortfolio(Long portfolioId) {
-        Portfolio getPortfolio = findById(portfolioId);
-        portfolioRepository.delete(getPortfolio);
+    public ApiResponse<Void> deletePortfolio(Long portfolioId,AuthUser authUser) {
+        User user = userRepository.findById(Long.parseLong(authUser.getUserId())).orElseThrow();
+        Portfolio portfolio = findById(portfolioId);
+        PortfolioValidator.isMe(user.getId(),portfolio.getId());
+        portfolioRepository.delete(portfolio);
         return ApiResponse.of(PORTFOLIO_OK);
     }
 

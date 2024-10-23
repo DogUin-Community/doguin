@@ -8,6 +8,9 @@ public enum ApiResponsePortfolioEnum implements ApiResponseEnum {
     // 200
     PORTFOLIO_OK (HttpStatus.OK, "포트폴리오 작업 요청 성공"),
 
+    // 403
+    PROTFOLIO_IS_NOT_ME(HttpStatus.FORBIDDEN, "자신이 작성한 포트폴리오가 아니기에, 권한이 존재하지 않습니다"),
+
     // 404
     PORTFOLIO_NOT_FOUND (HttpStatus.NOT_FOUND, "포트폴리오가 존재하지 않습니다"),
     ;

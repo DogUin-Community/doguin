@@ -1,6 +1,7 @@
 package com.sparta.doguin.domain.answer.entity;
 
-import com.sparta.doguin.domain.answer.enums.CommentType;
+import com.sparta.doguin.domain.answer.AnswerType;
+import com.sparta.doguin.domain.answer.dto.AnswerRequest;
 import com.sparta.doguin.domain.question.entity.Question;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -23,9 +24,18 @@ public class Answer {
     private LocalDateTime updatedAt;
 
     @Enumerated(EnumType.STRING)
-    private CommentType commentType;
+    private AnswerType answerType;
 
     @ManyToOne
     @JoinColumn(name = "question_id", nullable = false)
     private Question question;
+
+    public Answer(String content, AnswerType answerType) {
+        this.content = content;
+        this.answerType = answerType;
+    }
+
+    public void update(AnswerRequest.Request request) {
+        this.content = content;
+    }
 }

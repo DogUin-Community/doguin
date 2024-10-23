@@ -6,7 +6,10 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ApiResponseMatchingEnum implements ApiResponseEnum {
     // 200
-    MATHCING_SUCCESS(HttpStatus.OK,"매칭에 성공 하였습니다"),
+    MATHCING_SUCCESS(HttpStatus.OK,"매칭작업에 성공 하였습니다"),
+
+    // 403
+    MATHCING_IS_NOT_ME(HttpStatus.FORBIDDEN, "자신이 신청한 매칭이 아니기에, 권한이 존재하지 않습니다"),
 
     // 404
     MATCHING_NOT_FOUND(HttpStatus.NOT_FOUND,"매칭 대상이 존재하지 않습니다")
