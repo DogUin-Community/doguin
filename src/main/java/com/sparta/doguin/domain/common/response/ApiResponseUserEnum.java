@@ -10,8 +10,10 @@ public enum ApiResponseUserEnum implements ApiResponseEnum {
     USER_LOGIN_SUCCESS(HttpStatus.OK, "로그인에 성공하였습니다."),
 
     // 404
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저를 찾지 못하였습니다.");
-
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저를 찾지 못하였습니다."),
+    USER_ROLE_INVALID(HttpStatus.BAD_REQUEST, "유효하지 않은 UserRole입니다."),
+    USER_TYPE_INVALID(HttpStatus.BAD_REQUEST, "유효하지 않은 UserType입니다."),
+    USER_GRADE_INVALID(HttpStatus.BAD_REQUEST, "유효하지 않은 UserGrade입니다.");
 
 
 
