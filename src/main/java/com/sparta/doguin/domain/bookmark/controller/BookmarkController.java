@@ -20,12 +20,6 @@ import org.springframework.web.bind.annotation.*;
 public class BookmarkController {
     private final BookmarkService bookmarkService;
 
-    @GetMapping("/{bookmarkId}")
-    public ResponseEntity<ApiResponse<BookmarkDto>> getBookmark(@PathVariable Long bookmarkId) {
-        ApiResponse<BookmarkDto> apiResponse = bookmarkService.getBookmark(bookmarkId);
-        return ApiResponse.of(apiResponse);
-    }
-
     /**
      * 로그인 되있는 자신의 북마크들 목록 확인
      */
@@ -50,8 +44,8 @@ public class BookmarkController {
     }
 
     @DeleteMapping("/{bookmarkId}")
-    public ResponseEntity<ApiResponse<Void>> deleteBookmark(@PathVariable Long bookmarkId){
-        ApiResponse<Void> apiResponse = bookmarkService.deleteBookmark(bookmarkId);
+    public ResponseEntity<ApiResponse<Void>> deleteBookmark(@PathVariable Long bookmarkId, @AuthenticationPrincipal AuthUser authUser){
+        ApiResponse<Void> apiResponse = bookmarkService.deleteBookmark(bookmarkId,authUser);
         return ApiResponse.of(apiResponse);
     }
 
