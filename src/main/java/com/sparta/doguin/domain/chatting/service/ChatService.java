@@ -12,7 +12,7 @@ import com.sparta.doguin.domain.chatting.repository.UserChatRoomRepository;
 import com.sparta.doguin.domain.common.exception.ChatException;
 import com.sparta.doguin.domain.common.response.ApiResponseChatEnum;
 import com.sparta.doguin.domain.user.entity.User;
-import com.sparta.doguin.domain.user.service.AuthService;
+import com.sparta.doguin.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -33,7 +33,7 @@ public class ChatService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final MessageRepository messageRepository;
-    private final AuthService authService;
+    private final UserService userService;
     private final UserChatRoomRepository userChatRoomRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final RedisTemplate<String, Object> redisTemplate;
@@ -56,24 +56,26 @@ public class ChatService {
         // 채팅방 인원 제한 체크
         checkRoomCapacity(messageRequest.chatRoomId());
 
-        User user = authService.findById(authUser.getUserId());
+        User user = userService.findById(authUser.getUserId());
 
         // 메시지 생성 및 저장
         Message message = createAndSaveMessage(chatRoom, user, messageRequest.content());
 
         // WebSocket을 통한 메시지 전송 및 Redis 저장
-        sendMessageToTopic(messageRequest.chatRoomId(), authUser.getNickname(), messageRequest.content(), message.getCreatedAt());
+        sendMessageToTopic(messageRequest.chatRoomId(), user.getNickname(), messageRequest.content(), message.getCreatedAt());
         saveMessageToRedis(messageRequest.chatRoomId(), message);
     }
 
     // 입장 메시지 처리
     public void userEnter(Long chatRoomId, AuthUser authUser) {
-        sendSystemMessage(chatRoomId, authUser.getNickname() + "님이 입장하셨습니다.");
+        User user = userService.findById(authUser.getUserId());
+        sendSystemMessage(chatRoomId, user.getNickname() + "님이 입장하셨습니다.");
     }
 
     // 퇴장 메시지 처리 및 방 삭제 여부 확인
     public void userExit(Long chatRoomId, AuthUser authUser) {
-        sendSystemMessage(chatRoomId, authUser.getNickname() + "님이 퇴장하셨습니다.");
+        User user = userService.findById(authUser.getUserId());
+        sendSystemMessage(chatRoomId,  user.getNickname() + "님이 퇴장하셨습니다.");
 
         // 퇴장 후 채팅방 인원 체크 및 삭제 처리
         List<UserChatRoom> userChatRooms = userChatRoomRepository.findByChatRoom_Id(chatRoomId);
@@ -119,7 +121,7 @@ public class ChatService {
 
     private void sendSystemMessage(Long chatRoomId, String messageContent) {
         ChatRequest.ChatMessageRequest systemMessage = new ChatRequest.ChatMessageRequest(
-                "System", messageContent, chatRoomId, LocalDateTime.now().format(formatter) // 일관된 포맷 사용
+                "System", messageContent, chatRoomId, LocalDateTime.now().format(formatter)
         );
         messagingTemplate.convertAndSend("/topic/" + chatRoomId, systemMessage);
     }
