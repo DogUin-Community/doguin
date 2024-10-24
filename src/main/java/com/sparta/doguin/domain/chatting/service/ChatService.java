@@ -1,6 +1,6 @@
 package com.sparta.doguin.domain.chatting.service;
 
-import com.sparta.doguin.config.AuthUser;
+import com.sparta.doguin.config.security.AuthUser;
 import com.sparta.doguin.domain.chatting.dto.ChatRequest;
 import com.sparta.doguin.domain.chatting.dto.ChatResponse;
 import com.sparta.doguin.domain.chatting.entity.ChatRoom;

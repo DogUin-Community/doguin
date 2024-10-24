@@ -112,4 +112,14 @@ public class FollowService {
 
         return ApiResponse.of(ApiResponseFollowEnum.UNFOLLOW_SUCCESS);
     }
+
+    // 나를 팔로우한 사람들의 수
+    public long getFollowedCount(Long userId) {
+        return followRepository.findByFollowedId(userId).size();
+    }
+
+    // 내가 팔로우한 사람들의 수
+    public long getFollowerCount(Long userId) {
+        return followRepository.findByFollowerId(userId).size();
+    }
 }

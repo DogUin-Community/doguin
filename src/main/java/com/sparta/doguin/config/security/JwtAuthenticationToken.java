@@ -1,4 +1,4 @@
-package com.sparta.doguin.config;
+package com.sparta.doguin.config.security;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 

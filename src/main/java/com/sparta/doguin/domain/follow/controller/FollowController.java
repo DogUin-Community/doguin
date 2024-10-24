@@ -1,9 +1,10 @@
 package com.sparta.doguin.domain.follow.controller;
 
-import com.sparta.doguin.config.AuthUser;
+import com.sparta.doguin.config.security.AuthUser;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.follow.dto.FollowResponse;
 import com.sparta.doguin.domain.follow.service.FollowService;
+import com.sparta.doguin.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,32 +21,32 @@ public class FollowController {
     // 팔로우 추가
     @PostMapping
     public ResponseEntity<ApiResponse<FollowResponse.Follow>> followUser(@AuthenticationPrincipal AuthUser authUser, @RequestParam("followedEmail") String followedEmail) {
-        Long followerId = authUser.getUserId();  // 로그인한 사용자의 ID를 AuthUser에서 가져옴
-        ApiResponse<FollowResponse.Follow> response = followService.follow(followerId, followedEmail);
+        User user = User.fromAuthUser(authUser);
+        ApiResponse<FollowResponse.Follow> response = followService.follow(user.getId(), followedEmail);
         return ApiResponse.of(response);
     }
 
     // 나를 팔로우한 사용자 목록 조회
     @GetMapping("/followers")
     public ResponseEntity<ApiResponse<List<FollowResponse.Follow>>> getFollowers(@AuthenticationPrincipal AuthUser authUser) {
-        Long userId = authUser.getUserId();
-        ApiResponse<List<FollowResponse.Follow>> response = followService.getFollowers(userId);
+        User user = User.fromAuthUser(authUser);
+        ApiResponse<List<FollowResponse.Follow>> response = followService.getFollowers(user.getId());
         return ApiResponse.of(response);
     }
 
     // 팔로우한 사용자 목록 조회(내가 팔로우한 사용자들)
     @GetMapping("/followings")
     public ResponseEntity<ApiResponse<List<FollowResponse.Follow>>> getFollowedUsers(@AuthenticationPrincipal AuthUser authUser) {
-        Long userId = authUser.getUserId();
-        ApiResponse<List<FollowResponse.Follow>> response = followService.getFollowedUsers(userId);
+        User user = User.fromAuthUser(authUser);
+        ApiResponse<List<FollowResponse.Follow>> response = followService.getFollowedUsers(user.getId());
         return ApiResponse.of(response);
     }
 
     // 팔로우 해제
     @DeleteMapping("/{followedEmail}")
     public ResponseEntity<ApiResponse<FollowResponse.Follow>> unfollowUser(@AuthenticationPrincipal AuthUser authUser, @PathVariable("followedEmail") String followedEmail) {
-        Long followerId = authUser.getUserId();
-        ApiResponse<FollowResponse.Follow> response = followService.unfollow(followerId, followedEmail);
+        User user = User.fromAuthUser(authUser);
+        ApiResponse<FollowResponse.Follow> response = followService.unfollow(user.getId(), followedEmail);
         return ApiResponse.of(response);
     }
 }
