@@ -11,8 +11,8 @@ import org.hibernate.annotations.DynamicUpdate;
 
 // 외주 엔티티 수정
 @Getter
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
-@NoArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
 @Builder
 @Entity

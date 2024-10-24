@@ -168,9 +168,11 @@ class OutsourcingServiceTest {
             // then - 예상한 데이터와, 실제 데이터가 일치하는지 검증
             assertEquals( outsourcings.size(), actualData.size() );
             assertEquals(outsourcing1.getId(), actualData.get(0).id());
+            assertEquals(outsourcing1.getUser().getId(), actualData.get(0).user_id());
             assertEquals(outsourcing1.getTitle(), actualData.get(0).title());
             assertEquals(outsourcing1.getArea(), actualData.get(0).area());
             assertEquals(outsourcing2.getId(), actualData.get(1).id());
+            assertEquals(outsourcing2.getUser().getId(), actualData.get(1).user_id());
             assertEquals(outsourcing2.getTitle(), actualData.get(1).title());
             assertEquals(outsourcing2.getArea(), actualData.get(1).area());
         }
@@ -193,9 +195,11 @@ class OutsourcingServiceTest {
             // then - 예상한 데이터와, 실제 데이터가 일치하는지 검증
             assertEquals( outsourcings.size(), actualData.size() );
             assertEquals(outsourcing1.getId(), actualData.get(0).id());
+            assertEquals(outsourcing1.getUser().getId(), actualData.get(0).user_id());
             assertEquals(outsourcing1.getTitle(), actualData.get(0).title());
             assertEquals(outsourcing1.getArea(), actualData.get(0).area());
             assertEquals(outsourcing2.getId(), actualData.get(1).id());
+            assertEquals(outsourcing2.getUser().getId(), actualData.get(1).user_id());
             assertEquals(outsourcing2.getTitle(), actualData.get(1).title());
             assertEquals(outsourcing2.getArea(), actualData.get(1).area());
         }
