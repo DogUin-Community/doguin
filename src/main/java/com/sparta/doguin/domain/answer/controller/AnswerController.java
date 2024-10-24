@@ -10,6 +10,6 @@ public interface AnswerController {
     ResponseEntity<ApiResponse<AnswerResponse.Response>> create(AnswerRequest.Request answerRequest);
     ResponseEntity<ApiResponse<AnswerResponse.Response>> update(long answerId, AnswerRequest.Request answerRequest);
     ResponseEntity<ApiResponse<AnswerResponse.Response>> viewOne(long answerId);
-    ResponseEntity<ApiResponse<Page<AnswerResponse.Response>>> viewAll(int page, int size);
+    ResponseEntity<ApiResponse<Page<AnswerResponse.Response>>> viewAll(long boardId, int page, int size);
     ResponseEntity<ApiResponse<Void>> delete(Long answerId);
 }

@@ -9,6 +9,6 @@ public interface AnswerService {
     ApiResponse<AnswerResponse.Response> create(AnswerRequest.Request request);
     ApiResponse<AnswerResponse.Response> update(long answerId, AnswerRequest.Request request);
     ApiResponse<AnswerResponse.Response> viewOne(long answerId);
-    ApiResponse<Page<AnswerResponse.Response>> viewAll(int page, int size);
+    ApiResponse<Page<AnswerResponse.Response>> viewAll(long boardId, int page, int size);
     ApiResponse<Void> delete(long answerId);
 }
