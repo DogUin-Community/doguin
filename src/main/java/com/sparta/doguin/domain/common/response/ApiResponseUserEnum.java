@@ -8,6 +8,9 @@ public enum ApiResponseUserEnum implements ApiResponseEnum {
     // 200 - OK
     USER_CREATE_SUCCESS(HttpStatus.OK,"회원 가입에 성공하였습니다."),
     USER_LOGIN_SUCCESS(HttpStatus.OK, "로그인에 성공하였습니다."),
+    USER_CHECK_SUCCESS(HttpStatus.OK, "회원 정보 조회에 성공하였습니다."),
+    USER_UPDATE_SUCCESS(HttpStatus.OK, "회원 정보 수정에 성공하였습니다."),
+    USER_DELETE_SUCCESS(HttpStatus.OK, "회원 탈퇴에 성공하였습니다."),
 
     // 400 - BAD_REQUEST
     USER_ROLE_INVALID(HttpStatus.BAD_REQUEST, "유효하지 않은 UserRole입니다."),
