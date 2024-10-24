@@ -21,16 +21,19 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
     private final JwtUtil jwtUtil;
 
     @Override
-    public Message<?> preSend(@NonNull Message<?> message,@NonNull MessageChannel channel) {
+    public Message<?> preSend(@NonNull Message<?> message, @NonNull MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
-        String token = accessor.getFirstNativeHeader("Authorization");
+        String token = accessor.getFirstNativeHeader("Authorization");  // STOMP 헤더에서 Authorization 추출
+
+        System.out.println(token);
 
         if (token != null && token.startsWith("Bearer ")) {
             try {
-                String jwt = token.substring(7);  // "Bearer " 제거
+                String jwt = token.substring(7);
                 Claims claims = jwtUtil.extractClaims(jwt);
 
+                // JWT 검증 및 인증 객체 설정
                 Long userId = Long.valueOf(claims.getSubject());
                 String email = claims.get("email", String.class);
                 String nickname = claims.get("nickname", String.class);
@@ -38,7 +41,6 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
                 UserRole userRole = UserRole.of(claims.get("userRole", String.class));
 
                 AuthUser authUser = new AuthUser(userId, email, nickname, userType, userRole);
-
                 JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(authUser);
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
