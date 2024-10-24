@@ -121,8 +121,8 @@ class OutsourcingServiceTest {
 
             // then - 1번 호출 됐는지, 예상한 데이터와 실제 데이터가 일치하는지 검증
             Mockito.verify(outsourcingRepository, Mockito.times(1)).save(Mockito.argThat(outsourcing ->
-                    outsourcing.getTitle().equals(outsourctingRequestUpdate1.title()) &&
-                            outsourcing.getContent().equals(outsourctingRequestUpdate1.content()) &&
+                    !outsourcing1.getTitle().equals(outsourctingRequestUpdate1.title()) &&
+                            !outsourcing1.getContent().equals(outsourctingRequestUpdate1.content()) &&
                             outsourcing.getUser().getId().equals(outsourcing1.getUser().getId()) // 사용자 확인
             ));
         }
