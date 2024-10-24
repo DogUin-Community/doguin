@@ -24,11 +24,12 @@ public class AuthService {
 
     /**
      * 회원가입 요청을 처리하는 메서드
+     *
      * @param signupRequest 회원가입에 필요한 정보를 담은 dto
      * @return ApiResponse<String> JWT 토큰을 포함한 회원가입 성공 메시지
      * @throws UserException 중복된 이메일이 있는 경우 예외 처리
-     * @since 1.1
      * @author 황윤서
+     * @since 1.1
      */
     @Transactional
     public ApiResponse<String> signup(UserRequest.Signup signupRequest) {
@@ -40,37 +41,20 @@ public class AuthService {
         // 비밀번호를 암호화
         String encodedPassword = passwordEncoder.encode(signupRequest.password());
 
-        User newUser;
-        // 필수 사항만 입력된 경우
-        if (signupRequest.profileImage() == null &&
-                signupRequest.introduce() == null &&
-                signupRequest.homeAddress() == null &&
-                signupRequest.gitAddress() == null &&
-                signupRequest.blogAddress() == null) {
-            newUser = new User(
-                    null, // ID는 자동 생성이므로 null 전달
-                    signupRequest.email(),
-                    encodedPassword,
-                    signupRequest.nickname(),
-                    UserType.of(signupRequest.userType()),
-                    UserRole.of(signupRequest.userRole())
-            );
-        } else {
-            // 필수 + 선택 사항 모두 입력된 경우
-            newUser = new User(
-                    null, // ID는 자동 생성이므로 null 전달
-                    signupRequest.email(),
-                    encodedPassword,
-                    signupRequest.nickname(),
-                    UserType.of(signupRequest.userType()),
-                    UserRole.of(signupRequest.userRole()),
-                    signupRequest.profileImage(),
-                    signupRequest.introduce(),
-                    signupRequest.homeAddress(),
-                    signupRequest.gitAddress(),
-                    signupRequest.blogAddress()
-            );
-        }
+        User newUser = new User(
+                null, // ID는 자동 생성이므로 null 전달
+                signupRequest.email(),
+                encodedPassword,
+                signupRequest.nickname(),
+                UserType.of(signupRequest.userType()),
+                UserRole.of(signupRequest.userRole()),
+                signupRequest.profileImage(),
+                signupRequest.introduce(),
+                signupRequest.homeAddress(),
+                signupRequest.gitAddress(),
+                signupRequest.blogAddress()
+        );
+
         User saveduser = userRepository.save(newUser);
         ApiResponseEnum apiResponse = ApiResponseUserEnum.USER_CREATE_SUCCESS;
 
@@ -83,8 +67,8 @@ public class AuthService {
      * @param signinRequest 로그인에 필요한 정보를 담은 DTO
      * @return ApiResponse<String> JWT 토큰을 포함한 로그인 성공 메시지
      * @throws UserException 유저가 존재하지 않거나, 비밀번호가 일치하지 않는 경우 예외 처리
-     * @since 1.1
      * @author 황윤서
+     * @since 1.1
      */
     @Transactional(readOnly = true)
     public ApiResponse<String> signin(UserRequest.Signin signinRequest) {
