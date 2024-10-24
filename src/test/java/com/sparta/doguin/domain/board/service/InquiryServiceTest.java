@@ -129,7 +129,7 @@ class InquiryServiceTest {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<AnswerResponse.Response> responsePage = new PageImpl<>(mockResponse, pageable, mockResponse.size());
 
-        given(boardRepository.findById(anyLong())).willReturn(Optional.of(board));
+        given(boardRepository.findByUserId(anyLong())).willReturn(Optional.of(board));
         given(inquiryAnswerService.findByBoardId(1L, pageable)).willReturn(responsePage);
 
         BoardResponse.BoardWithAnswer result = inquiryService.viewOneWithUser( 1L,user);

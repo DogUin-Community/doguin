@@ -80,7 +80,7 @@ public class InquiryService implements BoardService{
      */
     @Override
     public BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId, User user) {
-        Board board = boardRepository.findById(boardId)
+        Board board = boardRepository.findByUserId(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.INQUIRY_NOT_FOUND));
         if(!board.getUser().getId().equals(user.getId())){
             throw new InvalidRequestException(ApiResponseBoardEnum.USER_WRONG);
