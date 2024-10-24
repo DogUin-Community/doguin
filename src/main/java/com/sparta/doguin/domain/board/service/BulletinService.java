@@ -69,7 +69,7 @@ public class BulletinService implements BoardService {
         if (board.getBoardType() != boardType) {
             throw new InvalidRequestException(ApiResponseBoardEnum.BULLETIN_WRONG);
         }
-        board.update(boardRequest.title(), boardRequest.content());
+        board.update(boardRequest.title(), boardRequest.content()); // 업데이트 정보 null 처리
         return board;
     }
 
@@ -168,7 +168,8 @@ public class BulletinService implements BoardService {
     }
 
     @Override
-    public List<Board> findByUserId(Long userId) {
-        return boardRepository.findAllByUserId(userId);
+    public Page<Board> findByUserId(Long userId) {
+        Pageable pageable = PageRequest.of( 0, 10);
+        return boardRepository.findAllByBoardTypeAndUserId(pageable,boardType,userId);
     }
 }

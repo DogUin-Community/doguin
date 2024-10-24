@@ -107,7 +107,7 @@ public class InquiryService implements BoardService{
     public Page<BoardCommonResponse> viewAllWithUser(int page, int size, User user) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        Page<Board> boards = boardRepository.findAllByBoardTypeAndUser(pageable,boardType,user);
+        Page<Board> boards = boardRepository.findAllByBoardTypeAndUserId(pageable,boardType,user.getId());
 
         return boards.map(notice -> new BoardCommonResponse(
                 notice.getId(),
@@ -165,7 +165,8 @@ public class InquiryService implements BoardService{
     }
 
     @Override
-    public List<Board> findByUserId(Long userId) {
-        return boardRepository.findAllByUserId(userId);
+    public Page<Board> findByUserId(Long userId) {
+        Pageable pageable = PageRequest.of( 0, 10);
+        return boardRepository.findAllByBoardTypeAndUserId(pageable,boardType,userId);
     }
 }
