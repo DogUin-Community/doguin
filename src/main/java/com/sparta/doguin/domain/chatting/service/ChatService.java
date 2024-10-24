@@ -39,7 +39,6 @@ public class ChatService {
     private final RedisTemplate<String, Object> redisTemplate;
 
 
-
     // 채팅방 생성
     public ChatResponse.ChatRoomResponse createChatRoom(ChatRequest.ChatRoomRequest chatRoomRequest) {
         ChatRoom chatRoom = new ChatRoom();
@@ -49,35 +48,55 @@ public class ChatService {
         return new ChatResponse.ChatRoomResponse(chatRoom.getId(), chatRoom.getTitle());
     }
 
-    // 메시지 저장 및 전송
+    // 메시지 전송
     public void sendMessage(ChatRequest.MessageRequest messageRequest, AuthUser authUser) {
+        User user = getUserFromAuth(authUser);
         ChatRoom chatRoom = findChatRoomById(messageRequest.chatRoomId());
 
-        // 채팅방 인원 제한 체크
-        checkRoomCapacity(messageRequest.chatRoomId());
-
-        User user = userService.findById(authUser.getUserId());
-
-        // 메시지 생성 및 저장
         Message message = createAndSaveMessage(chatRoom, user, messageRequest.content());
-
-        // WebSocket을 통한 메시지 전송 및 Redis 저장
         sendMessageToTopic(messageRequest.chatRoomId(), user.getNickname(), messageRequest.content(), message.getCreatedAt());
-        saveMessageToRedis(messageRequest.chatRoomId(), message);
     }
 
-    // 입장 메시지 처리
+    // 유저 입장 처리
     public void userEnter(Long chatRoomId, AuthUser authUser) {
-        User user = userService.findById(authUser.getUserId());
+        checkRoomCapacity(chatRoomId); // 인원 제한 체크
+        User user = getUserFromAuth(authUser);
         sendSystemMessage(chatRoomId, user.getNickname() + "님이 입장하셨습니다.");
     }
 
-    // 퇴장 메시지 처리 및 방 삭제 여부 확인
+    // 유저 퇴장 처리 및 방 삭제 여부 확인
     public void userExit(Long chatRoomId, AuthUser authUser) {
-        User user = userService.findById(authUser.getUserId());
-        sendSystemMessage(chatRoomId,  user.getNickname() + "님이 퇴장하셨습니다.");
+        User user = getUserFromAuth(authUser);
+        sendSystemMessage(chatRoomId, user.getNickname() + "님이 퇴장하셨습니다.");
+        checkAndDeleteEmptyChatRoom(chatRoomId);
+    }
 
-        // 퇴장 후 채팅방 인원 체크 및 삭제 처리
+    // 유저 정보 가져오기
+    private User getUserFromAuth(AuthUser authUser) {
+        return userService.findById(authUser.getUserId());
+    }
+
+    // 채팅방 찾기
+    private ChatRoom findChatRoomById(Long chatRoomId) {
+        return chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new ChatException(ApiResponseChatEnum.CHATROOM_NOT_FOUND));
+    }
+
+    // 채팅방 인원 제한 체크
+    private void checkRoomCapacity(Long chatRoomId) {
+        if (isRoomFull(chatRoomId)) {
+            throw new ChatException(ApiResponseChatEnum.CHATROOM_FULL);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isRoomFull(Long chatRoomId) {
+        List<UserChatRoom> userChatRooms = userChatRoomRepository.findByChatRoom_Id(chatRoomId);
+        return userChatRooms.size() >= MAX_CHAT_ROOM_CAPACITY;
+    }
+
+    // 채팅방이 비어 있으면 삭제
+    private void checkAndDeleteEmptyChatRoom(Long chatRoomId) {
         List<UserChatRoom> userChatRooms = userChatRoomRepository.findByChatRoom_Id(chatRoomId);
         if (userChatRooms.isEmpty()) {
             redisTemplate.delete("chatroom:" + chatRoomId);
@@ -85,44 +104,22 @@ public class ChatService {
         }
     }
 
-    // 채팅방 인원 체크
-    @Transactional(readOnly = true)
-    public boolean isRoomFull(Long chatRoomId) {
-        List<UserChatRoom> userChatRooms = userChatRoomRepository.findByChatRoom_Id(chatRoomId);
-        return userChatRooms.size() >= MAX_CHAT_ROOM_CAPACITY;
-    }
-
-    private ChatRoom findChatRoomById(Long chatRoomId) {
-        return chatRoomRepository.findById(chatRoomId)
-                .orElseThrow(() -> new ChatException(ApiResponseChatEnum.CHATROOM_NOT_FOUND));
-    }
-
-    private void checkRoomCapacity(Long chatRoomId) {
-        if (isRoomFull(chatRoomId)) {
-            throw new ChatException(ApiResponseChatEnum.CHATROOM_FULL);
-        }
-    }
-
+    // 메시지 생성 및 저장
     private Message createAndSaveMessage(ChatRoom chatRoom, User user, String content) {
         Message message = new Message(chatRoom, user, content);
         return messageRepository.save(message);
     }
 
-    private void sendMessageToTopic(Long chatRoomId, String nickname, String content, LocalDateTime createdAt) {
+    // 메시지 전송
+    private void sendMessageToTopic(Long chatRoomId, String sender, String content, LocalDateTime createdAt) {
         ChatRequest.ChatMessageRequest chatMessage = new ChatRequest.ChatMessageRequest(
-                nickname, content, chatRoomId, createdAt.format(formatter)
+                sender, content, chatRoomId, createdAt.format(formatter)
         );
         messagingTemplate.convertAndSend("/topic/" + chatRoomId, chatMessage);
     }
 
-    private void saveMessageToRedis(Long chatRoomId, Message message) {
-        redisTemplate.opsForList().rightPush("chatroom:" + chatRoomId, message);
-    }
-
+    // 시스템 메시지 전송
     private void sendSystemMessage(Long chatRoomId, String messageContent) {
-        ChatRequest.ChatMessageRequest systemMessage = new ChatRequest.ChatMessageRequest(
-                "System", messageContent, chatRoomId, LocalDateTime.now().format(formatter)
-        );
-        messagingTemplate.convertAndSend("/topic/" + chatRoomId, systemMessage);
+        sendMessageToTopic(chatRoomId, "System", messageContent, LocalDateTime.now());
     }
 }
