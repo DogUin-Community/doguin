@@ -163,4 +163,10 @@ public class EventService implements BoardService{
         }
         boardRepository.delete(board);
     }
+
+    @Override
+    public Board findByUserId(Long userId) {
+        return boardRepository.findByUserId(userId)
+                .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.EVENT_NOT_FOUND));
+    }
 }

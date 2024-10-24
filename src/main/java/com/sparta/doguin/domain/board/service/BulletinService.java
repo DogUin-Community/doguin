@@ -164,4 +164,10 @@ public class BulletinService implements BoardService {
 
         boardRepository.delete(board);
     }
+
+    @Override
+    public Board findByUserId(Long userId) {
+        return boardRepository.findByUserId(userId)
+                .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.BULLETIN_NOT_FOUND));
+    }
 }

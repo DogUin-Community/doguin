@@ -48,5 +48,6 @@ public interface BoardService {
 
     // 게시글 삭제
     void delete(User user, Long boardId);
+    Board findByUserId(Long userId);
 }
 

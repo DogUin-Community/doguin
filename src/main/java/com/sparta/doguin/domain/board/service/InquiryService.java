@@ -161,4 +161,10 @@ public class InquiryService implements BoardService{
 
         boardRepository.delete(board);
     }
+
+    @Override
+    public Board findByUserId(Long userId) {
+        return boardRepository.findByUserId(userId)
+                .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.INQUIRY_NOT_FOUND));
+    }
 }
