@@ -7,6 +7,8 @@ import com.sparta.doguin.domain.bookmark.model.BookmarkRequest;
 import com.sparta.doguin.domain.outsourcing.constans.AreaType;
 import com.sparta.doguin.domain.outsourcing.entity.Outsourcing;
 import com.sparta.doguin.domain.outsourcing.model.OutsourcingRequest;
+import com.sparta.doguin.domain.portfolio.entity.Portfolio;
+import com.sparta.doguin.domain.portfolio.model.PortfolioRequest;
 import com.sparta.doguin.domain.question.dto.QuestionRequest;
 import com.sparta.doguin.domain.question.entity.Question;
 import com.sparta.doguin.domain.question.enums.FirstCategory;
@@ -277,6 +279,73 @@ public class DataUtil {
         );
     }
 
+    public static PortfolioRequest.PortfolioRequestCreate portfolioRequestCreate1(){
+        return new PortfolioRequest.PortfolioRequestCreate(
+                "Senior Developer Portfolio",
+                "This portfolio highlights my experience in backend development with Java and Spring.",
+                10L,
+                "Remote",
+                "Developed multiple microservices for an e-commerce platform.",
+                AreaType.SEOUL
+        );
+    }
 
+    public static PortfolioRequest.PortfolioRequestCreate portfolioRequestCreate2(){
+        return new PortfolioRequest.PortfolioRequestCreate(
+                "Senior Developer Portfolio1",
+                "This portfolio highlights my experience in backend development with Java and Spring1.",
+                11L,
+                "Remote1",
+                "Deve1loped multiple microservices for an e-commerce platform.",
+                AreaType.SEOUL
+        );
+    }
 
+    public static PortfolioRequest.PortfolioRequestUpdate portfolioRequestUpdate1(){
+        return new PortfolioRequest.PortfolioRequestUpdate(
+                "Senior Developer Portfolio11",
+                "This portfolio highlight1s my experience in backend development with Java and Spring1.",
+                5L,
+                "Remot2e1",
+                "Dev22e1loped multiple microservices for an e-commerce platform.",
+                AreaType.SEOUL
+        );
+    }
+
+    public static PortfolioRequest.PortfolioRequestUpdate portfolioRequestUpdate2(){
+        return new PortfolioRequest.PortfolioRequestUpdate(
+                "Senior Developer Portfolio33",
+                "This portfolio highlight31s my experience in backend development with Java and Spring1.",
+                4L,
+                "Remot233e1",
+                "Dev22333e1loped multiple microservices for an e-commerce platform.",
+                AreaType.SEOUL
+        );
+    }
+
+    public static Portfolio portfolio1(){
+        return new Portfolio(
+                one(),
+                user1(),
+                portfolioRequestCreate1().title(),
+                portfolioRequestCreate1().content(),
+                portfolioRequestCreate1().work_experience(),
+                portfolioRequestCreate1().work_type(),
+                portfolioRequestCreate1().proejct_history(),
+                portfolioRequestCreate1().area()
+        );
+    }
+
+    public static Portfolio portfolio2() {
+        return new Portfolio(
+                two(),
+                user2(),
+                portfolioRequestCreate2().title(),
+                portfolioRequestCreate2().content(),
+                portfolioRequestCreate2().work_experience(),
+                portfolioRequestCreate2().work_type(),
+                portfolioRequestCreate2().proejct_history(),
+                portfolioRequestCreate2().area()
+        );
+    }
 }
