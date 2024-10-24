@@ -1,15 +1,24 @@
-package com.sparta.doguin.domain.outsourcing.setup;
+package com.sparta.doguin.domain.setup;
 
 import com.sparta.doguin.config.AuthUser;
+import com.sparta.doguin.domain.bookmark.constans.BookmarkTargetType;
+import com.sparta.doguin.domain.bookmark.entity.Bookmark;
+import com.sparta.doguin.domain.bookmark.model.BookmarkRequest;
 import com.sparta.doguin.domain.outsourcing.constans.AreaType;
 import com.sparta.doguin.domain.outsourcing.entity.Outsourcing;
 import com.sparta.doguin.domain.outsourcing.model.OutsourcingRequest;
+import com.sparta.doguin.domain.question.dto.QuestionRequest;
+import com.sparta.doguin.domain.question.entity.Question;
+import com.sparta.doguin.domain.question.enums.FirstCategory;
+import com.sparta.doguin.domain.question.enums.LastCategory;
+import com.sparta.doguin.domain.question.enums.SecondCategory;
 import com.sparta.doguin.domain.user.entity.User;
 import com.sparta.doguin.domain.user.enums.UserRole;
 import com.sparta.doguin.domain.user.enums.UserType;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+
 import java.time.LocalDateTime;
 
 public class DataUtil {
@@ -19,7 +28,7 @@ public class DataUtil {
 
     public static User user1() {
         return new User(
-                1L,
+                 one(),
                 "test@naver.com",
                 "!@Skdud340",
                 "testNickname",
@@ -30,7 +39,7 @@ public class DataUtil {
 
     public static User user2() {
         return new User(
-                2L,
+                 two(),
                 "test1@naver.com",
                 "!@Skdud340",
                 "testNickname1",
@@ -45,6 +54,26 @@ public class DataUtil {
 
     public static Long two(){
         return 2L;
+    }
+
+    public static AuthUser authUser1() {
+        return new AuthUser(
+                user1().getId(),
+                user1().getEmail(),
+                user1().getNickname(),
+                user1().getUserType(),
+                user1().getUserRole()
+        );
+    }
+
+    public static AuthUser authUser2() {
+        return new AuthUser(
+                user2().getId(),
+                user2().getEmail(),
+                user2().getNickname(),
+                user2().getUserType(),
+                user2().getUserRole()
+        );
     }
 
     public static OutsourcingRequest.OutsourcingRequestCreate outsourctingRequestCreate1(){
@@ -110,6 +139,7 @@ public class DataUtil {
     public static Outsourcing outsourcing1(){
         return Outsourcing.builder()
                 .user(user1())
+                .id(one())
                 .title(outsourctingRequestCreate1().title())
                 .content(outsourctingRequestCreate1().content())
                 .preferential(outsourctingRequestCreate1().preferential())
@@ -126,6 +156,7 @@ public class DataUtil {
     public static Outsourcing outsourcing2(){
         return Outsourcing.builder()
                 .user(user1())
+                .id(two())
                 .title(outsourctingRequestCreate2().title())
                 .content(outsourctingRequestCreate2().content())
                 .preferential(outsourctingRequestCreate2().preferential())
@@ -139,23 +170,113 @@ public class DataUtil {
                 .build();
     }
 
-    public static AuthUser authUser1() {
-        return new AuthUser(
-                String.valueOf(user1().getId()),
-                user1().getEmail(),
-                user1().getNickname(),
-                user1().getUserType(),
-                user1().getUserRole()
+    public static BookmarkRequest.BookmarkRequestCreate outsourcingBookmarkRequestCreate1(){
+        return new BookmarkRequest.BookmarkRequestCreate(
+                one(),
+                BookmarkTargetType.OUTSOURCING
         );
     }
 
-    public static AuthUser authUser2() {
-        return new AuthUser(
-                String.valueOf( user2().getId()),
-                 user2().getEmail(),
-                 user2().getNickname(),
-                 user2().getUserType(),
-                 user2().getUserRole()
+    public static BookmarkRequest.BookmarkRequestCreate outsourcingBookmarkRequestCreate2(){
+        return new BookmarkRequest.BookmarkRequestCreate(
+                two(),
+                BookmarkTargetType.OUTSOURCING
         );
     }
+
+    public static BookmarkRequest.BookmarkRequestCreate questionBookmarkRequestCreate1(){
+        return new BookmarkRequest.BookmarkRequestCreate(
+                one(),
+                BookmarkTargetType.QUESTION
+        );
+    }
+
+    public static BookmarkRequest.BookmarkRequestCreate questionBookmarkRequestCreate2(){
+        return new BookmarkRequest.BookmarkRequestCreate(
+                two(),
+                BookmarkTargetType.QUESTION
+        );
+    }
+
+    public static Bookmark outsourcingBookmark1(){
+        return new Bookmark(
+                one(),
+                user1(),
+                one(),
+                BookmarkTargetType.OUTSOURCING
+        );
+    }
+
+    public static Bookmark outsourcingBookmark2(){
+        return new Bookmark(
+                two(),
+                user2(),
+                two(),
+                BookmarkTargetType.OUTSOURCING
+        );
+    }
+
+    public static Bookmark questionBookmark1(){
+        return new Bookmark(
+                one(),
+                user1(),
+                one(),
+                BookmarkTargetType.QUESTION
+        );
+    }
+
+    public static Bookmark questionBookmark2(){
+        return new Bookmark(
+                two(),
+                user2(),
+                two(),
+                BookmarkTargetType.QUESTION
+        );
+    }
+
+    public static QuestionRequest.CreatedQuestion questionRequestCreate1(){
+        return new QuestionRequest.CreatedQuestion(
+                "test title",
+                "test content",
+                FirstCategory.JAVA,
+                SecondCategory.STRING,
+                LastCategory.REDIS
+        );
+    }
+
+    public static QuestionRequest.CreatedQuestion questionRequestCreate2(){
+        return new QuestionRequest.CreatedQuestion(
+                "test title1",
+                "test content1",
+                FirstCategory.JAVA,
+                SecondCategory.STRING,
+                LastCategory.REDIS
+        );
+    }
+
+    public static Question question1(){
+        return new Question(
+                one(),
+                questionRequestCreate1().title(),
+                questionRequestCreate1().content(),
+                questionRequestCreate1().firstCategory(),
+                questionRequestCreate1().secondCategory(),
+                questionRequestCreate1().lastCategory()
+        );
+    }
+
+
+    public static Question question2(){
+        return new Question(
+                two(),
+                questionRequestCreate2().title(),
+                questionRequestCreate2().content(),
+                questionRequestCreate2().firstCategory(),
+                questionRequestCreate2().secondCategory(),
+                questionRequestCreate2().lastCategory()
+        );
+    }
+
+
+
 }

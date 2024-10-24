@@ -60,9 +60,10 @@ public class InquiryAnswerController implements AnswerController {
      */
     @Override
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<AnswerResponse.Response>>> viewAll(@RequestParam(defaultValue = "1") int page,
+    public ResponseEntity<ApiResponse<Page<AnswerResponse.Response>>> viewAll(@PathVariable long boardId,
+                                                                              @RequestParam(defaultValue = "1") int page,
                                                                               @RequestParam(defaultValue = "10") int size) {
-        ApiResponse<Page<AnswerResponse.Response>> response = answerService.viewAll(page, size);
+        ApiResponse<Page<AnswerResponse.Response>> response = answerService.viewAll(boardId, page, size);
         return ResponseEntity.ok(response);
     }
 

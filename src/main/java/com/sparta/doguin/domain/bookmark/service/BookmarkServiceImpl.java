@@ -21,8 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.sparta.doguin.domain.common.response.ApiResponseBookmarkEnum.BOOKMARK_NOT_FOUND;
-import static com.sparta.doguin.domain.common.response.ApiResponseBookmarkEnum.BOOKMARK_OK;
+import static com.sparta.doguin.domain.common.response.ApiResponseBookmarkEnum.*;
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +63,7 @@ public class BookmarkServiceImpl implements BookmarkService {
     /**
      * 북마크 취소 메서드
      *
-     * @param matchingId / 취소할 북마크 ID
+     * @param bookmarkId / 취소할 북마크 ID
      * @return ApiResponse<Void> / 성공 응답 반환
      * @throws BookmarkException / 북마크 없을시 예외처리
      * @throws ValidatorException / 북마크 한 사람이 본인이 아닐경우 예외처리
@@ -73,9 +72,9 @@ public class BookmarkServiceImpl implements BookmarkService {
      */
     @Transactional
     @Override
-    public ApiResponse<Void> deleteBookmark(Long matchingId,AuthUser authUser) {
+    public ApiResponse<Void> deleteBookmark(Long bookmarkId,AuthUser authUser) {
         User user = User.fromAuthUser(authUser);
-        Bookmark bookmark = findById(matchingId);
+        Bookmark bookmark = findById(bookmarkId);
         BookmarkValidator.isMe(user.getId(),bookmark.getUser().getId());
         bookmarkRepository.delete(bookmark);
         return ApiResponse.of(BOOKMARK_OK);
