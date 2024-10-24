@@ -23,6 +23,14 @@ public class BulletinService implements BoardService {
     private final BoardRepository boardRepository;
     private final BoardType boardType = BoardType.BOARD_BULLETIN;
 
+    /**
+     * 일반 게시물 생성
+     *
+     * @param boardRequest 일반 게시물의 정보 (제목, 내용 등)
+     * @since 1.0
+     * @return 생성된 일반 게시물 객체
+     * @author 김창민
+     */
     @Override
     @Transactional
     public Board create(User user, BoardCommonRequest boardRequest) {
@@ -30,6 +38,19 @@ public class BulletinService implements BoardService {
         return boardRepository.save(board);
     }
 
+    /**
+     * 일반 게시물 수정
+     *
+     * @param user 로그인 유저
+     * @param boardId 작성한 게시물 id
+     * @param boardRequest 일반 게시물의 수정 정보 (제목, 내용 등)
+     * @since 1.0
+     * @throws HandleNotFound 일반 게시물 조회 시 데이터가 없을 경우 발생
+     * @throws InvalidRequestException 게시물 제작자와 로그인한 유저가 다를 경우 발생
+     * @throws InvalidRequestException 게시물 타입이 일반 게시물이 아닐 경우 발생
+     * @return 수정된 일반 게시물 객체
+     * @author 김창민
+     */
     @Override
     @Transactional
     public Board update(User user,Long boardId, BoardCommonRequest boardRequest) {
@@ -46,7 +67,16 @@ public class BulletinService implements BoardService {
         return board;
     }
 
-
+    /**
+     * 일반 게시물 단건 조회
+     *
+     * @param boardId 조회 대상 일반 게시물의 id
+     * @since 1.0
+     * @throws HandleNotFound 일반 게시물 조회 시 데이터가 없을 경우 발생
+     * @throws InvalidRequestException 게시물 타입이 일반 게시물이 아닐 경우 발생
+     * @return 조회된 일반 게시물 객체
+     * @author 김창민
+     */
     @Override
     public Board viewOne(Long boardId) {
         Board board = boardRepository.findById(boardId)
@@ -57,6 +87,15 @@ public class BulletinService implements BoardService {
         return  board;
     }
 
+    /**
+     * 일반 게시물 전체 조회
+     *
+     * @param page 페이지 번호
+     * @param size 한 페이지당 게시물 개수
+     * @since 1.0
+     * @return 조회된 한 페이지 내의 모든 게시물
+     * @author 김창민
+     */
     @Override
     public Page<BoardCommonResponse> viewAll(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
@@ -71,6 +110,16 @@ public class BulletinService implements BoardService {
 
     }
 
+    /**
+     * 일반 게시물 검색 조회
+     *
+     * @param page 페이지 번호
+     * @param size 한 페이지당 게시물 개수
+     * @param title 조회 대상 검색물의 제목
+     * @since 1.0
+     * @return 조회된 게시물의 id, 제목, 내용
+     * @author 김창민
+     */
     @Override
     public Page<BoardCommonResponse> search(int page, int size, String title) {
         Pageable pageable = PageRequest.of(page - 1, size);
@@ -83,6 +132,17 @@ public class BulletinService implements BoardService {
         ));
     }
 
+    /**
+     * 일반 게시물 삭제
+     *
+     * @param user 로그인한 유저
+     * @param boardId 삭제 대상 일반 게시물의 id
+     * @since 1.0
+     * @throws HandleNotFound 일반 게시물 조회 시 데이터가 없을 경우 발생
+     * @throws InvalidRequestException 게시물 제작자와 로그인한 유저가 다를 경우 발생
+     * @throws InvalidRequestException 게시물 타입이 일반 게시물이 아닐 경우 발생
+     * @author 김창민
+     */
     @Override
     @Transactional
     public void delete(User user,Long boardId) {

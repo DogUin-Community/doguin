@@ -6,7 +6,8 @@ import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseMatchingEnum;
 import com.sparta.doguin.domain.matching.constans.MathingStatusType;
 import com.sparta.doguin.domain.matching.entity.Matching;
-import com.sparta.doguin.domain.matching.model.MatchingDto;
+import com.sparta.doguin.domain.matching.model.MatchingRequest;
+import com.sparta.doguin.domain.matching.model.MatchingResponse;
 import com.sparta.doguin.domain.matching.repository.MatchingRepository;
 import com.sparta.doguin.domain.matching.validator.MatchingValidator;
 import com.sparta.doguin.domain.outsourcing.entity.Outsourcing;
@@ -14,7 +15,6 @@ import com.sparta.doguin.domain.outsourcing.service.OutsourcingServiceImpl;
 import com.sparta.doguin.domain.portfolio.entity.Portfolio;
 import com.sparta.doguin.domain.portfolio.service.PortfolioServiceImpl;
 import com.sparta.doguin.domain.user.entity.User;
-import com.sparta.doguin.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,11 +30,6 @@ public class MatchingServiceImpl implements MatchingService {
     private final OutsourcingServiceImpl outsourcingService;
     private final PortfolioServiceImpl portfolioService;
 
-    // TODO: 이거 나중에 뺴야함
-    private final UserRepository userRepository;
-
-
-    // TODO: 유저 찾는 메서드 변경해야함
 
     /**
      * 매칭생성 메서드 (유저,포트폴리오,외주 3개로 확인함)
@@ -48,8 +43,8 @@ public class MatchingServiceImpl implements MatchingService {
      */
     @Transactional
     @Override
-    public ApiResponse<Void> createMatching(MatchingDto.MatchingRequest reqDto, AuthUser authUser) {
-        User user = userRepository.findById(Long.parseLong(authUser.getUserId())).orElseThrow();
+    public ApiResponse<Void> createMatching(MatchingRequest.MatchingRequestCreate reqDto, AuthUser authUser) {
+        User user = User.fromAuthUser(authUser);
         Outsourcing outsourcing = outsourcingService.findById(reqDto.outsourcingId());
         Portfolio portfolio = portfolioService.findById(reqDto.portfolioId());
         Matching matching = Matching.builder()
@@ -74,8 +69,8 @@ public class MatchingServiceImpl implements MatchingService {
      */
     @Transactional
     @Override
-    public ApiResponse<Void> updateMatching(Long matchingId, MatchingDto.MatchingRequestUpdate updateReqDto, AuthUser authUser) {
-        User user = userRepository.findById(Long.parseLong(authUser.getUserId())).orElseThrow();
+    public ApiResponse<Void> updateMatching(Long matchingId, MatchingRequest.MatchingRequestUpdate updateReqDto, AuthUser authUser) {
+        User user = User.fromAuthUser(authUser);
         Matching findMatching = findById(matchingId);
         MatchingValidator.isMe(user.getId(),findMatching.getUser().getId());
         Matching updateMatching = Matching.builder()
@@ -101,7 +96,7 @@ public class MatchingServiceImpl implements MatchingService {
     @Transactional
     @Override
     public ApiResponse<Void> deleteMatching(Long matchingId, AuthUser authUser) {
-        User user = userRepository.findById(Long.parseLong(authUser.getUserId())).orElseThrow();
+        User user = User.fromAuthUser(authUser);
         Matching matching = findById(matchingId);
         MatchingValidator.isMe(user.getId(),matching.getUser().getId());
         matchingRepository.delete(matching);
@@ -122,8 +117,8 @@ public class MatchingServiceImpl implements MatchingService {
      */
     @Transactional(readOnly = true)
     @Override
-    public ApiResponse<Page<MatchingDto>> getAllMatching(AuthUser authUser, Pageable pageable, MathingStatusType status) {
-        User user = userRepository.findById(Long.parseLong(authUser.getUserId())).orElseThrow();
+    public ApiResponse<Page<MatchingResponse>> getAllMatching(AuthUser authUser, Pageable pageable, MathingStatusType status) {
+        User user = User.fromAuthUser(authUser);
         Page<Matching> pageableMatchings;
         if (status == null) {
             pageableMatchings = matchingRepository.findAllByUser(user, pageable);
@@ -131,7 +126,7 @@ public class MatchingServiceImpl implements MatchingService {
             pageableMatchings = matchingRepository.findAllByUserAndStatus(user,pageable,status);
         }
 
-        Page<MatchingDto> matchings = pageableMatchings.map(MatchingDto.MatchingResponse::of);
+        Page<MatchingResponse> matchings = pageableMatchings.map(MatchingResponse.MatchingResponseGet::of);
         return ApiResponse.of(MATHCING_SUCCESS,matchings);
     }
 

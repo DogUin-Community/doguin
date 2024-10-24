@@ -2,7 +2,8 @@ package com.sparta.doguin.domain.bookmark.controller;
 
 import com.sparta.doguin.config.AuthUser;
 import com.sparta.doguin.domain.bookmark.constans.BookmarkTargetType;
-import com.sparta.doguin.domain.bookmark.model.BookmarkDto;
+import com.sparta.doguin.domain.bookmark.model.BookmarkRequest;
+import com.sparta.doguin.domain.bookmark.model.BookmarkResponse;
 import com.sparta.doguin.domain.bookmark.service.BookmarkService;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class BookmarkController {
      * 로그인 되있는 자신의 북마크들 목록 확인
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<BookmarkDto>>> getAllBookmarks(
+    public ResponseEntity<ApiResponse<Page<BookmarkResponse>>> getAllBookmarks(
             @RequestParam(defaultValue = "0", required = false) int page,
             @RequestParam(defaultValue = "10", required = false) int size,
             @RequestParam(defaultValue = "desc", required = false) String sort,
@@ -33,12 +34,12 @@ public class BookmarkController {
             ) {
         Sort.Direction direction = Sort.Direction.fromString(sort);
         Pageable pageable = PageRequest.of(page, size, direction,"createdAt");
-        ApiResponse<Page<BookmarkDto>> apiResponse = bookmarkService.getAllBookmarksByUser(pageable, authUser, target);
+        ApiResponse<Page<BookmarkResponse>> apiResponse = bookmarkService.getAllBookmarksByUser(pageable, authUser, target);
         return ApiResponse.of(apiResponse);
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Void>> createBookmark(@RequestBody BookmarkDto.BookmarkRequest reqDto, @AuthenticationPrincipal AuthUser authUser){
+    public ResponseEntity<ApiResponse<Void>> createBookmark(@RequestBody BookmarkRequest.BookmarkRequestCreate reqDto, @AuthenticationPrincipal AuthUser authUser){
         ApiResponse<Void> apiResponse = bookmarkService.createBookmark(reqDto,authUser);
         return ApiResponse.of(apiResponse);
     }
