@@ -38,7 +38,7 @@ public class DataUtil {
                 "!@Skdud340",
                 "testNickname",
                 UserType.INDIVIDUAL,
-                UserRole.ROLE_USER
+                UserRole.ROLE_USER,"","","","",""
         );
     }
 
@@ -49,7 +49,7 @@ public class DataUtil {
                 "!@Skdud340",
                 "testNickname1",
                 UserType.INDIVIDUAL,
-                UserRole.ROLE_USER
+                UserRole.ROLE_USER,"","","","",""
         );
     }
 

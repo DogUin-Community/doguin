@@ -61,8 +61,8 @@ class ReportServiceTest {
 
     @BeforeEach
     void setUp(){
-        reporter = new User(1L, "user1@gmail.com", "AAAaaa111!!!", "신고자", UserType.INDIVIDUAL, UserRole.ROLE_USER);
-        reportee = new User(2L, "user2@gmail.com", "AAAaaa111!!!", "피의자", UserType.INDIVIDUAL, UserRole.ROLE_USER);
+        reporter = new User(1L, "user1@gmail.com", "AAAaaa111!!!", "신고자", UserType.INDIVIDUAL, UserRole.ROLE_USER,"","","","","");
+        reportee = new User(2L, "user2@gmail.com", "AAAaaa111!!!", "피의자", UserType.INDIVIDUAL, UserRole.ROLE_USER,"","","","","");
 
         report = new Report("신고합니다.", "아주 무시무시합니다.", reporter, reportee, ReportType.REPORT_NOT_CONFIRMED);
         ReflectionTestUtils.setField(report,"id",1L);
@@ -148,7 +148,7 @@ class ReportServiceTest {
     @Test
     @DisplayName("신고한 내역 조회")
     void reportViewAll() {
-        User reportee2 = new User(3L, "user3@gmail.com", "AAAaaa111!!!", "피의자2", UserType.INDIVIDUAL, UserRole.ROLE_USER);
+        User reportee2 = new User(3L, "user3@gmail.com", "AAAaaa111!!!", "피의자2", UserType.INDIVIDUAL, UserRole.ROLE_USER,"","","","","");
         Report report2 = new Report("신고합니다.", "아주 무시무시합니다.", reportee, reportee2, ReportType.REPORT_NOT_CONFIRMED);
         ReflectionTestUtils.setField(report2,"id",2L);
 

@@ -56,7 +56,7 @@ class BulletinServiceTest {
 
     @BeforeEach
     void setUp() {
-        user = new User(1L, "user@gmail.com", "AAAaaa111!!!", "유저입니다.", UserType.INDIVIDUAL, UserRole.ROLE_USER);
+        user = new User(1L, "user@gmail.com", "AAAaaa111!!!", "유저입니다.", UserType.INDIVIDUAL, UserRole.ROLE_USER,"","","","","");
 
         board = new Board("일반 게시물", "일반 게시물", BoardType.BOARD_BULLETIN,user);
         ReflectionTestUtils.setField(board,"id",1L);
@@ -87,7 +87,7 @@ class BulletinServiceTest {
     @Test
     @DisplayName("일반 게시물 수정 실패 테스트(등록자 다름)")
     void update_등록자_다름() {
-        User user1 = new User(2L, "user1@gmail.com", "AAAaaa111!!!", "다른 유저 입니다.", UserType.INDIVIDUAL, UserRole.ROLE_USER);
+        User user1 = new User(2L, "user1@gmail.com", "AAAaaa111!!!", "다른 유저 입니다.", UserType.INDIVIDUAL, UserRole.ROLE_USER,"","","","","");
         BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("수정된 일반 게시물","수정된 일반 게시물");
         given(boardRepository.findById(anyLong())).willReturn(Optional.of(board));
 
@@ -227,7 +227,7 @@ class BulletinServiceTest {
     @Test
     @DisplayName("일반 게시물 삭제 실패 테스트(등록자 다름)")
     void delete_등록자_다름() {
-        User user1 = new User(2L, "user1@gmail.com", "AAAaaa111!!!", "다른 유저 입니다.", UserType.INDIVIDUAL, UserRole.ROLE_USER);
+        User user1 = new User(2L, "user1@gmail.com", "AAAaaa111!!!", "다른 유저 입니다.", UserType.INDIVIDUAL, UserRole.ROLE_USER,"","","","","");
         Long boardId = 1L;
         when(boardRepository.findById(boardId)).thenReturn(Optional.of(board));
 
