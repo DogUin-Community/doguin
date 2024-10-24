@@ -6,6 +6,7 @@ import com.sparta.doguin.domain.question.enums.FirstCategory;
 import com.sparta.doguin.domain.question.enums.LastCategory;
 import com.sparta.doguin.domain.question.enums.QuestionStatus;
 import com.sparta.doguin.domain.question.enums.SecondCategory;
+import com.sparta.doguin.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,6 +39,10 @@ public class Question {
 
     @Enumerated(EnumType.STRING)
     private QuestionStatus questionStatus;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="user_id")
+    private User user;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     private List<Answer> answerList = new ArrayList<>();
