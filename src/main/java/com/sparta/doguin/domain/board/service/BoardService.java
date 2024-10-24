@@ -50,6 +50,6 @@ public interface BoardService {
 
     // 게시글 삭제
     void delete(User user, Long boardId);
-    List<Board> findByUserId(Long userId);
+    Page<Board> findByUserId(Long userId);
 }
 

@@ -1,7 +1,6 @@
 package com.sparta.doguin.domain.board.service;
 
 import com.sparta.doguin.domain.answer.dto.AnswerResponse;
-import com.sparta.doguin.domain.answer.service.BulletinAnswerService;
 import com.sparta.doguin.domain.answer.service.InquiryAnswerService;
 import com.sparta.doguin.domain.board.BoardType;
 import com.sparta.doguin.domain.board.dto.BoardRequest;
@@ -185,7 +184,7 @@ class InquiryServiceTest {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Board> boardPage = new PageImpl<>(mockBoards, pageable, mockBoards.size());
 
-        given(boardRepository.findAllByBoardTypeAndUser(pageable, BoardType.BOARD_INQUIRY,user)).willReturn(boardPage);
+        given(boardRepository.findAllByBoardTypeAndUserId(pageable, BoardType.BOARD_INQUIRY,user)).willReturn(boardPage);
 
         // when
         Page<BoardResponse.BoardCommonResponse> responsePage = inquiryService.viewAllWithUser(page, size,user);

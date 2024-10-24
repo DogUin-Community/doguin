@@ -13,7 +13,7 @@ public interface BoardRepositoryCustom {
 
     Page<Board> findAllByTitleAndBoardType(Pageable pageable, String title, BoardType boardType);
 
-    Page<Board> findAllByBoardTypeAndUser(Pageable pageable, BoardType boardType, User user);
+    Page<Board> findAllByBoardTypeAndUserId(Pageable pageable, BoardType boardType, Long userId);
 
     Page<Board> findAllByTitleAndBoardTypeAndUser(Pageable pageable, String title, BoardType boardType, User user);
 }
