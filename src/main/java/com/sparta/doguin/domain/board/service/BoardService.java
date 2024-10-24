@@ -7,6 +7,8 @@ import com.sparta.doguin.domain.board.entity.Board;
 import com.sparta.doguin.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface BoardService {
 
     // 게시글 생성
@@ -48,6 +50,6 @@ public interface BoardService {
 
     // 게시글 삭제
     void delete(User user, Long boardId);
-    Board findByUserId(Long userId);
+    List<Board> findByUserId(Long userId);
 }
 

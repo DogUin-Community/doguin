@@ -1,7 +1,6 @@
 package com.sparta.doguin.domain.board.service;
 
 import com.sparta.doguin.domain.answer.dto.AnswerResponse;
-import com.sparta.doguin.domain.answer.service.BulletinAnswerService;
 import com.sparta.doguin.domain.answer.service.NoticeAnswerService;
 import com.sparta.doguin.domain.board.BoardType;
 import com.sparta.doguin.domain.board.dto.BoardRequest.BoardCommonRequest;
@@ -19,6 +18,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -165,8 +166,7 @@ public class EventService implements BoardService{
     }
 
     @Override
-    public Board findByUserId(Long userId) {
-        return boardRepository.findByUserId(userId)
-                .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.EVENT_NOT_FOUND));
+    public List<Board> findByUserId(Long userId) {
+        return boardRepository.findAllByUserId(userId);
     }
 }
