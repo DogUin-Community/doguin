@@ -41,6 +41,6 @@ public class Answer {
     }
 
     public void update(AnswerRequest.Request request) {
-        this.content = content;
+        this.content = request.content();
     }
 }
