@@ -1,6 +1,6 @@
 package com.sparta.doguin.domain.matching.service;
 
-import com.sparta.doguin.config.AuthUser;
+import com.sparta.doguin.config.security.AuthUser;
 import com.sparta.doguin.domain.common.exception.MatchingException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseMatchingEnum;

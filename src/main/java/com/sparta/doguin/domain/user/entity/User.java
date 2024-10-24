@@ -1,6 +1,6 @@
 package com.sparta.doguin.domain.user.entity;
 
-import com.sparta.doguin.config.AuthUser;
+import com.sparta.doguin.config.security.AuthUser;
 import com.sparta.doguin.domain.common.Timestamped;
 import com.sparta.doguin.domain.user.dto.UserRequest;
 import com.sparta.doguin.domain.user.enums.UserGrade;

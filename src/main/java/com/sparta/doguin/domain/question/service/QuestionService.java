@@ -1,6 +1,6 @@
 package com.sparta.doguin.domain.question.service;
 
-import com.sparta.doguin.config.AuthUser;
+import com.sparta.doguin.config.security.AuthUser;
 import com.sparta.doguin.domain.common.exception.HandleNotFound;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseQuestionEnum;
