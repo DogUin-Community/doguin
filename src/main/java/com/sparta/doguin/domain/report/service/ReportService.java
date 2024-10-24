@@ -73,7 +73,7 @@ public class ReportService {
      * @author 김창민
      */
     @Transactional
-    public void inject(Long reportId) {
+    public void reject(Long reportId) {
         Report report = reportRepository.findById(reportId).orElseThrow(
                 () -> new HandleNotFound(ApiResponseReportEnum.REPORT_NOT_FOUND)
         );

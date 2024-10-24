@@ -2,7 +2,6 @@ package com.sparta.doguin.domain.report.controller;
 
 import com.sparta.doguin.config.AuthUser;
 import com.sparta.doguin.domain.common.response.ApiResponse;
-import com.sparta.doguin.domain.common.response.ApiResponseBoardEnum;
 import com.sparta.doguin.domain.common.response.ApiResponseReportEnum;
 import com.sparta.doguin.domain.report.dto.ReportRequest;
 import com.sparta.doguin.domain.report.dto.ReportResponse;
@@ -41,7 +40,7 @@ public class ReportController {
     // 신고 반려 (admin only)
     @PutMapping("/{reportId}/inject")
     public ResponseEntity<ApiResponse<Void>> inject(@PathVariable Long reportId) {
-        reportService.inject(reportId);
+        reportService.reject(reportId);
         return ApiResponse.of(ApiResponse.of(ApiResponseReportEnum.REPORT_REJECTED_SUCCESS));
     }
 
