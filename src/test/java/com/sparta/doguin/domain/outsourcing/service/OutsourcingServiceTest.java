@@ -102,7 +102,7 @@ class OutsourcingServiceTest {
             Mockito.verify(outsourcingRepository, Mockito.times(1)).save(Mockito.argThat(outsourcing ->
                     outsourcing.getTitle().equals(outsourcing1.getTitle()) &&
                             outsourcing.getContent().equals(outsourcing1.getContent()) &&
-                            outsourcing.getUser().getId().equals(Long.parseLong(authUser1.getUserId())) // 사용자 확인
+                            outsourcing.getUser().getId().equals(authUser1.getUserId()) // 사용자 확인
             ));
 
         }

@@ -141,7 +141,7 @@ public class DataUtil {
 
     public static AuthUser authUser1() {
         return new AuthUser(
-                String.valueOf(user1().getId()),
+                user1().getId(),
                 user1().getEmail(),
                 user1().getNickname(),
                 user1().getUserType(),
@@ -151,7 +151,7 @@ public class DataUtil {
 
     public static AuthUser authUser2() {
         return new AuthUser(
-                String.valueOf( user2().getId()),
+                user2().getId(),
                  user2().getEmail(),
                  user2().getNickname(),
                  user2().getUserType(),
