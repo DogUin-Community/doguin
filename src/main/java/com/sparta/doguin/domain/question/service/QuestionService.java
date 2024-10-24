@@ -14,6 +14,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class QuestionService {
@@ -135,10 +137,9 @@ public class QuestionService {
      * 주어진 사용자 ID에 해당하는 질문 목록을 반환
      *
      * @param authUser 로그인한 사용자 정보(사용자 ID)
-     * @param pageable 페이지 정보(페이지 정보, 페이지 크기)
-     * @return 주어진 사용자 ID에 해당하는 질문의 페이징 결과
+     * @return 주어진 사용자 ID에 해당하는 질문의 리스트 결과
      */
-    public Page<Question> findAllByUserId(AuthUser authUser, Pageable pageable) {
-        return questionRepository.findAllByUserId(authUser.getUserId(), pageable);
+    public List<Question> findAllByUserId(AuthUser authUser) {
+        return questionRepository.findAllByUserId(authUser.getUserId());
     }
 }
