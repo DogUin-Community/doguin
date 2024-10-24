@@ -2,6 +2,7 @@ package com.sparta.doguin.domain.user.entity;
 
 import com.sparta.doguin.config.AuthUser;
 import com.sparta.doguin.domain.common.Timestamped;
+import com.sparta.doguin.domain.user.dto.UserRequest;
 import com.sparta.doguin.domain.user.enums.UserGrade;
 import com.sparta.doguin.domain.user.enums.UserRole;
 import com.sparta.doguin.domain.user.enums.UserType;
@@ -105,5 +106,17 @@ public class User extends Timestamped {
                 .email(authUser.getEmail())
                 .userRole(UserRole.of(roleName))
                 .build();  // 선택 필드들은 나중에 설정
+    }
+
+    // 회원 정보 수정
+    public void update(UserRequest.Update userRequest) {
+        this.email = userRequest.email();
+        this.password = userRequest.password();
+        this.nickname = userRequest.nickname();
+        this.profileImage = userRequest.profileImage();
+        this.introduce = userRequest.introduce();
+        this.homeAddress = userRequest.homeAddress();
+        this.gitAddress = userRequest.gitAddress();
+        this.blogAddress = userRequest.blogAddress();
     }
 }
