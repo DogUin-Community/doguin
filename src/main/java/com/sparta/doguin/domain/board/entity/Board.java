@@ -42,7 +42,11 @@ public class Board extends Timestamped {
     }
 
     public void update(String title, String content){
-        this.title=title;
-        this.content = content;
+        if(!title.isEmpty()){
+            this.title=title;
+        }
+        if(!content.isEmpty()){
+            this.content = content;
+        }
     }
 }
