@@ -19,6 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class NoticeService implements BoardService{
@@ -164,8 +166,7 @@ public class NoticeService implements BoardService{
     }
 
     @Override
-    public Board findByUserId(Long userId) {
-        return boardRepository.findByUserId(userId)
-                .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.NOTICE_NOT_FOUND));
+    public List<Board> findByUserId(Long userId) {
+        return boardRepository.findAllByUserId(userId);
     }
 }
