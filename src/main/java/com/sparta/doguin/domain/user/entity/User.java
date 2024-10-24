@@ -89,6 +89,7 @@ public class User extends Timestamped {
         this.homeAddress = homeAddress;
         this.gitAddress = gitAddress;
         this.blogAddress = blogAddress;
+        this.userGrade = UserGrade.C_NECK; // 회원가입 시 기본값으로 설정
     }
 
     // Builder 패턴을 사용하여 유연하게 객체를 생성
@@ -111,12 +112,16 @@ public class User extends Timestamped {
     // 회원 정보 수정
     public void update(UserRequest.Update userRequest) {
         this.email = userRequest.email();
-        this.password = userRequest.password();
         this.nickname = userRequest.nickname();
         this.profileImage = userRequest.profileImage();
         this.introduce = userRequest.introduce();
         this.homeAddress = userRequest.homeAddress();
         this.gitAddress = userRequest.gitAddress();
         this.blogAddress = userRequest.blogAddress();
+    }
+
+    // 비밀번호 업데이트 메서드
+    public void updatePassword(String encodedPassword) {
+        this.password = encodedPassword;
     }
 }

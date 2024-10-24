@@ -16,6 +16,13 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
+    // 회원 정보 조회
+    @GetMapping("/check")
+    public ResponseEntity<ApiResponse<UserResponse.Check>> checkUser(@AuthenticationPrincipal AuthUser authUser) {
+        ApiResponse<UserResponse.Check> response = userService.checkUser(authUser);
+        return ApiResponse.of(response);
+    }
+
     // 회원 정보 수정
     @PutMapping("/update")
     public ResponseEntity<ApiResponse<UserResponse.Update>> updateUser(
