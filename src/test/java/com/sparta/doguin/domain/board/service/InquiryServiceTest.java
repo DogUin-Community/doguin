@@ -1,5 +1,8 @@
 package com.sparta.doguin.domain.board.service;
 
+import com.sparta.doguin.domain.answer.dto.AnswerResponse;
+import com.sparta.doguin.domain.answer.service.BulletinAnswerService;
+import com.sparta.doguin.domain.answer.service.InquiryAnswerService;
 import com.sparta.doguin.domain.board.BoardType;
 import com.sparta.doguin.domain.board.dto.BoardRequest;
 import com.sparta.doguin.domain.board.dto.BoardResponse;
@@ -42,6 +45,8 @@ class InquiryServiceTest {
 
     @Mock
     private BoardRepository boardRepository;
+    @Mock
+    private InquiryAnswerService inquiryAnswerService;
 
     @InjectMocks
     private InquiryService inquiryService;
@@ -116,10 +121,20 @@ class InquiryServiceTest {
     @Test
     @DisplayName("문의 게시물 단일 조회 성공 테스트")
     void viewOne() {
-        given(boardRepository.findById(anyLong())).willReturn(Optional.of(board));
+        AnswerResponse.Response response1 = new AnswerResponse.Response(1L, "답글1");
+        AnswerResponse.Response response2 = new AnswerResponse.Response(2L, "답글2");
+        List<AnswerResponse.Response> mockResponse = Arrays.asList(response1, response2);
+        int page = 1;
+        int size = 10;
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<AnswerResponse.Response> responsePage = new PageImpl<>(mockResponse, pageable, mockResponse.size());
 
-        Board result = inquiryService.viewOneWithUser( 1L,user);
-        assertEquals(result, board);
+        given(boardRepository.findById(anyLong())).willReturn(Optional.of(board));
+        given(inquiryAnswerService.findByBoardId(1L, pageable)).willReturn(responsePage);
+
+        BoardResponse.BoardWithAnswer result = inquiryService.viewOneWithUser( 1L,user);
+        assertThat(result.title()).isEqualTo("문의 게시물");
+        assertThat(responsePage.getContent().get(0).content()).isEqualTo("답글1");
     }
     @Test
     @DisplayName("문의 게시물 단일 조회 살패 테스트(등록자 다름)")
