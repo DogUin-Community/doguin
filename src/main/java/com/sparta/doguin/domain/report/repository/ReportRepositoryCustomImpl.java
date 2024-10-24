@@ -35,7 +35,7 @@ public class ReportRepositoryCustomImpl implements ReportRepositoryCustom {
                         report.reportType
                 ))
                 .from(report)
-                .join(report.reportee, user)
+                .innerJoin(report.reportee, user)
                 .where(
                         eqReporterId(id) // 신고자 또는 신고당한 사람으로 검색
                 )
