@@ -84,6 +84,7 @@ public class BulletinService implements BoardService {
         if (board.getBoardType() != boardType) {
             throw new InvalidRequestException(ApiResponseBoardEnum.BULLETIN_WRONG);
         }
+
         return  board;
     }
 
@@ -107,7 +108,6 @@ public class BulletinService implements BoardService {
                 notice.getTitle(),
                 notice.getContent()
         ));
-
     }
 
     /**
