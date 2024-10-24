@@ -1,4 +1,4 @@
-package com.sparta.doguin.config;
+package com.sparta.doguin.config.security;
 
 import com.sparta.doguin.domain.user.enums.UserRole;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +51,6 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.PUT, "/api/v1/reports/*/accept").hasAuthority(UserRole.Authority.ADMIN)
                                 .requestMatchers(HttpMethod.PUT, "/api/v1/reports/*/inject").hasAuthority(UserRole.Authority.ADMIN)
                                 .requestMatchers(HttpMethod.GET, "/api/v1/reports/total/*").hasAuthority(UserRole.Authority.ADMIN)
-//                        .requestMatchers("/test").hasAuthority(UserRole.Authority.ADMIN) -> 컨트롤러 로직에서 admin 사용자에게만 권한 설정할 때 사용하기 위해 일단 주석처리
                         .anyRequest().authenticated()
                 )
                 .build();

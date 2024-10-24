@@ -16,12 +16,12 @@ public enum ApiResponseFollowEnum implements ApiResponseEnum {
     // 404 - NOT_FOUND
     FOLLOW_NOT_FOUND(HttpStatus.NOT_FOUND, "팔로우 관계를 찾지 못하였습니다.");
 
+
+
+
     private final HttpStatus httpStatus;
     private final int code;
     private final String message;
-
-
-
 
     ApiResponseFollowEnum(HttpStatus httpStatus, String message) {
         this.httpStatus = httpStatus;

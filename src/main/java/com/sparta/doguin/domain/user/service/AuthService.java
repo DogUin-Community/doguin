@@ -1,6 +1,6 @@
 package com.sparta.doguin.domain.user.service;
 
-import com.sparta.doguin.config.JwtUtil;
+import com.sparta.doguin.config.security.JwtUtil;
 import com.sparta.doguin.domain.common.exception.UserException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseEnum;
