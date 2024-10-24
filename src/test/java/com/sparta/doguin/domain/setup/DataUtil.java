@@ -4,6 +4,9 @@ import com.sparta.doguin.config.AuthUser;
 import com.sparta.doguin.domain.bookmark.constans.BookmarkTargetType;
 import com.sparta.doguin.domain.bookmark.entity.Bookmark;
 import com.sparta.doguin.domain.bookmark.model.BookmarkRequest;
+import com.sparta.doguin.domain.matching.constans.MathingStatusType;
+import com.sparta.doguin.domain.matching.entity.Matching;
+import com.sparta.doguin.domain.matching.model.MatchingRequest;
 import com.sparta.doguin.domain.outsourcing.constans.AreaType;
 import com.sparta.doguin.domain.outsourcing.entity.Outsourcing;
 import com.sparta.doguin.domain.outsourcing.model.OutsourcingRequest;
@@ -346,6 +349,52 @@ public class DataUtil {
                 portfolioRequestCreate2().work_type(),
                 portfolioRequestCreate2().proejct_history(),
                 portfolioRequestCreate2().area()
+        );
+    }
+
+    public static MatchingRequest.MatchingRequestCreate matchingRequestCreate1(){
+        return new MatchingRequest.MatchingRequestCreate(
+                one(),
+                one()
+        );
+    }
+
+    public static MatchingRequest.MatchingRequestCreate matchingRequestCreate2(){
+        return new MatchingRequest.MatchingRequestCreate(
+                two(),
+                two()
+        );
+    }
+
+    public static MatchingRequest.MatchingRequestUpdate MatchingRequestUpdate1(){
+        return new MatchingRequest.MatchingRequestUpdate(
+                MathingStatusType.YES
+        );
+    }
+
+    public static MatchingRequest.MatchingRequestUpdate MatchingRequestUpdate2(){
+        return new MatchingRequest.MatchingRequestUpdate(
+                MathingStatusType.NO
+        );
+    }
+
+    public static Matching matching1() {
+        return new Matching(
+                one(),
+                user1(),
+                portfolio1(),
+                outsourcing1(),
+                MathingStatusType.READY
+        );
+    }
+
+    public static Matching matching2() {
+        return new Matching(
+                two(),
+                user2(),
+                portfolio2(),
+                outsourcing2(),
+                MathingStatusType.READY
         );
     }
 }

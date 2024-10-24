@@ -169,9 +169,11 @@ class BookmarkServiceTest {
             // then - 예상한 데이터와, 실제 데이터의 값이 일치하는지 검증
             assertEquals( actualDatas.size(), bookmarks.size() );
             assertEquals(outsourcingBookmark1.getId(), actualDataConvert.get(0).id());
+            assertEquals(outsourcingBookmark1.getUser().getId(), actualDataConvert.get(0).userId());
             assertEquals(outsourcingBookmark1.getTarget(), actualDataConvert.get(0).target());
             assertEquals(outsourcingBookmark1.getTargetId(), actualDataConvert.get(0).targetId());
             assertEquals(outsourcingBookmark2.getId(), actualDataConvert.get(1).id());
+            assertEquals(outsourcingBookmark2.getUser().getId(), actualDataConvert.get(1).userId());
             assertEquals(outsourcingBookmark2.getTarget(), actualDataConvert.get(1).target());
             assertEquals(outsourcingBookmark2.getTargetId(), actualDataConvert.get(1).targetId());
         }
@@ -193,9 +195,11 @@ class BookmarkServiceTest {
             // then - 예상한 데이터와, 실제 데이터의 값이 일치하는지 검증
             assertEquals( actualDatas.size(), bookmarks.size() );
             assertEquals(outsourcingBookmark1.getId(), actualDataConvert.get(0).id());
+            assertEquals(outsourcingBookmark1.getUser().getId(), actualDataConvert.get(0).userId());
             assertEquals(outsourcingBookmark1.getTarget(), actualDataConvert.get(0).target());
             assertEquals(outsourcingBookmark1.getTargetId(), actualDataConvert.get(0).targetId());
             assertEquals(outsourcingBookmark2.getId(), actualDataConvert.get(1).id());
+            assertEquals(outsourcingBookmark2.getUser().getId(), actualDataConvert.get(1).userId());
             assertEquals(outsourcingBookmark2.getTarget(), actualDataConvert.get(1).target());
             assertEquals(outsourcingBookmark2.getTargetId(), actualDataConvert.get(1).targetId());
         }

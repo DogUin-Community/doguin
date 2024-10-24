@@ -166,9 +166,11 @@ class PortfolioServiceImplTest {
             // then - 예상한 데이터와, 실제 데이터의 값이 일치하는지 검증
             assertEquals( actualDatas.size(), portfolios.size() );
             assertEquals(portfolio1.getId(), actualDataConvert.get(0).id());
+            assertEquals(portfolio1.getUser().getId(), actualDataConvert.get(0).user_id());
             assertEquals(portfolio1.getTitle(), actualDataConvert.get(0).title());
             assertEquals(portfolio1.getContent(), actualDataConvert.get(0).content());
             assertEquals(portfolio2.getId(), actualDataConvert.get(1).id());
+            assertEquals(portfolio2.getUser().getId(), actualDataConvert.get(1).user_id());
             assertEquals(portfolio2.getTitle(), actualDataConvert.get(1).title());
             assertEquals(portfolio2.getContent(), actualDataConvert.get(1).content());
         }
@@ -190,9 +192,11 @@ class PortfolioServiceImplTest {
             // then - 예상한 데이터와, 실제 데이터의 값이 일치하는지 검증
             assertEquals( actualDatas.size(), portfolios.size() );
             assertEquals(portfolio1.getId(), actualDataConvert.get(0).id());
+            assertEquals(portfolio1.getUser().getId(), actualDataConvert.get(0).user_id());
             assertEquals(portfolio1.getTitle(), actualDataConvert.get(0).title());
             assertEquals(portfolio1.getContent(), actualDataConvert.get(0).content());
             assertEquals(portfolio2.getId(), actualDataConvert.get(1).id());
+            assertEquals(portfolio2.getUser().getId(), actualDataConvert.get(1).user_id());
             assertEquals(portfolio2.getTitle(), actualDataConvert.get(1).title());
             assertEquals(portfolio2.getContent(), actualDataConvert.get(1).content());
         }
@@ -217,9 +221,11 @@ class PortfolioServiceImplTest {
             // then - 예상한 데이터와, 실제 데이터의 값이 일치하는지 검증
             assertEquals( actualDatas.size(), portfolios.size() );
             assertEquals(portfolio1.getId(), actualDataConvert.get(0).id());
+            assertEquals(portfolio1.getUser().getId(), actualDataConvert.get(0).user_id());
             assertEquals(portfolio1.getTitle(), actualDataConvert.get(0).title());
             assertEquals(portfolio1.getContent(), actualDataConvert.get(0).content());
             assertEquals(portfolio2.getId(), actualDataConvert.get(1).id());
+            assertEquals(portfolio2.getUser().getId(), actualDataConvert.get(1).user_id());
             assertEquals(portfolio2.getTitle(), actualDataConvert.get(1).title());
             assertEquals(portfolio2.getContent(), actualDataConvert.get(1).content());
         }
@@ -241,9 +247,11 @@ class PortfolioServiceImplTest {
             // then - 예상한 데이터와, 실제 데이터의 값이 일치하는지 검증
             assertEquals( actualDatas.size(), portfolios.size() );
             assertEquals(portfolio1.getId(), actualDataConvert.get(0).id());
+            assertEquals(portfolio1.getUser().getId(), actualDataConvert.get(0).user_id());
             assertEquals(portfolio1.getTitle(), actualDataConvert.get(0).title());
             assertEquals(portfolio1.getContent(), actualDataConvert.get(0).content());
             assertEquals(portfolio2.getId(), actualDataConvert.get(1).id());
+            assertEquals(portfolio2.getUser().getId(), actualDataConvert.get(1).user_id());
             assertEquals(portfolio2.getTitle(), actualDataConvert.get(1).title());
             assertEquals(portfolio2.getContent(), actualDataConvert.get(1).content());
         }
