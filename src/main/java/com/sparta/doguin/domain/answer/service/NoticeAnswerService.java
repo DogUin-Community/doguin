@@ -69,14 +69,9 @@ public class NoticeAnswerService implements AnswerService {
      */
     @Override
     @Transactional(readOnly = true)
-    public ApiResponse<Page<AnswerResponse.Response>> viewAll(int page, int size) {
+    public ApiResponse<Page<AnswerResponse.Response>> viewAll(long boardId, int page, int size) {
         Pageable pageable = PageRequest.of(page -1, size);
-
-        Page<Answer> answerList = answerRepository.findAllByAnswerType(pageable, answerType);
-
-        Page<AnswerResponse.Response> response = answerList
-                .map(answer -> new AnswerResponse.Response(answer.getId(), answer.getContent()));
-
+        Page<AnswerResponse.Response> response = findByBoardId(boardId, pageable);
         return ApiResponse.of(ApiResponseAnswerEnum.COMMENT_ANSWER_FIND_ALL_SUCCESS, response);
     }
 
@@ -123,5 +118,22 @@ public class NoticeAnswerService implements AnswerService {
      */
     private Answer findById(long answerId) {
         return answerRepository.findById(answerId).orElseThrow(() -> new HandleNotFound(ApiResponseAnswerEnum.COMMENT_ANSWER_NOT_FOUND));
+    }
+
+    /**
+     * 특정 게시글에 대한 댓글 목록을 페이지네이션하여 반환
+     *
+     * @param boardId 댓글 조회할 게시글 ID
+     * @param pageable 페이지네이션 정보가 담긴 객체
+     * @since 1.0
+     * @return 게시글에 해당하는 댓글 목록을 변환한 Page 객체 반환
+     * @author 유태이
+     */
+    public Page<AnswerResponse.Response> findByBoardId(long boardId, Pageable pageable) {
+        Page<Answer> answers = answerRepository.findByBoardId(boardId, pageable);
+        Page<AnswerResponse.Response> response = answers
+                .map(answer -> new AnswerResponse.Response(answer.getId(), answer.getContent()));
+
+        return response;
     }
 }

@@ -8,4 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AnswerRepository extends JpaRepository<Answer, Long> {
     Page<Answer> findAllByAnswerType(Pageable pageable, AnswerType answerType);
+
+    // 게시글 ID로 답변 목록 조회
+    Page<Answer> findByBoardId(long boardId, Pageable pageable);
 }
