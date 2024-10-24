@@ -1,7 +1,10 @@
 package com.sparta.doguin.domain.board.service;
 
+import com.sparta.doguin.domain.answer.dto.AnswerResponse;
+import com.sparta.doguin.domain.answer.service.InquiryAnswerService;
 import com.sparta.doguin.domain.board.BoardType;
 import com.sparta.doguin.domain.board.dto.BoardRequest.BoardCommonRequest;
+import com.sparta.doguin.domain.board.dto.BoardResponse;
 import com.sparta.doguin.domain.board.dto.BoardResponse.BoardCommonResponse;
 import com.sparta.doguin.domain.board.entity.Board;
 import com.sparta.doguin.domain.board.repository.BoardRepository;
@@ -20,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class InquiryService implements BoardService{
 
+    private final InquiryAnswerService inquiryAnswerService;
     private final BoardRepository boardRepository;
     private final BoardType boardType = BoardType.BOARD_INQUIRY;
 
@@ -73,7 +77,7 @@ public class InquiryService implements BoardService{
      * @author 김창민
      */
     @Override
-    public Board viewOneWithUser(Long boardId,User user) {
+    public BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId, User user) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.INQUIRY_NOT_FOUND));
         if(!board.getUser().getId().equals(user.getId())){
@@ -82,7 +86,9 @@ public class InquiryService implements BoardService{
         if (board.getBoardType() != boardType) {
             throw new InvalidRequestException(ApiResponseBoardEnum.INQUIRY_WRONG);
         }
-        return  board;
+        Page<AnswerResponse.Response> responses = inquiryAnswerService.findByBoardId(boardId,PageRequest.of(0,10));
+
+        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(), responses);
     }
 
     /**

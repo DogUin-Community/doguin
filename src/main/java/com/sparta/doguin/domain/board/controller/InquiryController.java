@@ -2,6 +2,7 @@ package com.sparta.doguin.domain.board.controller;
 
 import com.sparta.doguin.config.AuthUser;
 import com.sparta.doguin.domain.board.dto.BoardRequest.BoardCommonRequest;
+import com.sparta.doguin.domain.board.dto.BoardResponse;
 import com.sparta.doguin.domain.board.dto.BoardResponse.BoardCommonResponse;
 import com.sparta.doguin.domain.board.entity.Board;
 import com.sparta.doguin.domain.board.service.BoardService;
@@ -42,10 +43,9 @@ public class InquiryController{
     }
 
     @GetMapping("{boardId}")
-    public ResponseEntity<ApiResponse<BoardCommonResponse>> viewOne(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long boardId) {
+    public ResponseEntity<ApiResponse<BoardResponse.BoardWithAnswer>> viewOne(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long boardId) {
         User user = User.fromAuthUser(authUser);
-        Board board = boardService.viewOneWithUser(boardId, user);
-        BoardCommonResponse response = new BoardCommonResponse(board.getId(), board.getTitle(), board.getContent());
+        BoardResponse.BoardWithAnswer response = boardService.viewOneWithUser(boardId, user);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.INQUIRY_FIND_ONE_SUCCESS, response));
     }
 
