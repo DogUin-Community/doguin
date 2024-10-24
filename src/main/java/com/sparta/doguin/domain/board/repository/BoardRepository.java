@@ -12,5 +12,5 @@ public interface BoardRepository extends JpaRepository<Board,Long>, BoardReposit
     Optional<Board> findByUserId(Long userId);
 
 
-    List<Board> findAllByUserId(Long userId);
+
 }

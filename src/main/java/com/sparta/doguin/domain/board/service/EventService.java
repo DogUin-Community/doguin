@@ -166,7 +166,8 @@ public class EventService implements BoardService{
     }
 
     @Override
-    public List<Board> findByUserId(Long userId) {
-        return boardRepository.findAllByUserId(userId);
+    public Page<Board> findByUserId(Long userId) {
+        Pageable pageable = PageRequest.of( 0, 10);
+        return boardRepository.findAllByBoardTypeAndUserId(pageable,boardType,userId);
     }
 }

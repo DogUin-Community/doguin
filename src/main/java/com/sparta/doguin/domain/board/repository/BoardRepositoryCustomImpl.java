@@ -76,7 +76,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     }
 
     @Override
-    public Page<Board> findAllByBoardTypeAndUser(Pageable pageable, BoardType boardType, User user) {
+    public Page<Board> findAllByBoardTypeAndUserId(Pageable pageable, BoardType boardType, Long userId) {
         List<Board> result = jpaQueryFactory
                 .select(Projections.constructor(Board.class,
                         board.id,
@@ -87,7 +87,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
                 .from(board)
                 .where(
                         eqType(boardType),
-                        eqUserId(user.getId())
+                        eqUserId(userId)
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
