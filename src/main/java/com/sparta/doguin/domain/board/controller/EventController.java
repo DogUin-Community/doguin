@@ -2,6 +2,7 @@ package com.sparta.doguin.domain.board.controller;
 
 import com.sparta.doguin.config.AuthUser;
 import com.sparta.doguin.domain.board.dto.BoardRequest.BoardCommonRequest;
+import com.sparta.doguin.domain.board.dto.BoardResponse;
 import com.sparta.doguin.domain.board.dto.BoardResponse.BoardCommonResponse;
 import com.sparta.doguin.domain.board.entity.Board;
 import com.sparta.doguin.domain.board.service.BoardService;
@@ -41,9 +42,9 @@ public class EventController{
     }
 
     @GetMapping("{boardId}")
-    public ResponseEntity<ApiResponse<BoardCommonResponse>> viewOne(@PathVariable Long boardId) {
-        Board board = boardService.viewOne(boardId);
-        BoardCommonResponse response = new BoardCommonResponse(board.getId(),board.getTitle(),board.getContent());
+    public ResponseEntity<ApiResponse<BoardResponse.BoardWithAnswer>> viewOne(@PathVariable Long boardId) {
+
+        BoardResponse.BoardWithAnswer response = boardService.viewOne(boardId);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.EVENT_FIND_ONE_SUCCESS, response));
     }
 

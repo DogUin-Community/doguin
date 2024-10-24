@@ -1,6 +1,7 @@
 package com.sparta.doguin.domain.board.service;
 
 import com.sparta.doguin.domain.board.dto.BoardRequest.BoardCommonRequest;
+import com.sparta.doguin.domain.board.dto.BoardResponse;
 import com.sparta.doguin.domain.board.dto.BoardResponse.BoardCommonResponse;
 import com.sparta.doguin.domain.board.entity.Board;
 import com.sparta.doguin.domain.user.entity.User;
@@ -15,7 +16,7 @@ public interface BoardService {
     Board update(User user, Long boardId, BoardCommonRequest boardRequest);
 
 
-    default Board viewOne(Long boardId) {
+    default BoardResponse.BoardWithAnswer viewOne(Long boardId) {
         throw new UnsupportedOperationException("viewOne operation not supported");
     }
 
@@ -29,7 +30,7 @@ public interface BoardService {
         throw new UnsupportedOperationException("search operation not supported");
     }
 
-    default Board viewOneWithUser(Long boardId,User user) {
+    default BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId,User user) {
         throw new UnsupportedOperationException("viewOne operation not supported");
     }
 
@@ -47,5 +48,6 @@ public interface BoardService {
 
     // 게시글 삭제
     void delete(User user, Long boardId);
+    Board findByUserId(Long userId);
 }
 

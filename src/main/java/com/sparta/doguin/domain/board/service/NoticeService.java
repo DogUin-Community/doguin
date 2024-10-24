@@ -1,7 +1,10 @@
 package com.sparta.doguin.domain.board.service;
 
+import com.sparta.doguin.domain.answer.dto.AnswerResponse;
+import com.sparta.doguin.domain.answer.service.NoticeAnswerService;
 import com.sparta.doguin.domain.board.BoardType;
 import com.sparta.doguin.domain.board.dto.BoardRequest.BoardCommonRequest;
+import com.sparta.doguin.domain.board.dto.BoardResponse;
 import com.sparta.doguin.domain.board.dto.BoardResponse.BoardCommonResponse;
 import com.sparta.doguin.domain.board.entity.Board;
 import com.sparta.doguin.domain.board.repository.BoardRepository;
@@ -21,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class NoticeService implements BoardService{
 
     private final BoardRepository boardRepository;
+    private final NoticeAnswerService noticeAnswerService;
     private final BoardType boardType = BoardType.BOARD_NOTICE;
 
     /**
@@ -70,20 +74,22 @@ public class NoticeService implements BoardService{
      * 공지 게시물 단건 조회
      *
      * @param boardId 조회 대상 공지 게시물의 id
-     * @since 1.0
-     * @throws HandleNotFound 공지 게시물 조회 시 데이터가 없을 경우 발생
-     * @throws InvalidRequestException 게시물 타입이 공지 게시물이 아닐 경우 발생
      * @return 조회된 공지 게시물 객체
+     * @throws HandleNotFound          공지 게시물 조회 시 데이터가 없을 경우 발생
+     * @throws InvalidRequestException 게시물 타입이 공지 게시물이 아닐 경우 발생
      * @author 김창민
+     * @since 1.0
      */
     @Override
-    public Board viewOne(Long boardId) {
+    public BoardResponse.BoardWithAnswer viewOne(Long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.NOTICE_NOT_FOUND));
         if (board.getBoardType() != boardType) {
             throw new InvalidRequestException(ApiResponseBoardEnum.NOTICE_WRONG);
         }
-        return  board;
+        Page<AnswerResponse.Response> responses = noticeAnswerService.findByBoardId(boardId,PageRequest.of(0,10));
+
+        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(), responses);
     }
 
     /**
@@ -155,5 +161,11 @@ public class NoticeService implements BoardService{
             throw new InvalidRequestException(ApiResponseBoardEnum.NOTICE_WRONG);
         }
         boardRepository.delete(board);
+    }
+
+    @Override
+    public Board findByUserId(Long userId) {
+        return boardRepository.findByUserId(userId)
+                .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.NOTICE_NOT_FOUND));
     }
 }
