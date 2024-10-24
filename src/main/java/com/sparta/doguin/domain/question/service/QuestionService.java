@@ -1,5 +1,6 @@
 package com.sparta.doguin.domain.question.service;
 
+import com.sparta.doguin.config.AuthUser;
 import com.sparta.doguin.domain.common.exception.HandleNotFound;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseQuestionEnum;
@@ -118,6 +119,7 @@ public class QuestionService {
     }
 
 
+
     /**
      * 질문 ID로 질문 조회
      *
@@ -127,5 +129,16 @@ public class QuestionService {
      */
     public Question findById(long questionId) {
         return questionRepository.findById(questionId).orElseThrow(() -> new HandleNotFound(ApiResponseQuestionEnum.QUESTION_NOT_FOUND));
+    }
+
+    /**
+     * 주어진 사용자 ID에 해당하는 질문 목록을 반환
+     *
+     * @param authUser 로그인한 사용자 정보(사용자 ID)
+     * @param pageable 페이지 정보(페이지 정보, 페이지 크기)
+     * @return 주어진 사용자 ID에 해당하는 질문의 페이징 결과
+     */
+    public Page<Question> findAllByUserId(AuthUser authUser, Pageable pageable) {
+        return questionRepository.findAllByUserId(authUser.getUserId(), pageable);
     }
 }
