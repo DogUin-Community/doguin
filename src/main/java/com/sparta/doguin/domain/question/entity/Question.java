@@ -45,6 +45,15 @@ public class Question {
 //    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
 //    private List<Bookmark> bookmarkList = new ArrayList<>();
 
+    public Question(Long id, String title, String content, FirstCategory firstCategory, SecondCategory secondCategory, LastCategory lastCategory) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.firstCategory = firstCategory;
+        this.secondCategory = secondCategory;
+        this.lastCategory = lastCategory;
+    }
+
     public Question(String title, String content, FirstCategory firstCategory, SecondCategory secondCategory, LastCategory lastCategory) {
         this.title = title;
         this.content = content;

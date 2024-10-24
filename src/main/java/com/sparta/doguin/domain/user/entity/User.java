@@ -2,6 +2,7 @@ package com.sparta.doguin.domain.user.entity;
 
 import com.sparta.doguin.config.AuthUser;
 import com.sparta.doguin.domain.common.Timestamped;
+import com.sparta.doguin.domain.user.dto.UserRequest;
 import com.sparta.doguin.domain.user.enums.UserGrade;
 import com.sparta.doguin.domain.user.enums.UserRole;
 import com.sparta.doguin.domain.user.enums.UserType;
@@ -88,6 +89,7 @@ public class User extends Timestamped {
         this.homeAddress = homeAddress;
         this.gitAddress = gitAddress;
         this.blogAddress = blogAddress;
+        this.userGrade = UserGrade.C_NECK; // 회원가입 시 기본값으로 설정
     }
 
     // Builder 패턴을 사용하여 유연하게 객체를 생성
@@ -105,5 +107,21 @@ public class User extends Timestamped {
                 .email(authUser.getEmail())
                 .userRole(UserRole.of(roleName))
                 .build();  // 선택 필드들은 나중에 설정
+    }
+
+    // 회원 정보 수정
+    public void update(UserRequest.Update userRequest) {
+        this.email = userRequest.email();
+        this.nickname = userRequest.nickname();
+        this.profileImage = userRequest.profileImage();
+        this.introduce = userRequest.introduce();
+        this.homeAddress = userRequest.homeAddress();
+        this.gitAddress = userRequest.gitAddress();
+        this.blogAddress = userRequest.blogAddress();
+    }
+
+    // 비밀번호 업데이트 메서드
+    public void updatePassword(String encodedPassword) {
+        this.password = encodedPassword;
     }
 }
