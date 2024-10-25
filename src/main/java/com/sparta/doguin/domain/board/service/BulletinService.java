@@ -19,14 +19,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class BulletinService implements BoardService {
 
     private final BoardRepository boardRepository;
     private final BulletinAnswerService bulletinAnswerService;
+    private final ViewTrackingService viewTrackingService;
+
     private final BoardType boardType = BoardType.BOARD_BULLETIN;
 
     /**
@@ -84,7 +84,7 @@ public class BulletinService implements BoardService {
      * @since 1.0
      */
     @Override
-    public BoardResponse.BoardWithAnswer viewOne(Long boardId) {
+    public BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId, User user) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.BULLETIN_NOT_FOUND));
         if (board.getBoardType() != boardType) {
@@ -93,7 +93,12 @@ public class BulletinService implements BoardService {
 
         Page<AnswerResponse.Response> responses = bulletinAnswerService.findByBoardId(boardId,PageRequest.of(0,10));
 
-        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(), responses);
+        if(user!=null){
+            viewTrackingService.trackUserView(boardId, user.getId());
+        }
+
+        Long viewCount =viewTrackingService.getDailyUniqueViewCount(boardId)+board.getView();
+        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(),viewCount, responses);
     }
 
     /**

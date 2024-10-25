@@ -43,9 +43,9 @@ public class NoticeController {
     }
 
     @GetMapping("{boardId}")
-    public ResponseEntity<ApiResponse<BoardResponse.BoardWithAnswer>> viewOne(@PathVariable Long boardId) {
-
-        BoardResponse.BoardWithAnswer response = boardService.viewOne(boardId);
+    public ResponseEntity<ApiResponse<BoardResponse.BoardWithAnswer>> viewOne(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long boardId) {
+        User user = authUser != null ? User.fromAuthUser(authUser) : null;
+        BoardResponse.BoardWithAnswer response = boardService.viewOneWithUser(boardId,user);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.NOTICE_FIND_ONE_SUCCESS, response));
     }
 

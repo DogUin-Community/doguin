@@ -18,11 +18,6 @@ public interface BoardService {
     Board update(User user, Long boardId, BoardCommonRequest boardRequest);
 
 
-    default BoardResponse.BoardWithAnswer viewOne(Long boardId) {
-        throw new UnsupportedOperationException("viewOne operation not supported");
-    }
-
-
     default Page<BoardCommonResponse> viewAll(int page, int size) {
         throw new UnsupportedOperationException("viewAll operation not supported");
     }
@@ -32,9 +27,7 @@ public interface BoardService {
         throw new UnsupportedOperationException("search operation not supported");
     }
 
-    default BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId,User user) {
-        throw new UnsupportedOperationException("viewOne operation not supported");
-    }
+    BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId,User user);
 
 
     default Page<BoardCommonResponse> viewAllWithUser(int page, int size,User user) {

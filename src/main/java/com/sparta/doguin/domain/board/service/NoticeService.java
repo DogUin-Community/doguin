@@ -16,10 +16,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +26,8 @@ public class NoticeService implements BoardService{
 
     private final BoardRepository boardRepository;
     private final NoticeAnswerService noticeAnswerService;
+    private final ViewTrackingService viewTrackingService;
+
     private final BoardType boardType = BoardType.BOARD_NOTICE;
 
     /**
@@ -83,7 +84,7 @@ public class NoticeService implements BoardService{
      * @since 1.0
      */
     @Override
-    public BoardResponse.BoardWithAnswer viewOne(Long boardId) {
+    public BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId, User user) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.NOTICE_NOT_FOUND));
         if (board.getBoardType() != boardType) {
@@ -91,7 +92,12 @@ public class NoticeService implements BoardService{
         }
         Page<AnswerResponse.Response> responses = noticeAnswerService.findByBoardId(boardId,PageRequest.of(0,10));
 
-        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(), responses);
+        if(user!=null){
+            viewTrackingService.trackUserView(boardId, user.getId());
+        }
+
+        Long viewCount =viewTrackingService.getDailyUniqueViewCount(boardId)+board.getView();
+        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(),viewCount, responses);
     }
 
     /**

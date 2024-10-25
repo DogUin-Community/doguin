@@ -19,14 +19,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class InquiryService implements BoardService{
 
     private final InquiryAnswerService inquiryAnswerService;
     private final BoardRepository boardRepository;
+    private final ViewTrackingService viewTrackingService;
     private final BoardType boardType = BoardType.BOARD_INQUIRY;
 
     /**
@@ -80,7 +79,7 @@ public class InquiryService implements BoardService{
      */
     @Override
     public BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId, User user) {
-        Board board = boardRepository.findByUserId(boardId)
+        Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.INQUIRY_NOT_FOUND));
         if(!board.getUser().getId().equals(user.getId())){
             throw new InvalidRequestException(ApiResponseBoardEnum.USER_WRONG);
@@ -89,8 +88,10 @@ public class InquiryService implements BoardService{
             throw new InvalidRequestException(ApiResponseBoardEnum.INQUIRY_WRONG);
         }
         Page<AnswerResponse.Response> responses = inquiryAnswerService.findByBoardId(boardId,PageRequest.of(0,10));
+        viewTrackingService.trackUserView(boardId, user.getId());
+        Long viewCount =viewTrackingService.getDailyUniqueViewCount(boardId)+board.getView();
 
-        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(), responses);
+        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(),viewCount, responses);
     }
 
     /**

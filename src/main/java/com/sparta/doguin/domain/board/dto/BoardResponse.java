@@ -9,13 +9,15 @@ public sealed interface BoardResponse permits BoardResponse.BoardCommonResponse,
     record BoardCommonResponse(
             Long id,
             String title,
-            String content) implements BoardResponse {
+            String content
+            ) implements BoardResponse {
     }
 
     record BoardWithAnswer(
             Long id,
             String title,
             String content,
+            Long view,
             Page<AnswerResponse.Response> response
     )implements  BoardResponse{}
 
