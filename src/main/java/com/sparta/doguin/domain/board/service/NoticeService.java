@@ -77,6 +77,7 @@ public class NoticeService implements BoardService{
      * 공지 게시물 단건 조회
      *
      * @param boardId 조회 대상 공지 게시물의 id
+     * @param user 로그인 한 계정 (로그인 안할 수 있음)
      * @return 조회된 공지 게시물 객체
      * @throws HandleNotFound          공지 게시물 조회 시 데이터가 없을 경우 발생
      * @throws InvalidRequestException 게시물 타입이 공지 게시물이 아닐 경우 발생

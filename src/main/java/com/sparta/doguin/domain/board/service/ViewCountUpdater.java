@@ -2,6 +2,8 @@ package com.sparta.doguin.domain.board.service;
 
 import com.sparta.doguin.domain.board.entity.Board;
 import com.sparta.doguin.domain.board.repository.BoardRepository;
+import com.sparta.doguin.domain.common.exception.HandleNotFound;
+import com.sparta.doguin.domain.common.exception.InvalidRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -16,6 +18,12 @@ public class ViewCountUpdater {
     @Autowired
     private ViewTrackingService viewTrackingService;
 
+    /**
+     * 정각에 레디스에 저장된 각 게시물의 일일 조회수를 삭제하고, 누적 조회수에 반영
+     *
+     * @author 김창민
+     * @since 1.0
+     */
     @Scheduled(cron = "0 0 0 * * ?") // 매일 자정 실행
     @Transactional
     public void updateTotalViewCounts() {

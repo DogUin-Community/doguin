@@ -77,7 +77,8 @@ public class BulletinService implements BoardService {
      * 일반 게시물 단건 조회
      *
      * @param boardId 조회 대상 일반 게시물의 id
-     * @return 조회된 일반 게시물 객체
+     * @param user 로그인 한 계정 (로그인 안할 수 있음)
+     * @return 조회된 일반 게시물과 해당 댓글 객체
      * @throws HandleNotFound          일반 게시물 조회 시 데이터가 없을 경우 발생
      * @throws InvalidRequestException 게시물 타입이 일반 게시물이 아닐 경우 발생
      * @author 김창민
