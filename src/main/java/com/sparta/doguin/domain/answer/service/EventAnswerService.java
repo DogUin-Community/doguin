@@ -21,21 +21,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class InquiryAnswerService implements AnswerService {
+public class EventAnswerService implements AnswerService {
 
     private final AnswerRepository answerRepository;
     private final AnswerType answerType = AnswerType.BOARD;
 
     private final BoardRepository boardRepository;
 
-    // 1:1 문의 답변 생성
+    // 자유게시판 댓글 생성
     @Override
     @Transactional
     public ApiResponse<AnswerResponse.Response> create(AuthUser authUser, long boardId, AnswerRequest.Request request) {
         // 로그인한 사용자의 인증 정보
         User user = User.fromAuthUser(authUser);
 
-        // 질문 찾기
+        // 댓글 찾기
         Board board = boardRepository.findById(boardId).orElseThrow(null);
 
         // 생성
@@ -127,6 +127,16 @@ public class InquiryAnswerService implements AnswerService {
         // 성공 응답 반환
         return ApiResponse.of(ApiResponseAnswerEnum.COMMENT_ANSWER_DELETE_SUCCESS);
     }
+
+
+
+
+
+
+
+
+
+
 
 
 

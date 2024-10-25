@@ -1,13 +1,16 @@
 package com.sparta.doguin.domain.answer.service;
 
-import com.sparta.doguin.domain.answer.AnswerType;
+import com.sparta.doguin.config.AuthUser;
 import com.sparta.doguin.domain.answer.dto.AnswerRequest;
 import com.sparta.doguin.domain.answer.dto.AnswerResponse;
 import com.sparta.doguin.domain.answer.entity.Answer;
+import com.sparta.doguin.domain.answer.enums.AnswerType;
 import com.sparta.doguin.domain.answer.repository.AnswerRepository;
-import com.sparta.doguin.domain.common.exception.HandleNotFound;
+import com.sparta.doguin.domain.common.exception.AnswerException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseAnswerEnum;
+import com.sparta.doguin.domain.question.entity.Question;
+import com.sparta.doguin.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,124 +18,177 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class QuestionAnswerService implements AnswerService {
 
     private final AnswerRepository answerRepository;
-    private final AnswerType answerType = AnswerType.QUESTION_ANSWER;
+    private final AnswerType answerType = AnswerType.QUESTION;
 
-    /**
-     * 질문 답변 등록
-     *
-     * @param request 질문 답변 생성 시 필요한 정보가 담긴 객체
-     * @since 1.0
-     * @return 생성 된 답변의 정보를 포함하는 ApiResponse
-     * @author 유태이
-     */
+    // 답변 생성
     @Override
     @Transactional
-    public ApiResponse<AnswerResponse.Response> create(AnswerRequest.Request request) {
-        Answer newAnswer = new Answer(request.content(), answerType);
-        answerRepository.save(newAnswer);
-        return ApiResponse.of(ApiResponseAnswerEnum.QUESTION_ANSWER_CREATE_SUCCESS, new AnswerResponse.Response(newAnswer.getId(), newAnswer.getContent()));
+    public ApiResponse<AnswerResponse.Response> createQuestionAnswer(AuthUser authUser, long questionId, AnswerRequest.Request request) {
+        // 로그인한 사용자의 인증 정보
+        User user = User.fromAuthUser(authUser);
+
+        // 질문 찾기
+        Answer findAnswer = answerRepository.findFirstByQuestionId(questionId)
+                .orElseThrow(() -> new AnswerException(ApiResponseAnswerEnum.QUESTION_NOT_FOUND));
+
+        // Question 가져오기
+        Question question = findAnswer.getQuestion();
+
+        // 답변 생성
+        Answer answer = new Answer(request.content(), user, question, answerType);
+
+        // 답변 저장
+        answerRepository.save(answer);
+
+        // 성공 응답 반환
+        return ApiResponse.of(ApiResponseAnswerEnum.QUESTION_ANSWER_CREATE_SUCCESS, new AnswerResponse.Response(answer.getId(), answer.getContent()));
     }
 
-    /**
-     * 질문 답변 수정
-     *
-     * @param answerId 수정할 답변 ID
-     * @param request 수정할 답변의 정보가 담긴 객체
-     * @since 1.0
-     * @throws HandleNotFound 답변 수정 시 데이터가 없을 경우 발생
-     * @return 수정 된 답변의 정보를 포함하는 ApiResponse
-     * @author 유태이
-     */
+    // 답변 수정
     @Override
     @Transactional
-    public ApiResponse<AnswerResponse.Response> update(long answerId, AnswerRequest.Request request) {
-        Answer answer = findById(answerId);
+    public ApiResponse<AnswerResponse.Response> updateQuestionAnswer(AuthUser authUser, long questionId, long answerId, AnswerRequest.Request request) {
+        // 로그인한 사용자의 인증 정보
+        User user = User.fromAuthUser(authUser);
+
+        // 질문 찾기
+        Answer findAnswer = answerRepository.findFirstByQuestionId(questionId)
+                .orElseThrow(() -> new AnswerException(ApiResponseAnswerEnum.QUESTION_NOT_FOUND));
+
+        // Question 가져오기
+        Question question = findAnswer.getQuestion();
+
+        // 답변 찾기
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new AnswerException(ApiResponseAnswerEnum.QUESTION_ANSWER_NOT_FOUND));
+
+        // parentId가 있을 경우 수정 불가
+        if (answer.getParent() != null) {
+            throw new AnswerException(ApiResponseAnswerEnum.QUESTION_ANSWER_NOT_FOUND);
+        }
+
+        // 본인이 생성한 글인지 확인
+        if (!answer.getUser().getId().equals(user.getId())) {
+            throw new AnswerException(ApiResponseAnswerEnum.UPDATE_ACCESS_DENIED);
+        }
+
+        // 답변 수정
         answer.update(request);
+
+        // 답변 저장
         answerRepository.save(answer);
+
+        // 성공 응답 반환
         return ApiResponse.of(ApiResponseAnswerEnum.QUESTION_ANSWER_UPDATE_SUCCESS, new AnswerResponse.Response(answer.getId(), answer.getContent()));
     }
 
-    /**
-     * 질문 답변 전체 조회
-     *
-     * @param page 조회할 페이지 번호(기본 값: 1)
-     * @param size 한 페이지에 포함될 질문 수(기본 값 10)
-     * @since 1.0
-     * @return 요청한 페이지에 해당하는 답변 목록이 포함 된 ApiResponse
-     * @author 유태이
-     */
     @Override
     @Transactional(readOnly = true)
-    public ApiResponse<Page<AnswerResponse.Response>> viewAll(long boardId, int page, int size) {
+    public ApiResponse<Page<AnswerResponse.GetResponse>> viewAllQuestionAnswer(long questionId, int page, int size) {
         Pageable pageable = PageRequest.of(page -1, size);
-        Page<AnswerResponse.Response> response = findByBoardId(boardId, pageable);
-        return ApiResponse.of(ApiResponseAnswerEnum.QUESTION_ANSWER_FIND_ALL_SUCCESS, response);
+
+        // 질문 찾기
+        Answer findAnswer = answerRepository.findFirstByQuestionId(questionId)
+                .orElseThrow(() -> new AnswerException(ApiResponseAnswerEnum.QUESTION_NOT_FOUND));
+
+        // Question 가져오기
+        Question question = findAnswer.getQuestion();
+
+        Page<Answer> answers = answerRepository.findByQuestionId(questionId, pageable);
+
+        Page<AnswerResponse.GetResponse> response = answers
+                .map(answer -> {
+                    List<AnswerResponse.GetResponse> applyResponse = answerRepository.findByParentId(answer.getId()).stream()
+                            .map(applyAnswer -> new AnswerResponse.GetResponse(applyAnswer.getId(), applyAnswer.getContent(), new ArrayList<>())).toList();
+
+                    // 현재 답변과 대답변 리스트를 포함한 응답
+                    return new AnswerResponse.GetResponse(answer.getId(), answer.getContent(), applyResponse);
+                });
+
+        return ApiResponse.of(ApiResponseAnswerEnum.COMMENT_ANSWER_FIND_ALL_SUCCESS, response);
     }
 
-    /**
-     * 질문 답변 단건 조회
-     *
-     * @param answerId 조회할 답변 ID
-     * @since 1.0
-     * @throws HandleNotFound 답변 조회 시 데이터가 없을 경우 발생
-     * @return 요청한 답변 정보가 포함 된 ApiResponse
-     * @author 유태이
-     */
     @Override
     @Transactional(readOnly = true)
-    public ApiResponse<AnswerResponse.Response> viewOne(long answerId) {
-        Answer answer = findById(answerId);
-        return ApiResponse.of(ApiResponseAnswerEnum.QUESTION_ANSWER_FIND_ONE_SUCCESS, new AnswerResponse.Response(answer.getId(), answer.getContent()));
+    public ApiResponse<AnswerResponse.GetResponse> viewOneQuestionAnswer(long questionId, long answerId) {
+        // 질문 찾기
+        Answer findAnswer = answerRepository.findFirstByQuestionId(questionId)
+                .orElseThrow(() -> new AnswerException(ApiResponseAnswerEnum.QUESTION_NOT_FOUND));
+
+        // Question 가져오기
+        Question question = findAnswer.getQuestion();
+
+        // 답변 찾기
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new AnswerException(ApiResponseAnswerEnum.QUESTION_ANSWER_NOT_FOUND));
+
+        List<AnswerResponse.GetResponse> applyresponse = answerRepository.findByParentId(answer.getId()).stream()
+                .map(applyAnswer -> new AnswerResponse.GetResponse(applyAnswer.getId(), applyAnswer.getContent(), new ArrayList<>())).toList();
+
+        AnswerResponse.GetResponse response = new AnswerResponse.GetResponse(answer.getId(), answer.getContent(), applyresponse);
+
+        return ApiResponse.of(ApiResponseAnswerEnum.COMMENT_ANSWER_FIND_ONE_SUCCESS, response);
     }
 
-    /**
-     * 질문 답변 삭제
-     *
-     * @param answerId 삭제할 답변 ID
-     * @since 1.0
-     * @throws HandleNotFound 답변 수정 시 데이터가 없을 경우 발생
-     * @return 삭제가 성공적으로 완료되었음을 나타내는 ApiResponse
-     * @author 유태이
-     */
     @Override
     @Transactional
-    public ApiResponse<Void> delete(long answerId) {
-        Answer answer = findById(answerId);
+    public ApiResponse<Void> deleteQuestionAnswer(AuthUser authUser, long questionId, long answerId) {
+        // 로그인한 사용자의 인증 정보
+        User user = User.fromAuthUser(authUser);
+
+        // 질문 찾기
+        Answer findAnswer = answerRepository.findFirstByQuestionId(questionId)
+                .orElseThrow(() -> new AnswerException(ApiResponseAnswerEnum.QUESTION_NOT_FOUND));
+
+        // Question 가져오기
+        Question question = findAnswer.getQuestion();
+
+        // 답변 찾기
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new AnswerException(ApiResponseAnswerEnum.QUESTION_ANSWER_NOT_FOUND));
+
+        // parentId가 있을 경우 수정 불가
+        if (answer.getParent() != null) {
+            throw new AnswerException(ApiResponseAnswerEnum.QUESTION_ANSWER_NOT_FOUND);
+        }
+
+        // 본인이 생성한 글인지 확인
+        if (!answer.getUser().getId().equals(user.getId())) {
+            throw new AnswerException(ApiResponseAnswerEnum.UPDATE_ACCESS_DENIED);
+        }
+
+        // 답변 삭제
         answerRepository.delete(answer);
+
+        // 성공 응답 반환
         return ApiResponse.of(ApiResponseAnswerEnum.QUESTION_ANSWER_DELETE_SUCCESS);
     }
 
-    /**
-     * 질문 답변 ID로 조회
-     *
-     * @param answerId 조회할 답변 ID
-     * @throws HandleNotFound 답변이 존재하지 않을 경우 발생
-     * @return 해당 질문 객체
-     * @author 유태이
-     */
-    private Answer findById(long answerId) {
-        return answerRepository.findById(answerId).orElseThrow(() -> new HandleNotFound(ApiResponseAnswerEnum.QUESTION_ANSWER_NOT_FOUND));
-    }
 
-    /**
-     * 특정 게시글에 대한 댓글 목록을 페이지네이션하여 반환
-     *
-     * @param boardId 댓글 조회할 게시글 ID
-     * @param pageable 페이지네이션 정보가 담긴 객체
-     * @since 1.0
-     * @return 게시글에 해당하는 댓글 목록을 변환한 Page 객체 반환
-     * @author 유태이
-     */
-    public Page<AnswerResponse.Response> findByBoardId(long boardId, Pageable pageable) {
-        Page<Answer> answers = answerRepository.findByBoardId(boardId, pageable);
-        Page<AnswerResponse.Response> response = answers
-                .map(answer -> new AnswerResponse.Response(answer.getId(), answer.getContent()));
 
-        return response;
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

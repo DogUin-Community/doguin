@@ -1,19 +1,26 @@
 package com.sparta.doguin.domain.question.service;
 
-import com.sparta.doguin.config.security.AuthUser;
+import com.sparta.doguin.config.AuthUser;
+import com.sparta.doguin.domain.answer.dto.AnswerResponse;
+import com.sparta.doguin.domain.answer.entity.Answer;
+import com.sparta.doguin.domain.answer.repository.AnswerRepository;
+import com.sparta.doguin.domain.answer.service.QuestionAnswerService;
 import com.sparta.doguin.domain.common.exception.HandleNotFound;
+import com.sparta.doguin.domain.common.exception.QuestionException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseQuestionEnum;
 import com.sparta.doguin.domain.question.dto.QuestionRequest;
 import com.sparta.doguin.domain.question.dto.QuestionResponse;
 import com.sparta.doguin.domain.question.entity.Question;
 import com.sparta.doguin.domain.question.repository.QuestionRepository;
+import com.sparta.doguin.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,6 +28,8 @@ import java.util.List;
 public class QuestionService {
 
     private final QuestionRepository questionRepository;
+    private final AnswerRepository answerRepository;
+    private final QuestionAnswerService questionAnswerService;
 
     /**
      * 질문 생성
@@ -30,15 +39,28 @@ public class QuestionService {
      * @return 생성된 질문의 정보를 포함하는 ApiResponse 객체
      * @author 유태이
      */
-    public ApiResponse<QuestionResponse.CreatedQuestion> createdQuestion(QuestionRequest.CreatedQuestion request) {
+    public ApiResponse<QuestionResponse.CreatedQuestion> createdQuestion(AuthUser authUser, QuestionRequest.CreatedQuestion request) {
 
+        // 사용자가 로그인 했는지 검증
+        if (authUser == null) {
+            throw new QuestionException(ApiResponseQuestionEnum.QUESTION_UNAUTHORIZED_USER);
+        }
+
+        // 로그인한 사용자의 인증 정보
+        User user = User.fromAuthUser(authUser);
+
+        // 질문 생성
         Question newQuestion = new Question(request.title(),
                                             request.content(),
                                             request.firstCategory(),
                                             request.secondCategory(),
-                                            request.lastCategory());
+                                            request.lastCategory(),
+                                            user);
+        
+        // 질문 저장
         questionRepository.save(newQuestion);
 
+        // 성공 응답 반환
         return ApiResponse.of(ApiResponseQuestionEnum.QUESTION_CREATE_SUCCESS, new QuestionResponse.CreatedQuestion(newQuestion.getId(), newQuestion.getTitle(), newQuestion.getContent(), newQuestion.getFirstCategory(), newQuestion.getSecondCategory(), newQuestion.getLastCategory(), newQuestion.getQuestionStatus()));
     }
 
@@ -52,10 +74,31 @@ public class QuestionService {
      * @return 수정 된 질문의 정보를 포함하는 ApiResponse 객체
      * @author 유태이
      */
-    public ApiResponse<QuestionResponse.CreatedQuestion> updatedQuestion(long questionId, QuestionRequest.UpdateQuestion request) {
+    public ApiResponse<QuestionResponse.CreatedQuestion> updatedQuestion(AuthUser authUser, long questionId, QuestionRequest.UpdateQuestion request) {
+
+        // 사용자가 로그인 했는지 검증
+        if (authUser == null) {
+            throw new QuestionException(ApiResponseQuestionEnum.QUESTION_UNAUTHORIZED_USER);
+        }
+
+        // 해당 댓글 있는지 검증
         Question question = findById(questionId);
+
+        // 로그인한 사용자의 인증 정보
+        User user = User.fromAuthUser(authUser);
+
+        // 본인이 등록한 게시글인지 확인
+        if (!question.getUser().getId().equals(user.getId())) {
+            throw new QuestionException(ApiResponseQuestionEnum.QUESTION_UPDATE_ACCESS_DENIED);
+        }
+
+        // 질문 수정
         question.update(request);
+
+        // 질문 저장
         questionRepository.save(question);
+
+        // 성공 응답 반환
         return ApiResponse.of(ApiResponseQuestionEnum.QUESTION_UPDATE_SUCCESS, new QuestionResponse.CreatedQuestion(question.getId(), question.getTitle(), question.getContent(), question.getFirstCategory(), question.getSecondCategory(), question.getLastCategory(), question.getQuestionStatus()));
     }
 
@@ -95,14 +138,34 @@ public class QuestionService {
      * @author 유태이
      */
     public ApiResponse<QuestionResponse.GetQuestion> getQuestion(long questionId) {
+        // 질문 가져오기
         Question question = findById(questionId);
-        return ApiResponse.of(ApiResponseQuestionEnum.QUESTION_FIND_ONE_SUCCESS, new QuestionResponse.GetQuestion(question.getId(),
-                                                                                                                    question.getTitle(),
-                                                                                                                    question.getContent(),
-                                                                                                                    question.getFirstCategory(),
-                                                                                                                    question.getSecondCategory(),
-                                                                                                                    question.getLastCategory(),
-                                                                                                                    question.getQuestionStatus()));
+
+        Pageable pageable = PageRequest.of(0, 10); // 필요에 따라 페이지 크기를 조정 가능
+        Page<Answer> answers = answerRepository.findByQuestionId(questionId, pageable);
+
+        // 답변과 대답변 리스트 변환
+        Page<AnswerResponse.GetResponse> comment = answers.map(answer -> {
+            List<AnswerResponse.GetResponse> commentResponse = answerRepository.findByParentId(answer.getId()).stream()
+                    .map(comments -> new AnswerResponse.GetResponse(comments.getId(), comments.getContent(), new ArrayList<>()))
+                    .toList();
+
+            return new AnswerResponse.GetResponse(answer.getId(), answer.getContent(), commentResponse);
+        });
+
+        // 질문과 답변 데이터 통합하여 반환
+        QuestionResponse.GetQuestion response = new QuestionResponse.GetQuestion(
+                question.getId(),
+                question.getTitle(),
+                question.getContent(),
+                question.getFirstCategory(),
+                question.getSecondCategory(),
+                question.getLastCategory(),
+                question.getQuestionStatus(),
+                comment
+        );
+
+        return ApiResponse.of(ApiResponseQuestionEnum.QUESTION_FIND_ONE_SUCCESS, response);
     }
 
     /**
@@ -114,11 +177,39 @@ public class QuestionService {
      * @return 삭제 성공 ApiResponse 객체
      * @author 유태이
      */
-    public ApiResponse<Void> deleteQuestion(long questionId) {
+    public ApiResponse<Void> deleteQuestion(AuthUser authUser, long questionId) {
+
+        // 사용자가 로그인 했는지 검증
+        if (authUser == null) {
+            throw new QuestionException(ApiResponseQuestionEnum.QUESTION_UNAUTHORIZED_USER);
+        }
+
+        // 해당 댓글 있는지 검증
         Question question = findById(questionId);
+
+        // 로그인한 사용자의 인증 정보
+        User user = User.fromAuthUser(authUser);
+
+        // 본인이 등록한 게시글인지 확인
+        if (!question.getUser().getId().equals(user.getId())) {
+            throw new QuestionException(ApiResponseQuestionEnum.QUESTION_UPDATE_ACCESS_DENIED);
+        }
+
+        // 질문 삭제
         questionRepository.delete(question);
+
+        // 성공 응답 반환
         return ApiResponse.of(ApiResponseQuestionEnum.QUESTION_DELETE_SUCCESS);
     }
+
+
+
+
+
+
+
+
+
 
 
 
