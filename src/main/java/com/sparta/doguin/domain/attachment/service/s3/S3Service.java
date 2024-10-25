@@ -34,6 +34,22 @@ public class S3Service {
         }
     }
 
+    public void uploadAll(List<Path> filePath, List<MultipartFile> file) {
+        try {
+            for ( int i=0; i<filePath.size(); i++ ) {
+                Path path = filePath.get(i);
+                MultipartFile multipartFile = file.get(i);
+                ObjectMetadata metadata = new ObjectMetadata();
+                metadata.setContentType(multipartFile.getContentType());
+                metadata.setContentLength(multipartFile.getSize());
+                amazonS3Client.putObject(bucket,path.toString(),multipartFile.getInputStream(),metadata);
+            }
+
+        } catch (Exception e) {
+            throw new FileException(FILE_IO_ERROR);
+        }
+    }
+
     public void deleteAll(List<Attachment> files){
         for (Attachment file : files) {
             amazonS3Client.deleteObject(bucket,file.getFile_relative_path());
