@@ -45,6 +45,7 @@ public class MypageService {
 
         // 작성한 Bulletin 게시글들의 타이틀만 조회
         List<String> bulletinBoards = bulletinService.findByUserId(user.getId())
+                .getContent()
                 .stream()
                 .map(Board::getTitle)
                 .toList();
@@ -57,6 +58,7 @@ public class MypageService {
 
         // 작성한 1대1문의글들의 타이틀만 조회
         List<String> inquiryBoards = inquiryService.findByUserId(user.getId())
+                .getContent()
                 .stream()
                 .map(Board::getTitle)
                 .toList();
