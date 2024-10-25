@@ -335,6 +335,8 @@ public class DataUtil {
                 portfolioRequestCreate1().work_experience(),
                 portfolioRequestCreate1().work_type(),
                 portfolioRequestCreate1().proejct_history(),
+                // TODO: 고쳐야함
+                "null",
                 portfolioRequestCreate1().area()
         );
     }
@@ -348,7 +350,9 @@ public class DataUtil {
                 portfolioRequestCreate2().work_experience(),
                 portfolioRequestCreate2().work_type(),
                 portfolioRequestCreate2().proejct_history(),
-                portfolioRequestCreate2().area()
+                // TODO: 고쳐야함
+                "null",
+                portfolioRequestCreate1().area()
         );
     }
 

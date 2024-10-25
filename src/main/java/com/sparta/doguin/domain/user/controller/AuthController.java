@@ -3,6 +3,7 @@ package com.sparta.doguin.domain.user.controller;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.user.dto.UserRequest;
 import com.sparta.doguin.domain.user.service.AuthService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -40,8 +41,8 @@ public class AuthController {
      * @author 황윤서
      */
     @PostMapping("signin")
-    public ResponseEntity<ApiResponse<String>> signin(@RequestBody UserRequest.Signin signinRequest) {
-        ApiResponse<String> apiResponse = authService.signin(signinRequest);
+    public ResponseEntity<ApiResponse<String>> signin(@RequestBody UserRequest.Signin signinRequest, HttpServletResponse response) {
+        ApiResponse<String> apiResponse = authService.signin(signinRequest, response);
         return ApiResponse.of(apiResponse);
     }
 }
