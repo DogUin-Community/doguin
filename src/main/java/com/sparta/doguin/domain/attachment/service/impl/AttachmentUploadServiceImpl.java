@@ -51,22 +51,21 @@ public class AttachmentUploadServiceImpl implements AttachmentUploadService {
     public ApiResponse<List<AttachmentResponse.AttachmentResponseGet>>  upload(List<MultipartFile> files, AuthUser authUser, Long targetId, AttachmentTargetType target) {
         User user = User.fromAuthUser(authUser);
         List<AttachmentResponse.AttachmentResponseGet> fileIds = new ArrayList<>();
-        List<Path> uploadPaths = new ArrayList<>();
+        List<Path> paths = new ArrayList<>();
+        List<MultipartFile> multipartFiles = new ArrayList<>();
         try {
             for ( MultipartFile file : files ) {
                 Path path = pathService.mkPath(file,authUser,targetId,target);
-                uploadPaths.add(path);
-                s3Service.upload(path,file);
+                paths.add(path);
+                multipartFiles.add(file);
                 Long saveId = saveAttachmentData(path, file, user, targetId, target);
                 fileIds.add(new AttachmentResponse.AttachmentResponseGet(saveId));
             }
-            return ApiResponse.of(FILE_OK,fileIds);
         } catch (Exception e) {
-            for ( Path path : uploadPaths ) {
-                s3Service.delete(path);
-            }
             throw new FileException(FILE_IO_ERROR);
         }
+        s3Service.uploadAll(paths, multipartFiles);
+        return ApiResponse.of(FILE_OK,fileIds);
     }
 
     /**

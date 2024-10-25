@@ -23,6 +23,13 @@ public class AttachmentDeleteServiceImpl implements AttachmentDeleteService {
     private final AttachmentRepository attachmentRepository;
     private final S3Service s3Service;
 
+    /**
+     * @title 파일의 고유식별자로 S3,DB의 파일들을 삭제합니다
+     * @description 파일중 하나라도 이상한게 있다면, 전부 롤백 시킵니다
+     *
+     * @param authUser
+     * @param fileIds
+     */
     @Transactional
     @Override
     public void delete(AuthUser authUser, List<Long> fileIds) {
