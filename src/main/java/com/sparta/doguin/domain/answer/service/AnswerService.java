@@ -1,6 +1,6 @@
 package com.sparta.doguin.domain.answer.service;
 
-import com.sparta.doguin.config.AuthUser;
+import com.sparta.doguin.config.security.AuthUser;
 import com.sparta.doguin.domain.answer.dto.AnswerRequest;
 import com.sparta.doguin.domain.answer.dto.AnswerResponse;
 import com.sparta.doguin.domain.common.response.ApiResponse;
