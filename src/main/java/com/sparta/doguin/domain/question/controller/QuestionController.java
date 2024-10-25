@@ -1,5 +1,6 @@
 package com.sparta.doguin.domain.question.controller;
 
+import com.sparta.doguin.config.AuthUser;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.question.dto.QuestionRequest;
 import com.sparta.doguin.domain.question.dto.QuestionResponse;
@@ -7,6 +8,7 @@ import com.sparta.doguin.domain.question.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,8 +27,9 @@ public class QuestionController {
      * @author 유태이
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<QuestionResponse.CreatedQuestion>> createdQuestion(@RequestBody QuestionRequest.CreatedQuestion request) {
-        return ApiResponse.of(questionService.createdQuestion(request));
+    public ResponseEntity<ApiResponse<QuestionResponse.CreatedQuestion>> createdQuestion(@AuthenticationPrincipal AuthUser authUser,
+                                                                                         @RequestBody QuestionRequest.CreatedQuestion request) {
+        return ApiResponse.of(questionService.createdQuestion(authUser, request));
     }
 
     /**
@@ -39,9 +42,10 @@ public class QuestionController {
      * @author 유태이
      */
     @PutMapping("/{questionId}")
-    public ResponseEntity<ApiResponse<QuestionResponse.CreatedQuestion>> updatedQuestion(@PathVariable Long questionId,
+    public ResponseEntity<ApiResponse<QuestionResponse.CreatedQuestion>> updatedQuestion(@AuthenticationPrincipal AuthUser authUser,
+                                                                                         @PathVariable Long questionId,
                                                                                          @RequestBody QuestionRequest.UpdateQuestion request) {
-        return ApiResponse.of(questionService.updatedQuestion(questionId, request));
+        return ApiResponse.of(questionService.updatedQuestion(authUser, questionId, request));
     }
 
     /**
@@ -81,7 +85,8 @@ public class QuestionController {
      * @author 유태이
      */
     @DeleteMapping("/{questionId}")
-    public ResponseEntity<ApiResponse<Void>> deleteQuestion(@PathVariable Long questionId) {
-        return ApiResponse.of(questionService.deleteQuestion(questionId));
+    public ResponseEntity<ApiResponse<Void>> deleteQuestion(@AuthenticationPrincipal AuthUser authUser,
+                                                            @PathVariable Long questionId) {
+        return ApiResponse.of(questionService.deleteQuestion(authUser, questionId));
     }
 }

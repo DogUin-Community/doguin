@@ -1,46 +1,77 @@
 package com.sparta.doguin.domain.answer.entity;
 
-import com.sparta.doguin.domain.answer.AnswerType;
 import com.sparta.doguin.domain.answer.dto.AnswerRequest;
+import com.sparta.doguin.domain.answer.enums.AnswerType;
 import com.sparta.doguin.domain.board.entity.Board;
+import com.sparta.doguin.domain.common.Timestamped;
 import com.sparta.doguin.domain.question.entity.Question;
+import com.sparta.doguin.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @NoArgsConstructor
-public class Answer {
+public class Answer extends Timestamped {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
     private String content;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_id")
+    private Board board;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "question_id")
+    private Question question;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Answer parent;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Enumerated(EnumType.STRING)
     private AnswerType answerType;
 
-    @ManyToOne
-    @JoinColumn(name = "question_id", nullable = false)
-    private Question question;
+    private int depth = 0; // 0: 댓글, 1: 대댓글
 
-    @ManyToOne
-    @JoinColumn(name = "board_id")
-    private Board board;
-
-    public Answer(String content, AnswerType answerType) {
+    // 일반 게시글 댓글 생성자
+    public Answer(String content, User user, Board board) {
         this.content = content;
+        this.user = user;
+        this.board = board;
+        this.depth = 0;
+        this.parent = null;
+    }
+
+    // 질문의 답변 생성자
+    public Answer(String content, User user, Question question, AnswerType answerType) {
+        this.content = content;
+        this.user = user;
+        this.question = question;
         this.answerType = answerType;
+        this.depth = 0;
+        this.parent = null;
+    }
+
+    // 질문의 답변의 대답변 생성자
+    public Answer(String content, User user, Question question, Answer parent, AnswerType answerType) {
+        this.content = content;
+        this.user = user;
+        this.question = question;
+        this.answerType = answerType;
+        this.parent = parent; // 부모 댓글 설정
+        this.depth = 1; // 대댓글 depth는 2
     }
 
     public void update(AnswerRequest.Request request) {
-        this.content = content;
+        this.content = request.content();
     }
+
 }

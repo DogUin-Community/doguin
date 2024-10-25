@@ -33,10 +33,15 @@ public enum ApiResponseAnswerEnum implements ApiResponseEnum {
     INQUIRY_ANSWER_FIND_ONE_SUCCESS(HttpStatus.OK, "문의 답변 조회(단건)에 성공하였습니다."),
 
     // 404
+    QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "질문을 찾을 수 없습니다."),
     QUESTION_ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "질문 답변을 찾을 수 없습니다."),
     APPLY_ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "질문 대답변을 찾을 수 없습니다."),
     COMMENT_ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."),
-    INQUIRY_ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "문의 답변을 찾을 수 없습니다.");
+    INQUIRY_ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "문의 답변을 찾을 수 없습니다."),
+
+    // 401
+    UPDATE_ACCESS_DENIED(HttpStatus.UNAUTHORIZED, "본인이 작성한 글만 수정이 가능합니다."),
+    DELETE_ACCESS_DENIED(HttpStatus.UNAUTHORIZED, "본인이 작성한 글만 삭제가 가능합니다.");
 
     private final HttpStatus httpStatus;
     private final int code;
