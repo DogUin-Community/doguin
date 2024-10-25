@@ -21,7 +21,7 @@ public class FollowController {
     // 팔로우 추가
     @PostMapping
     public ResponseEntity<ApiResponse<FollowResponse.Follow>> followUser(@AuthenticationPrincipal AuthUser authUser, @RequestParam("followedEmail") String followedEmail) {
-        User user = User.fromAuthUser(authUser);
+        User user = getAuthenticatedUser(authUser);
         ApiResponse<FollowResponse.Follow> response = followService.follow(user.getId(), followedEmail);
         return ApiResponse.of(response);
     }
@@ -29,7 +29,7 @@ public class FollowController {
     // 나를 팔로우한 사용자 목록 조회
     @GetMapping("/followers")
     public ResponseEntity<ApiResponse<List<FollowResponse.Follow>>> getFollowers(@AuthenticationPrincipal AuthUser authUser) {
-        User user = User.fromAuthUser(authUser);
+        User user = getAuthenticatedUser(authUser);
         ApiResponse<List<FollowResponse.Follow>> response = followService.getFollowers(user.getId());
         return ApiResponse.of(response);
     }
@@ -37,7 +37,7 @@ public class FollowController {
     // 팔로우한 사용자 목록 조회(내가 팔로우한 사용자들)
     @GetMapping("/followings")
     public ResponseEntity<ApiResponse<List<FollowResponse.Follow>>> getFollowedUsers(@AuthenticationPrincipal AuthUser authUser) {
-        User user = User.fromAuthUser(authUser);
+        User user = getAuthenticatedUser(authUser);
         ApiResponse<List<FollowResponse.Follow>> response = followService.getFollowedUsers(user.getId());
         return ApiResponse.of(response);
     }
@@ -45,8 +45,13 @@ public class FollowController {
     // 팔로우 해제
     @DeleteMapping("/{followedEmail}")
     public ResponseEntity<ApiResponse<FollowResponse.Follow>> unfollowUser(@AuthenticationPrincipal AuthUser authUser, @PathVariable("followedEmail") String followedEmail) {
-        User user = User.fromAuthUser(authUser);
+        User user = getAuthenticatedUser(authUser);
         ApiResponse<FollowResponse.Follow> response = followService.unfollow(user.getId(), followedEmail);
         return ApiResponse.of(response);
+    }
+
+    // 로그인된 사용자의 인증 정보를 User 엔티티로 변환하는 메서드
+    private User getAuthenticatedUser(AuthUser authUser) {
+        return User.fromAuthUser(authUser);
     }
 }

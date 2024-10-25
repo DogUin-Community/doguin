@@ -11,6 +11,7 @@ import com.sparta.doguin.domain.user.entity.User;
 import com.sparta.doguin.domain.user.enums.UserRole;
 import com.sparta.doguin.domain.user.enums.UserType;
 import com.sparta.doguin.domain.user.repository.UserRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -59,28 +60,21 @@ public class AuthService {
         User saveduser = userRepository.save(newUser);
         ApiResponseEnum apiResponse = ApiResponseUserEnum.USER_CREATE_SUCCESS;
 
-        JwtUtilRequest.CreateToken createToken = new JwtUtilRequest.CreateToken(
-                saveduser.getId(),
-                saveduser.getEmail(),
-                saveduser.getNickname(),
-                saveduser.getUserType(),
-                saveduser.getUserRole()
-        );
-
-        return ApiResponse.of(apiResponse, jwtUtil.createToken(createToken));
+        return ApiResponse.of(apiResponse);
     }
 
     /**
      * 로그인 요청을 처리하는 메서드
      *
      * @param signinRequest 로그인에 필요한 정보를 담은 DTO
+     * @param response      JWT 토큰을 응답 헤더에 추가하기 위한 HttpServletResponse 객체
      * @return ApiResponse<String> JWT 토큰을 포함한 로그인 성공 메시지
      * @throws UserException 유저가 존재하지 않거나, 비밀번호가 일치하지 않는 경우 예외 처리
      * @author 황윤서
      * @since 1.1
      */
     @Transactional(readOnly = true)
-    public ApiResponse<String> signin(UserRequest.Signin signinRequest) {
+    public ApiResponse<String> signin(UserRequest.Signin signinRequest, HttpServletResponse response) {
         User user = userRepository.findByEmail(signinRequest.email())
                 .orElseThrow(() -> new UserException(ApiResponseUserEnum.USER_NOT_FOUND));
 
@@ -99,6 +93,11 @@ public class AuthService {
                 user.getUserRole()
         );
 
-        return ApiResponse.of(apiResponse, jwtUtil.createToken(createToken));
+        String token = jwtUtil.createToken(createToken);
+
+        // JWT를 Bearer 접두사 없이 응답 헤더에 추가
+        jwtUtil.addTokenToResponseHeader(token, response);
+
+        return ApiResponse.of(apiResponse);
     }
 }
