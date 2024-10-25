@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -36,22 +37,21 @@ public class JwtUtil {
     public String createToken(JwtUtilRequest.CreateToken createToken) {
         Date date = new Date();
 
-        return BEARER_PREFIX +
-                Jwts.builder()
-                        .setSubject(String.valueOf(createToken.userId()))
-                        .claim("email", createToken.email())
-                        .claim("nickname", createToken.nickname())
-                        .claim("userType", createToken.userType().getUserType())
-                        .claim("userRole", createToken.userRole().getUserRole())
-                        .setExpiration(new Date(date.getTime() + TOKEN_TIME))
-                        .setIssuedAt(date) // 발급일
-                        .signWith(key, signatureAlgorithm) // 암호화 알고리즘
-                        .compact();
+        return Jwts.builder()
+                .setSubject(String.valueOf(createToken.userId()))
+                .claim("email", createToken.email())
+                .claim("nickname", createToken.nickname())
+                .claim("userType", createToken.userType().getUserType())
+                .claim("userRole", createToken.userRole().getUserRole())
+                .setExpiration(new Date(date.getTime() + TOKEN_TIME))
+                .setIssuedAt(date) // 발급일
+                .signWith(key, signatureAlgorithm) // 암호화 알고리즘
+                .compact();
     }
 
     public String substringToken(String tokenValue) {
         if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) {
-            return tokenValue.substring(7);
+            return tokenValue.substring(BEARER_PREFIX.length()); // Bearer 접두사 제거
         }
         log.error("Not Found Token");
         throw new NullPointerException("Not Found Token");
@@ -63,5 +63,10 @@ public class JwtUtil {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    // 토큰을 헤더에 저장하는 메서드
+    public void addTokenToResponseHeader(String token, HttpServletResponse response) {
+        response.addHeader("Authorization", token);
     }
 }
