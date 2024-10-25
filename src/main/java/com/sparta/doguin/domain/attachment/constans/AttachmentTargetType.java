@@ -2,6 +2,7 @@ package com.sparta.doguin.domain.attachment.constans;
 
 import lombok.Getter;
 
+// test
 @Getter
 public enum AttachmentTargetType {
     PORTFOLIO("portfolio"),
