@@ -2,8 +2,6 @@ package com.sparta.doguin.domain.board.service;
 
 import com.sparta.doguin.domain.board.entity.Board;
 import com.sparta.doguin.domain.board.repository.BoardRepository;
-import com.sparta.doguin.domain.common.exception.HandleNotFound;
-import com.sparta.doguin.domain.common.exception.InvalidRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

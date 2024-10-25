@@ -1,14 +1,8 @@
 package com.sparta.doguin.domain.board.service;
 
-import com.sparta.doguin.domain.common.exception.HandleNotFound;
-import com.sparta.doguin.domain.common.exception.InvalidRequestException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
-
-import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor

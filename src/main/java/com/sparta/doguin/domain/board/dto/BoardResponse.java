@@ -1,7 +1,6 @@
 package com.sparta.doguin.domain.board.dto;
 
 import com.sparta.doguin.domain.answer.dto.AnswerResponse;
-import com.sparta.doguin.domain.board.entity.Board;
 import org.springframework.data.domain.Page;
 
 public sealed interface BoardResponse permits BoardResponse.BoardCommonResponse, BoardResponse.BoardWithAnswer {
