@@ -48,6 +48,9 @@ class EventServiceTest {
     @Mock
     private NoticeAnswerService noticeAnswerService;
 
+    @Mock
+    private ViewTrackingService viewTrackingService;
+
     @InjectMocks
     private EventService eventService;
 
@@ -133,7 +136,7 @@ class EventServiceTest {
         given(boardRepository.findById(anyLong())).willReturn(Optional.of(board));
         given(noticeAnswerService.findByBoardId(1L, pageable)).willReturn(responsePage);
 
-        BoardResponse.BoardWithAnswer result = eventService.viewOne( 1L);
+        BoardResponse.BoardWithAnswer result = eventService.viewOneWithUser( 1L,user);
         assertThat(result.title()).isEqualTo("이벤트 게시물");
         assertThat(responsePage.getContent().get(0).content()).isEqualTo("답글1");
     }
@@ -147,7 +150,7 @@ class EventServiceTest {
 
         // When
         InvalidRequestException exception = assertThrows(InvalidRequestException.class, () ->
-                eventService.viewOne(2L )
+                eventService.viewOneWithUser( 2L,user)
         );
 
         // Then

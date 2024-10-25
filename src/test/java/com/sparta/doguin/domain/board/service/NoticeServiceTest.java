@@ -47,6 +47,9 @@ class NoticeServiceTest {
     private BoardRepository boardRepository;
     @Mock
     private NoticeAnswerService noticeAnswerService;
+    @Mock
+    private ViewTrackingService viewTrackingService;
+
 
     @InjectMocks
     private NoticeService noticeService;
@@ -133,7 +136,7 @@ class NoticeServiceTest {
         given(boardRepository.findById(anyLong())).willReturn(Optional.of(board));
         given(noticeAnswerService.findByBoardId(1L, pageable)).willReturn(responsePage);
 
-        BoardResponse.BoardWithAnswer result = noticeService.viewOne( 1L);
+        BoardResponse.BoardWithAnswer result = noticeService.viewOneWithUser( 1L,user);
         assertThat(result.title()).isEqualTo("공지 게시물");
         assertThat(responsePage.getContent().get(0).content()).isEqualTo("답글1");
     }
@@ -147,7 +150,7 @@ class NoticeServiceTest {
 
         // When
         InvalidRequestException exception = assertThrows(InvalidRequestException.class, () ->
-                noticeService.viewOne(2L )
+                noticeService.viewOneWithUser( 2L,user)
         );
 
         // Then

@@ -47,8 +47,12 @@ class InquiryServiceTest {
     @Mock
     private InquiryAnswerService inquiryAnswerService;
 
+    @Mock
+    private ViewTrackingService viewTrackingService;
+
     @InjectMocks
     private InquiryService inquiryService;
+
 
     private User user;
     private Board board;
@@ -128,7 +132,7 @@ class InquiryServiceTest {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<AnswerResponse.Response> responsePage = new PageImpl<>(mockResponse, pageable, mockResponse.size());
 
-        given(boardRepository.findByUserId(anyLong())).willReturn(Optional.of(board));
+        given(boardRepository.findById(anyLong())).willReturn(Optional.of(board));
         given(inquiryAnswerService.findByBoardId(1L, pageable)).willReturn(responsePage);
 
         BoardResponse.BoardWithAnswer result = inquiryService.viewOneWithUser( 1L,user);
@@ -139,16 +143,8 @@ class InquiryServiceTest {
     @DisplayName("문의 게시물 단일 조회 살패 테스트(등록자 다름)")
     void viewOne_등록자_다름() {
         User user1 = new User(2L, "user1@gmail.com", "AAAaaa111!!!", "다른 유저 입니다.", UserType.INDIVIDUAL, UserRole.ROLE_USER,"","","","","");
-        Long boardId = 1L;
-        AnswerResponse.Response response1 = new AnswerResponse.Response(1L, "답글1");
-        AnswerResponse.Response response2 = new AnswerResponse.Response(2L, "답글2");
-        List<AnswerResponse.Response> mockResponse = Arrays.asList(response1, response2);
-        int page = 1;
-        int size = 10;
-        Pageable pageable = PageRequest.of(page - 1, size);
-        Page<AnswerResponse.Response> responsePage = new PageImpl<>(mockResponse, pageable, mockResponse.size());
 
-        given(boardRepository.findByUserId(anyLong())).willReturn(Optional.of(board));
+        given(boardRepository.findById(anyLong())).willReturn(Optional.of(board));
 
         // When
         InvalidRequestException exception = assertThrows(InvalidRequestException.class, () ->
@@ -165,15 +161,7 @@ class InquiryServiceTest {
     void viewOne_타입_다름() {
         Board board1 = new Board("이벤트 게시물", "이벤트 게시물", BoardType.BOARD_EVENT,user);
 
-        AnswerResponse.Response response1 = new AnswerResponse.Response(1L, "답글1");
-        AnswerResponse.Response response2 = new AnswerResponse.Response(2L, "답글2");
-        List<AnswerResponse.Response> mockResponse = Arrays.asList(response1, response2);
-        int page = 1;
-        int size = 10;
-        Pageable pageable = PageRequest.of(page - 1, size);
-        Page<AnswerResponse.Response> responsePage = new PageImpl<>(mockResponse, pageable, mockResponse.size());
-
-        given(boardRepository.findByUserId(anyLong())).willReturn(Optional.of(board1));
+        given(boardRepository.findById(anyLong())).willReturn(Optional.of(board1));
 
         // When
         InvalidRequestException exception = assertThrows(InvalidRequestException.class, () ->
