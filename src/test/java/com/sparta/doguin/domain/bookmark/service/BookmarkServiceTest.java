@@ -1,6 +1,6 @@
 package com.sparta.doguin.domain.bookmark.service;
 
-import com.sparta.doguin.config.AuthUser;
+import com.sparta.doguin.config.security.AuthUser;
 import com.sparta.doguin.domain.bookmark.constans.BookmarkTargetType;
 import com.sparta.doguin.domain.bookmark.entity.Bookmark;
 import com.sparta.doguin.domain.bookmark.model.BookmarkRequest;

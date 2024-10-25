@@ -1,6 +1,6 @@
 package com.sparta.doguin.domain.setup;
 
-import com.sparta.doguin.config.AuthUser;
+import com.sparta.doguin.config.security.AuthUser;
 import com.sparta.doguin.domain.bookmark.constans.BookmarkTargetType;
 import com.sparta.doguin.domain.bookmark.entity.Bookmark;
 import com.sparta.doguin.domain.bookmark.model.BookmarkRequest;
@@ -38,7 +38,7 @@ public class DataUtil {
                 "!@Skdud340",
                 "testNickname",
                 UserType.INDIVIDUAL,
-                UserRole.ROLE_USER
+                UserRole.ROLE_USER,"","","","",""
         );
     }
 
@@ -49,7 +49,7 @@ public class DataUtil {
                 "!@Skdud340",
                 "testNickname1",
                 UserType.INDIVIDUAL,
-                UserRole.ROLE_USER
+                UserRole.ROLE_USER,"","","","",""
         );
     }
 
@@ -335,6 +335,8 @@ public class DataUtil {
                 portfolioRequestCreate1().work_experience(),
                 portfolioRequestCreate1().work_type(),
                 portfolioRequestCreate1().proejct_history(),
+                // TODO: 고쳐야함
+                "null",
                 portfolioRequestCreate1().area()
         );
     }
@@ -348,7 +350,9 @@ public class DataUtil {
                 portfolioRequestCreate2().work_experience(),
                 portfolioRequestCreate2().work_type(),
                 portfolioRequestCreate2().proejct_history(),
-                portfolioRequestCreate2().area()
+                // TODO: 고쳐야함
+                "null",
+                portfolioRequestCreate1().area()
         );
     }
 

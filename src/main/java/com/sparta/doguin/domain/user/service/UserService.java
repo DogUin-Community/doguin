@@ -1,6 +1,6 @@
 package com.sparta.doguin.domain.user.service;
 
-import com.sparta.doguin.config.AuthUser;
+import com.sparta.doguin.config.security.AuthUser;
 import com.sparta.doguin.domain.common.exception.UserException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseUserEnum;
@@ -86,7 +86,7 @@ public class UserService {
     }
 
     /**
-     * 로그인한 사용자의 회원 정보를 삭제하는 메서드
+     * 로그인한 사용자의 회원 탈퇴하는 메서드
      *
      * @param authUser  로그인한 사용자의 인증 정보
      * @return  ApiResponse<Void> 성공적으로 회원 정보가 삭제되었음을 알리는 응답

@@ -1,7 +1,6 @@
 package com.sparta.doguin.domain.board.service;
 
 import com.sparta.doguin.domain.answer.dto.AnswerResponse;
-import com.sparta.doguin.domain.answer.service.BulletinAnswerService;
 import com.sparta.doguin.domain.answer.service.InquiryAnswerService;
 import com.sparta.doguin.domain.board.BoardType;
 import com.sparta.doguin.domain.board.dto.BoardRequest;
@@ -48,15 +47,19 @@ class InquiryServiceTest {
     @Mock
     private InquiryAnswerService inquiryAnswerService;
 
+    @Mock
+    private ViewTrackingService viewTrackingService;
+
     @InjectMocks
     private InquiryService inquiryService;
+
 
     private User user;
     private Board board;
 
     @BeforeEach
     void setUp() {
-        user = new User(1L, "user@gmail.com", "AAAaaa111!!!", "유저입니다.", UserType.INDIVIDUAL, UserRole.ROLE_USER);
+        user = new User(1L, "user@gmail.com", "AAAaaa111!!!", "유저입니다.", UserType.INDIVIDUAL, UserRole.ROLE_USER,"","","","","");
 
         board = new Board("문의 게시물", "문의 게시물", BoardType.BOARD_INQUIRY,user);
         ReflectionTestUtils.setField(board,"id",1L);
@@ -87,7 +90,7 @@ class InquiryServiceTest {
     @Test
     @DisplayName("문의 게시물 수정 실패 테스트(등록자 다름)")
     void update_등록자_다름() {
-        User user1 = new User(2L, "user1@gmail.com", "AAAaaa111!!!", "다른 유저 입니다.", UserType.INDIVIDUAL, UserRole.ROLE_USER);
+        User user1 = new User(2L, "user1@gmail.com", "AAAaaa111!!!", "다른 유저 입니다.", UserType.INDIVIDUAL, UserRole.ROLE_USER,"","","","","");
         BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("수정된 문의 게시물","수정된 문의 게시물");
         given(boardRepository.findById(anyLong())).willReturn(Optional.of(board));
 
@@ -129,7 +132,7 @@ class InquiryServiceTest {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<AnswerResponse.Response> responsePage = new PageImpl<>(mockResponse, pageable, mockResponse.size());
 
-        given(boardRepository.findByUserId(anyLong())).willReturn(Optional.of(board));
+        given(boardRepository.findById(anyLong())).willReturn(Optional.of(board));
         given(inquiryAnswerService.findByBoardId(1L, pageable)).willReturn(responsePage);
 
         BoardResponse.BoardWithAnswer result = inquiryService.viewOneWithUser( 1L,user);
@@ -139,9 +142,9 @@ class InquiryServiceTest {
     @Test
     @DisplayName("문의 게시물 단일 조회 살패 테스트(등록자 다름)")
     void viewOne_등록자_다름() {
-        User user1 = new User(2L, "user1@gmail.com", "AAAaaa111!!!", "다른 유저 입니다.", UserType.INDIVIDUAL, UserRole.ROLE_USER);
-        Long boardId = 1L;
-        when(boardRepository.findById(boardId)).thenReturn(Optional.of(board));
+        User user1 = new User(2L, "user1@gmail.com", "AAAaaa111!!!", "다른 유저 입니다.", UserType.INDIVIDUAL, UserRole.ROLE_USER,"","","","","");
+
+        given(boardRepository.findById(anyLong())).willReturn(Optional.of(board));
 
         // When
         InvalidRequestException exception = assertThrows(InvalidRequestException.class, () ->
@@ -157,6 +160,7 @@ class InquiryServiceTest {
     @DisplayName("문의 게시물 단일 조회 살패 테스트(게시물 타입 다름)")
     void viewOne_타입_다름() {
         Board board1 = new Board("이벤트 게시물", "이벤트 게시물", BoardType.BOARD_EVENT,user);
+
         given(boardRepository.findById(anyLong())).willReturn(Optional.of(board1));
 
         // When
@@ -185,7 +189,7 @@ class InquiryServiceTest {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Board> boardPage = new PageImpl<>(mockBoards, pageable, mockBoards.size());
 
-        given(boardRepository.findAllByBoardTypeAndUser(pageable, BoardType.BOARD_INQUIRY,user)).willReturn(boardPage);
+        given(boardRepository.findAllByBoardTypeAndUserId(pageable, BoardType.BOARD_INQUIRY,user.getId())).willReturn(boardPage);
 
         // when
         Page<BoardResponse.BoardCommonResponse> responsePage = inquiryService.viewAllWithUser(page, size,user);
@@ -243,7 +247,7 @@ class InquiryServiceTest {
     @Test
     @DisplayName("문의 게시물 삭제 실패 테스트(등록자 다름)")
     void delete_등록자_다름() {
-        User user1 = new User(2L, "user1@gmail.com", "AAAaaa111!!!", "다른 유저 입니다.", UserType.INDIVIDUAL, UserRole.ROLE_USER);
+        User user1 = new User(2L, "user1@gmail.com", "AAAaaa111!!!", "다른 유저 입니다.", UserType.INDIVIDUAL, UserRole.ROLE_USER,"","","","","");
         Long boardId = 1L;
         when(boardRepository.findById(boardId)).thenReturn(Optional.of(board));
 

@@ -1,6 +1,6 @@
 package com.sparta.doguin.domain.outsourcing.service;
 
-import com.sparta.doguin.config.AuthUser;
+import com.sparta.doguin.config.security.AuthUser;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.outsourcing.constans.AreaType;
 import com.sparta.doguin.domain.outsourcing.model.OutsourcingRequest;

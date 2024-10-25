@@ -1,6 +1,6 @@
 package com.sparta.doguin.domain.user.entity;
 
-import com.sparta.doguin.config.AuthUser;
+import com.sparta.doguin.config.security.AuthUser;
 import com.sparta.doguin.domain.common.Timestamped;
 import com.sparta.doguin.domain.user.dto.UserRequest;
 import com.sparta.doguin.domain.user.enums.UserGrade;
@@ -63,17 +63,6 @@ public class User extends Timestamped {
 
     @Enumerated(EnumType.STRING)
     private UserGrade userGrade;
-
-    // 필수 정보만 받는 생성자
-    public User(Long id, String email, String password, String nickname, UserType userType, UserRole userRole) {
-        this.id = id;
-        this.email = email;
-        this.password = password;
-        this.nickname = nickname;
-        this.userType = userType;
-        this.userRole = userRole;
-        this.userGrade = UserGrade.C_NECK; // 회원가입 시 기본값으로 설정
-    }
 
     // 필수 정보 + 선택 정보 포함하는 생성자
     public User(Long id, String email, String password, String nickname, UserType userType, UserRole userRole,

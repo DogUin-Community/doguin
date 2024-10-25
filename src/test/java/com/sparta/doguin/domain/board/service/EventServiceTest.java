@@ -48,6 +48,9 @@ class EventServiceTest {
     @Mock
     private NoticeAnswerService noticeAnswerService;
 
+    @Mock
+    private ViewTrackingService viewTrackingService;
+
     @InjectMocks
     private EventService eventService;
 
@@ -57,8 +60,8 @@ class EventServiceTest {
 
     @BeforeEach
     void setUp() {
-        admin = new User(1L, "admin@gmail.com", "AAAaaa111!!!", "관리자입니다.", UserType.INDIVIDUAL, UserRole.ROLE_ADMIN);
-        user = new User(2L, "user@gmail.com", "AAAaaa111!!!", "유저입니다.", UserType.INDIVIDUAL, UserRole.ROLE_USER);
+        admin = new User(1L, "admin@gmail.com", "AAAaaa111!!!", "관리자입니다.", UserType.INDIVIDUAL, UserRole.ROLE_ADMIN,"","","","","");
+        user = new User(2L, "user@gmail.com", "AAAaaa111!!!", "유저입니다.", UserType.INDIVIDUAL, UserRole.ROLE_USER,"","","","","");
 
         board = new Board("이벤트 게시물", "이벤트 게시물", BoardType.BOARD_EVENT,admin);
         ReflectionTestUtils.setField(board,"id",1L);
@@ -89,7 +92,7 @@ class EventServiceTest {
     @Test
     @DisplayName("일반 게시물 수정 실패 테스트(등록자 다름)")
     void update_등록자_다름() {
-        User user1 = new User(2L, "user1@gmail.com", "AAAaaa111!!!", "다른 유저 입니다.", UserType.INDIVIDUAL, UserRole.ROLE_ADMIN);
+        User user1 = new User(2L, "user1@gmail.com", "AAAaaa111!!!", "다른 유저 입니다.", UserType.INDIVIDUAL, UserRole.ROLE_ADMIN,"","","","","");
         BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("수정된 이벤트 게시물","수정된 이벤트 게시물");
         given(boardRepository.findById(anyLong())).willReturn(Optional.of(board));
 
@@ -133,7 +136,7 @@ class EventServiceTest {
         given(boardRepository.findById(anyLong())).willReturn(Optional.of(board));
         given(noticeAnswerService.findByBoardId(1L, pageable)).willReturn(responsePage);
 
-        BoardResponse.BoardWithAnswer result = eventService.viewOne( 1L);
+        BoardResponse.BoardWithAnswer result = eventService.viewOneWithUser( 1L,user);
         assertThat(result.title()).isEqualTo("이벤트 게시물");
         assertThat(responsePage.getContent().get(0).content()).isEqualTo("답글1");
     }
@@ -147,7 +150,7 @@ class EventServiceTest {
 
         // When
         InvalidRequestException exception = assertThrows(InvalidRequestException.class, () ->
-                eventService.viewOne(2L )
+                eventService.viewOneWithUser( 2L,user)
         );
 
         // Then

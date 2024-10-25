@@ -1,6 +1,7 @@
 package com.sparta.doguin.domain.user.service;
 
-import com.sparta.doguin.config.JwtUtil;
+import com.sparta.doguin.config.security.JwtUtil;
+import com.sparta.doguin.config.security.dto.JwtUtilRequest;
 import com.sparta.doguin.domain.common.exception.UserException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseEnum;
@@ -10,6 +11,7 @@ import com.sparta.doguin.domain.user.entity.User;
 import com.sparta.doguin.domain.user.enums.UserRole;
 import com.sparta.doguin.domain.user.enums.UserType;
 import com.sparta.doguin.domain.user.repository.UserRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,11 +26,12 @@ public class AuthService {
 
     /**
      * 회원가입 요청을 처리하는 메서드
+     *
      * @param signupRequest 회원가입에 필요한 정보를 담은 dto
      * @return ApiResponse<String> JWT 토큰을 포함한 회원가입 성공 메시지
      * @throws UserException 중복된 이메일이 있는 경우 예외 처리
-     * @since 1.1
      * @author 황윤서
+     * @since 1.3
      */
     @Transactional
     public ApiResponse<String> signup(UserRequest.Signup signupRequest) {
@@ -40,54 +43,38 @@ public class AuthService {
         // 비밀번호를 암호화
         String encodedPassword = passwordEncoder.encode(signupRequest.password());
 
-        User newUser;
-        // 필수 사항만 입력된 경우
-        if (signupRequest.profileImage() == null &&
-                signupRequest.introduce() == null &&
-                signupRequest.homeAddress() == null &&
-                signupRequest.gitAddress() == null &&
-                signupRequest.blogAddress() == null) {
-            newUser = new User(
-                    null, // ID는 자동 생성이므로 null 전달
-                    signupRequest.email(),
-                    encodedPassword,
-                    signupRequest.nickname(),
-                    UserType.of(signupRequest.userType()),
-                    UserRole.of(signupRequest.userRole())
-            );
-        } else {
-            // 필수 + 선택 사항 모두 입력된 경우
-            newUser = new User(
-                    null, // ID는 자동 생성이므로 null 전달
-                    signupRequest.email(),
-                    encodedPassword,
-                    signupRequest.nickname(),
-                    UserType.of(signupRequest.userType()),
-                    UserRole.of(signupRequest.userRole()),
-                    signupRequest.profileImage(),
-                    signupRequest.introduce(),
-                    signupRequest.homeAddress(),
-                    signupRequest.gitAddress(),
-                    signupRequest.blogAddress()
-            );
-        }
+        User newUser = new User(
+                null, // ID는 자동 생성이므로 null 전달
+                signupRequest.email(),
+                encodedPassword,
+                signupRequest.nickname(),
+                UserType.of(signupRequest.userType()),
+                UserRole.of(signupRequest.userRole()),
+                signupRequest.profileImage(),
+                signupRequest.introduce(),
+                signupRequest.homeAddress(),
+                signupRequest.gitAddress(),
+                signupRequest.blogAddress()
+        );
+
         User saveduser = userRepository.save(newUser);
         ApiResponseEnum apiResponse = ApiResponseUserEnum.USER_CREATE_SUCCESS;
 
-        return ApiResponse.of(apiResponse, jwtUtil.createToken(saveduser.getId(), saveduser.getEmail(), saveduser.getNickname(), saveduser.getUserType(), saveduser.getUserRole()));
+        return ApiResponse.of(apiResponse);
     }
 
     /**
      * 로그인 요청을 처리하는 메서드
      *
      * @param signinRequest 로그인에 필요한 정보를 담은 DTO
+     * @param response      JWT 토큰을 응답 헤더에 추가하기 위한 HttpServletResponse 객체
      * @return ApiResponse<String> JWT 토큰을 포함한 로그인 성공 메시지
      * @throws UserException 유저가 존재하지 않거나, 비밀번호가 일치하지 않는 경우 예외 처리
-     * @since 1.1
      * @author 황윤서
+     * @since 1.1
      */
     @Transactional(readOnly = true)
-    public ApiResponse<String> signin(UserRequest.Signin signinRequest) {
+    public ApiResponse<String> signin(UserRequest.Signin signinRequest, HttpServletResponse response) {
         User user = userRepository.findByEmail(signinRequest.email())
                 .orElseThrow(() -> new UserException(ApiResponseUserEnum.USER_NOT_FOUND));
 
@@ -98,11 +85,19 @@ public class AuthService {
 
         ApiResponseEnum apiResponse = ApiResponseUserEnum.USER_LOGIN_SUCCESS;
 
-        return ApiResponse.of(apiResponse, jwtUtil.createToken(
+        JwtUtilRequest.CreateToken createToken = new JwtUtilRequest.CreateToken(
                 user.getId(),
                 user.getEmail(),
                 user.getNickname(),
                 user.getUserType(),
-                user.getUserRole()));
+                user.getUserRole()
+        );
+
+        String token = jwtUtil.createToken(createToken);
+
+        // JWT를 Bearer 접두사 없이 응답 헤더에 추가
+        jwtUtil.addTokenToResponseHeader(token, response);
+
+        return ApiResponse.of(apiResponse);
     }
 }

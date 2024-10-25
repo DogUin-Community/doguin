@@ -1,4 +1,4 @@
-package com.sparta.doguin.config;
+package com.sparta.doguin.config.security;
 
 import com.sparta.doguin.domain.user.enums.UserRole;
 import com.sparta.doguin.domain.user.enums.UserType;
@@ -33,23 +33,33 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse httpResponse,
             @NonNull FilterChain chain
     ) throws ServletException, IOException {
+        // 요청 헤더에서 "Authorization" 헤더 값을 가져옴
         String authorizationHeader = httpRequest.getHeader("Authorization");
 
+        // Authorization 헤더가 존재하고, Bearer로 시작하는지 확인
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            // Bearer 접두사를 제거하고 순수한 JWT만 추출
             String jwt = jwtUtil.substringToken(authorizationHeader);
             try {
+                // JWT에서 사용자 정보(Claims)를 추출
                 Claims claims = jwtUtil.extractClaims(jwt);
+                // Claims에서 각 정보 추출
                 Long userId = Long.parseLong(claims.getSubject());
                 String email = claims.get("email", String.class);
                 String nickname = claims.get("nickname", String.class);
                 UserType userType = UserType.of(claims.get("userType", String.class));
                 UserRole userRole = UserRole.of(claims.get("userRole", String.class));
 
+                // 사용자 인증이 아직 설정되지 않았다면
                 if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    // AuthUser 객체를 생성
                     AuthUser authUser = new AuthUser(userId, email, nickname, userType, userRole);
 
+                    // JwtAuthenticationToken으로 인증 객체 생성
                     JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(authUser);
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
+
+                    // SecurityContextHolder에 인증 객체 설정 (사용자 인증 처리)
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
             } catch (SecurityException | MalformedJwtException e) {
@@ -66,6 +76,7 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
                 httpResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
         }
+        // 요청을 다음 필터로 넘김
         chain.doFilter(httpRequest, httpResponse);
     }
 }

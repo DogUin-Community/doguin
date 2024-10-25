@@ -19,14 +19,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class BulletinService implements BoardService {
 
     private final BoardRepository boardRepository;
     private final BulletinAnswerService bulletinAnswerService;
+    private final ViewTrackingService viewTrackingService;
+
     private final BoardType boardType = BoardType.BOARD_BULLETIN;
 
     /**
@@ -69,7 +69,7 @@ public class BulletinService implements BoardService {
         if (board.getBoardType() != boardType) {
             throw new InvalidRequestException(ApiResponseBoardEnum.BULLETIN_WRONG);
         }
-        board.update(boardRequest.title(), boardRequest.content());
+        board.update(boardRequest.title(), boardRequest.content()); // 업데이트 정보 null 처리
         return board;
     }
 
@@ -77,14 +77,15 @@ public class BulletinService implements BoardService {
      * 일반 게시물 단건 조회
      *
      * @param boardId 조회 대상 일반 게시물의 id
-     * @return 조회된 일반 게시물 객체
+     * @param user 로그인 한 계정 (로그인 안할 수 있음)
+     * @return 조회된 일반 게시물과 해당 댓글 객체
      * @throws HandleNotFound          일반 게시물 조회 시 데이터가 없을 경우 발생
      * @throws InvalidRequestException 게시물 타입이 일반 게시물이 아닐 경우 발생
      * @author 김창민
      * @since 1.0
      */
     @Override
-    public BoardResponse.BoardWithAnswer viewOne(Long boardId) {
+    public BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId, User user) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.BULLETIN_NOT_FOUND));
         if (board.getBoardType() != boardType) {
@@ -93,7 +94,12 @@ public class BulletinService implements BoardService {
 
         Page<AnswerResponse.Response> responses = bulletinAnswerService.findByBoardId(boardId,PageRequest.of(0,10));
 
-        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(), responses);
+        if(user!=null){
+            viewTrackingService.trackUserView(boardId, user.getId());
+        }
+
+        Long viewCount =viewTrackingService.getDailyUniqueViewCount(boardId)+board.getView();
+        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(),viewCount, responses);
     }
 
     /**
@@ -168,7 +174,8 @@ public class BulletinService implements BoardService {
     }
 
     @Override
-    public List<Board> findByUserId(Long userId) {
-        return boardRepository.findAllByUserId(userId);
+    public Page<Board> findByUserId(Long userId) {
+        Pageable pageable = PageRequest.of( 0, 10);
+        return boardRepository.findAllByBoardTypeAndUserId(pageable,boardType,userId);
     }
 }
