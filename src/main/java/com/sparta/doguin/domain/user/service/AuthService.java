@@ -1,6 +1,7 @@
 package com.sparta.doguin.domain.user.service;
 
 import com.sparta.doguin.config.security.JwtUtil;
+import com.sparta.doguin.config.security.dto.JwtUtilRequest;
 import com.sparta.doguin.domain.common.exception.UserException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseEnum;
@@ -29,7 +30,7 @@ public class AuthService {
      * @return ApiResponse<String> JWT 토큰을 포함한 회원가입 성공 메시지
      * @throws UserException 중복된 이메일이 있는 경우 예외 처리
      * @author 황윤서
-     * @since 1.1
+     * @since 1.3
      */
     @Transactional
     public ApiResponse<String> signup(UserRequest.Signup signupRequest) {
@@ -58,7 +59,15 @@ public class AuthService {
         User saveduser = userRepository.save(newUser);
         ApiResponseEnum apiResponse = ApiResponseUserEnum.USER_CREATE_SUCCESS;
 
-        return ApiResponse.of(apiResponse, jwtUtil.createToken(saveduser.getId(), saveduser.getEmail(), saveduser.getNickname(), saveduser.getUserType(), saveduser.getUserRole()));
+        JwtUtilRequest.CreateToken createToken = new JwtUtilRequest.CreateToken(
+                saveduser.getId(),
+                saveduser.getEmail(),
+                saveduser.getNickname(),
+                saveduser.getUserType(),
+                saveduser.getUserRole()
+        );
+
+        return ApiResponse.of(apiResponse, jwtUtil.createToken(createToken));
     }
 
     /**
@@ -82,11 +91,14 @@ public class AuthService {
 
         ApiResponseEnum apiResponse = ApiResponseUserEnum.USER_LOGIN_SUCCESS;
 
-        return ApiResponse.of(apiResponse, jwtUtil.createToken(
+        JwtUtilRequest.CreateToken createToken = new JwtUtilRequest.CreateToken(
                 user.getId(),
                 user.getEmail(),
                 user.getNickname(),
                 user.getUserType(),
-                user.getUserRole()));
+                user.getUserRole()
+        );
+
+        return ApiResponse.of(apiResponse, jwtUtil.createToken(createToken));
     }
 }

@@ -1,7 +1,6 @@
 package com.sparta.doguin.config.security;
 
-import com.sparta.doguin.domain.user.enums.UserRole;
-import com.sparta.doguin.domain.user.enums.UserType;
+import com.sparta.doguin.config.security.dto.JwtUtilRequest;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -34,16 +33,16 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
-    public String createToken(Long userId, String email, String nickname, UserType userType, UserRole userRole) {
+    public String createToken(JwtUtilRequest.CreateToken createToken) {
         Date date = new Date();
 
         return BEARER_PREFIX +
                 Jwts.builder()
-                        .setSubject(String.valueOf(userId))
-                        .claim("email", email)
-                        .claim("nickname", nickname)
-                        .claim("userType", userType.getUserType())
-                        .claim("userRole", userRole.getUserRole())
+                        .setSubject(String.valueOf(createToken.userId()))
+                        .claim("email", createToken.email())
+                        .claim("nickname", createToken.nickname())
+                        .claim("userType", createToken.userType().getUserType())
+                        .claim("userRole", createToken.userRole().getUserRole())
                         .setExpiration(new Date(date.getTime() + TOKEN_TIME))
                         .setIssuedAt(date) // 발급일
                         .signWith(key, signatureAlgorithm) // 암호화 알고리즘
