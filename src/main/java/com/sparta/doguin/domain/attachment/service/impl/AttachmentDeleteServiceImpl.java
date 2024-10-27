@@ -34,8 +34,8 @@ public class AttachmentDeleteServiceImpl implements AttachmentDeleteService {
         for ( int i=0 ;i<attachments.size(); i++ ){
             Attachment attachment = attachments.get(i);
             AttachmentValidator.isMe(authUser.getUserId(),attachment.getUser().getId());
-            s3Service.delete(attachment);
             attachmentRepository.delete(attachment);
         }
+        s3Service.deleteAllAsync(attachments);
     }
 }

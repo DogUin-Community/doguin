@@ -6,6 +6,7 @@ import com.sparta.doguin.domain.attachment.entity.Attachment;
 import com.sparta.doguin.domain.common.exception.FileException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,20 +27,45 @@ public class S3Service {
     /**
      * @title S3에 파일 업로드 메서드
      *
-     * @param filePath 업로드할 경로
+     * @param path 업로드할 경로
      * @param file 업로드할 파일
      * @throws FileException 파일 업로드중 예외 발생 처리 로직
      * @since 1.0
      * @author 김경민
      */
-    public void upload(Path filePath, MultipartFile file) {
+    public void upload(Path path, MultipartFile file) {
         try {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType(file.getContentType());
             metadata.setContentLength(file.getSize());
-            amazonS3Client.putObject(bucket,filePath.toString(),file.getInputStream(),metadata);
+            amazonS3Client.putObject(bucket,path.toString(),file.getInputStream(),metadata);
         } catch (Exception e) {
             throw new FileException(FILE_IO_ERROR);
+        }
+    }
+
+    /**
+     * @title S3에 파일 비동기 업로드 메서드
+     *
+     * @param paths 업로드할 경로
+     * @param files 업로드할 파일
+     * @throws FileException 파일 업로드중 예외 발생 처리 로직
+     * @since 1.0
+     * @author 김경민
+     */
+    @Async
+    public void uploadAllAsync(List<Path> paths, List<MultipartFile> files) {
+        try {
+            for (int i = 0; i < paths.size(); i++) {
+                Path path = paths.get(i);
+                MultipartFile file = files.get(i);
+                ObjectMetadata metadata = new ObjectMetadata();
+                metadata.setContentType(file.getContentType());
+                metadata.setContentLength(file.getSize());
+                amazonS3Client.putObject(bucket, path.toString(), file.getInputStream(), metadata);
+            }
+        } catch(Exception e){
+            throw  new FileException(FILE_IO_ERROR);
         }
     }
 
@@ -50,7 +76,8 @@ public class S3Service {
      * @since 1.0
      * @author 김경민
      */
-    public void deleteAll(List<Attachment> attachments){
+    @Async
+    public void deleteAllAsync(List<Attachment> attachments){
         for (Attachment attachment : attachments) {
             amazonS3Client.deleteObject(bucket,attachment.getAttachment_relative_path());
         }
