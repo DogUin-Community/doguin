@@ -6,5 +6,5 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface AttachmentUpdateService {
-    void update(List<MultipartFile> files, AuthUser authUser, List<Long> fileIds);
+    void update(List<MultipartFile> updateAttachments, List<Long> fileIds,AuthUser authUser);
 }

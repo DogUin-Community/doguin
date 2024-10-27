@@ -37,7 +37,7 @@ public class AttachmentController {
     }
 
     @GetMapping("fileIds/{fileIds}")
-    public ResponseEntity<ApiResponse<List<String>>> fildDownload(
+    public ResponseEntity<ApiResponse<List<String>>> attachmentDownload(
             @PathVariable List<Long> fileIds
     ){
         ApiResponse<List<String>> apiResponse = attachmentDownloadService.download(fileIds);
@@ -50,7 +50,7 @@ public class AttachmentController {
             @RequestPart List<MultipartFile> files,
             @AuthenticationPrincipal AuthUser authUser
     ){
-        attachmentUpdateService.update(files,authUser,fileIds);
+        attachmentUpdateService.update(files,fileIds,authUser);
     }
 
     @DeleteMapping("fileIds/{fileIds}")
