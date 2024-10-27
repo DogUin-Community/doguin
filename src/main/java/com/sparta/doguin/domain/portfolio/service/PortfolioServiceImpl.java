@@ -49,7 +49,7 @@ public class PortfolioServiceImpl implements PortfolioService {
     @Override
     public ApiResponse<PortfolioResponse> getPortfolio(Long portfolioId) {
         Portfolio portfolio = findById(portfolioId);
-        List<String> filePaths = attachmentGetService.getFilePath(portfolio.getUser().getId(), portfolio.getId(), AttachmentTargetType.PORTFOLIO);
+        List<String> filePaths = attachmentGetService.getAllAttachmentPath(portfolio.getUser().getId(), portfolio.getId(), AttachmentTargetType.PORTFOLIO);
         PortfolioResponse portfolioResponse = PortfolioResponse.PortfolioResponseGet.of(portfolio,filePaths);
         return ApiResponse.of(PORTFOLIO_OK,portfolioResponse);
     }
@@ -113,7 +113,7 @@ public class PortfolioServiceImpl implements PortfolioService {
                 .area(portfolioRequestUpdate.area())
                 .build();
         if (files != null) {
-            attachmentUpdateService.update(files,authUser,portfolioRequestUpdate.fileIds());
+            attachmentUpdateService.update(files,portfolioRequestUpdate.fileIds(),authUser);
         }
         PortfolioValidator.isMe(user.getId(),findPortfolio.getUser().getId());
         portfolioRepository.save(portfolio);
@@ -151,7 +151,7 @@ public class PortfolioServiceImpl implements PortfolioService {
 
         Page<PortfolioResponse> portfolios = pageablePortfolio.map(portfolio -> {
             // 각 포트폴리오에 대해 file_paths를 가져옴
-            List<String> filePaths = attachmentGetService.getFilePath(authUser.getUserId(), portfolio.getId(), AttachmentTargetType.PORTFOLIO);
+            List<String> filePaths = attachmentGetService.getAllAttachmentPath(authUser.getUserId(), portfolio.getId(), AttachmentTargetType.PORTFOLIO);
             return PortfolioResponse.PortfolioResponseGet.of(portfolio, filePaths); // filePaths를 포함하여 변환
         });
 
@@ -170,7 +170,7 @@ public class PortfolioServiceImpl implements PortfolioService {
 
         Page<PortfolioResponse> portfolios = pageablePortfolio.map(portfolio -> {
             // 각 포트폴리오에 대해 file_paths를 가져옴
-            List<String> filePaths = attachmentGetService.getAllFilePath(portfolio.getId(), AttachmentTargetType.PORTFOLIO);
+            List<String> filePaths = attachmentGetService.getAllAttachmentPath(portfolio.getId(), AttachmentTargetType.PORTFOLIO);
             return PortfolioResponse.PortfolioResponseGet.of(portfolio, filePaths); // filePaths를 포함하여 변환
         });
 

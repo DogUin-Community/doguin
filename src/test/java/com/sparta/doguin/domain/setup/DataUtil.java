@@ -25,6 +25,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DataUtil {
     public static Pageable pageable() {
@@ -305,24 +307,28 @@ public class DataUtil {
     }
 
     public static PortfolioRequest.PortfolioRequestUpdate portfolioRequestUpdate1(){
+        List<Long> fileIds = new ArrayList<>();
         return new PortfolioRequest.PortfolioRequestUpdate(
                 "Senior Developer Portfolio11",
                 "This portfolio highlight1s my experience in backend development with Java and Spring1.",
                 5L,
                 "Remot2e1",
                 "Dev22e1loped multiple microservices for an e-commerce platform.",
-                AreaType.SEOUL
+                AreaType.SEOUL,
+                fileIds
         );
     }
 
     public static PortfolioRequest.PortfolioRequestUpdate portfolioRequestUpdate2(){
+        List<Long> fileIds = new ArrayList<>();
         return new PortfolioRequest.PortfolioRequestUpdate(
                 "Senior Developer Portfolio33",
                 "This portfolio highlight31s my experience in backend development with Java and Spring1.",
                 4L,
                 "Remot233e1",
                 "Dev22333e1loped multiple microservices for an e-commerce platform.",
-                AreaType.SEOUL
+                AreaType.SEOUL,
+                fileIds
         );
     }
 
@@ -335,8 +341,6 @@ public class DataUtil {
                 portfolioRequestCreate1().work_experience(),
                 portfolioRequestCreate1().work_type(),
                 portfolioRequestCreate1().proejct_history(),
-                // TODO: 고쳐야함
-                "null",
                 portfolioRequestCreate1().area()
         );
     }
@@ -350,8 +354,6 @@ public class DataUtil {
                 portfolioRequestCreate2().work_experience(),
                 portfolioRequestCreate2().work_type(),
                 portfolioRequestCreate2().proejct_history(),
-                // TODO: 고쳐야함
-                "null",
                 portfolioRequestCreate1().area()
         );
     }

@@ -7,15 +7,11 @@ import com.sparta.doguin.domain.attachment.repository.AttachmentRepository;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteService;
 import com.sparta.doguin.domain.attachment.service.s3.S3Service;
 import com.sparta.doguin.domain.attachment.validate.AttachmentValidator;
-import com.sparta.doguin.domain.common.exception.FileException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import static com.sparta.doguin.domain.common.response.ApiResponseFileEnum.FILE_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -27,19 +23,19 @@ public class AttachmentDeleteServiceImpl implements AttachmentDeleteService {
      * @title 파일의 고유식별자로 S3,DB의 파일들을 삭제합니다
      * @description 파일중 하나라도 이상한게 있다면, 전부 롤백 시킵니다
      *
-     * @param authUser
-     * @param fileIds
+     * @param authUser 로그인한 유저
+     * @param attachmentIds 삭제할 파일 아이디들
      */
     @Transactional
     @Override
-    public void delete(AuthUser authUser, List<Long> fileIds) {
-        List<Attachment> attachments = new ArrayList<>();
-        for ( Long fileId : fileIds ) {
-            Attachment attachment = attachmentRepository.findById(fileId).orElseThrow(() -> new FileException(FILE_NOT_FOUND));
+    public void delete(AuthUser authUser, List<Long> attachmentIds) {
+        List<Attachment> attachments = attachmentRepository.findAllByAttachment(attachmentIds);
+        AttachmentValidator.isCountEqual(attachmentIds.size(),attachments.size());
+        for ( int i=0 ;i<attachments.size(); i++ ){
+            Attachment attachment = attachments.get(i);
             AttachmentValidator.isMe(authUser.getUserId(),attachment.getUser().getId());
-            attachments.add(attachment);
+            s3Service.delete(attachment);
+            attachmentRepository.delete(attachment);
         }
-        s3Service.deleteAll(attachments);
-        attachmentRepository.deleteAll(attachments);
     }
 }

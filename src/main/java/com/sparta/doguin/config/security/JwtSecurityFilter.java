@@ -37,9 +37,11 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
         String authorizationHeader = httpRequest.getHeader("Authorization");
 
         // Authorization 헤더가 존재하고, Bearer로 시작하는지 확인
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+        // header에 이미 Bearer 를 자르고 주기 때문에 Bearer 로 시작 할 수 없음 by 김경민
+        if (authorizationHeader != null && authorizationHeader.startsWith("ey")) {
             // Bearer 접두사를 제거하고 순수한 JWT만 추출
-            String jwt = jwtUtil.substringToken(authorizationHeader);
+            // 이기 Bearer 가 잘려져있는 상태이므로, subString을 할 필요가 없음 by 김경민
+            String jwt = authorizationHeader;
             try {
                 // JWT에서 사용자 정보(Claims)를 추출
                 Claims claims = jwtUtil.extractClaims(jwt);

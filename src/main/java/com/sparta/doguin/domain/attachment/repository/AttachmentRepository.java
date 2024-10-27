@@ -8,29 +8,80 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface AttachmentRepository extends JpaRepository<Attachment, Long> {
-    // 유저 + 타겟 + 타겟타입 으로 찾은 파일의 s3 경로를 페이지 네비게이션으로 가져옴 (엔티티에 있는것들)
-    @Query("SELECT a.file_absolute_path from Attachment a " +
+    /**
+     * @title 유저아이디,타겟아이디,타겟이 일치하는 파일의 파일경로 전체 반환 쿼리
+     *
+     * @param userId 유저아이디
+     * @param targetId 타겟아이디
+     * @param target 터갯
+     * @return 위 3가지가 일치하는 파일의 경로들 전부 반환
+     * @since 1.0
+     * @author 1.0
+     */
+    @Query("SELECT a.attachment_absolute_path from Attachment a " +
             "WHERE a.user.id = :userId " +
             "AND a.targetId = :targetId " +
             "AND a.target = :target "
     )
-    List<String> findAllFilePathByUserIdAndTagertIdAndTarget(Long userId, Long targetId, AttachmentTargetType target);
+    List<String> findAllAttachmentPathByUserIdAndTagertIdAndTarget(Long userId, Long targetId, AttachmentTargetType target);
 
-    @Query("SELECT a.file_absolute_path from Attachment a " +
+    /**
+     * @title 타겟아이디, 타겟이 일치하는 파일의 파일경로 반환
+     *
+     * @param targetId 타겟아이디
+     * @param target 타겟
+     * @return 위 2가지가 일치하는 파일의
+     * @since 1.0
+     * @author 김경민
+     */
+    @Query("SELECT a.attachment_absolute_path from Attachment a " +
             "WHERE a.targetId = :targetId " +
             "AND a.target = :target "
     )
-    List<String> findAllFilePathByTagertIdAndTarget(Long targetId, AttachmentTargetType target);
+    List<String> findAllAttachmentPathByTagertIdAndTarget(Long targetId, AttachmentTargetType target);
 
-    @Query("SELECT a.file_absolute_path from Attachment a " +
-            "WHERE a.id = :fileId "
-    )
-    String findAbsolutePathById(Long fileId);
-
+    /**
+     * @title 유저아이디,타겟아이디,타겟이 일치하는 파일의 아이디 전체 반환 쿼리
+     *
+     * @param userId 유저아이디
+     * @param targetId 타겟아이디
+     * @param target 터갯
+     * @return 위 3가지가 일치하는 파일의 경로들 전부 반환
+     * @since 1.0
+     * @author 1.0
+     */
     @Query("SELECT a.id from Attachment a " +
             "WHERE a.user.id = :userId " +
             "AND a.targetId = :targetId " +
             "AND a.target = :target "
     )
-    List<Long> findAllFileIdByUserIdAndTagertIdAndTarget(Long userId, Long targetId, AttachmentTargetType target);
+    List<Long> findAllAttachmentIdByUserIdAndTagertIdAndTarget(Long userId, Long targetId, AttachmentTargetType target);
+
+    /**
+     * @title 파일 아이디들로 파일찾고, 파일 반환
+     *
+     * @param attachmentIds 파일 아이디들
+     * @return 위 조건에 맞는 파일 반환
+     * @since 1.0
+     * @author 김경민
+     */
+    @Query("SELECT a from Attachment a " +
+            "WHERE a.id IN :attachmentIds "
+    )
+    List<Attachment> findAllByAttachment(List<Long> attachmentIds);
+
+    /**
+     * @title 파일 아이디들로 파일찾고, 해당 파일들의 절대경로 반환 쿼리
+     *
+     * @param attachmentIds 파일 아이디들
+     * @return 위 조건에 맞는 파일의 경로 반환
+     * @since 1.0
+     * @author 김경민
+     */
+    @Query("SELECT a.attachment_absolute_path from Attachment a " +
+            "WHERE a.id IN :attachmentIds "
+    )
+    List<String> findAllByAttachmentPath(List<Long> attachmentIds);
+
+
 }

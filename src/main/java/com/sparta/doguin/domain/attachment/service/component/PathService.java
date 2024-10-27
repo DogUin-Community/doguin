@@ -25,8 +25,7 @@ public class PathService {
                 String.valueOf(user.getId()),
                 targetType.getTarget(),
                 String.valueOf(targetId),
-                String.valueOf(UUID.randomUUID()),
-                Objects.requireNonNull(file.getOriginalFilename()).replace(" ", "")
+                UUID.randomUUID() + Objects.requireNonNull(file.getOriginalFilename()).replace(" ", "")
         );
     }
 

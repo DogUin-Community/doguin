@@ -22,13 +22,13 @@ public class Attachment extends Timestamped {
 
     private Long targetId;
 
-    private String file_absolute_path;
+    private String attachment_absolute_path;
 
-    private String file_relative_path;
+    private String attachment_relative_path;
 
-    private String file_original_name;
+    private String attachment_original_name;
 
-    private Long file_size;
+    private Long attachment_size;
 
     @Enumerated(value = EnumType.STRING)
     private AttachmentTargetType target;

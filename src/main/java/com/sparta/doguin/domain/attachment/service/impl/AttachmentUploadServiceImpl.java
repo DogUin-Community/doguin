@@ -8,6 +8,7 @@ import com.sparta.doguin.domain.attachment.repository.AttachmentRepository;
 import com.sparta.doguin.domain.attachment.service.component.PathService;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
 import com.sparta.doguin.domain.attachment.service.s3.S3Service;
+import com.sparta.doguin.domain.attachment.validate.AttachmentValidator;
 import com.sparta.doguin.domain.common.exception.FileException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.user.entity.User;
@@ -20,7 +21,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.sparta.doguin.domain.common.response.ApiResponseFileEnum.FILE_IO_ERROR;
 import static com.sparta.doguin.domain.common.response.ApiResponseFileEnum.FILE_OK;
 
 @Service
@@ -48,25 +48,22 @@ public class AttachmentUploadServiceImpl implements AttachmentUploadService {
      */
     @Transactional
     @Override
-    public ApiResponse<List<AttachmentResponse.AttachmentResponseGet>>  upload(List<MultipartFile> files, AuthUser authUser, Long targetId, AttachmentTargetType target) {
+    public ApiResponse<List<AttachmentResponse.AttachmentResponseGet>> upload(List<MultipartFile> files, AuthUser authUser, Long targetId, AttachmentTargetType target) {
         User user = User.fromAuthUser(authUser);
         List<AttachmentResponse.AttachmentResponseGet> fileIds = new ArrayList<>();
-        List<Path> paths = new ArrayList<>();
-        List<MultipartFile> multipartFiles = new ArrayList<>();
-        try {
-            for ( MultipartFile file : files ) {
-                Path path = pathService.mkPath(file,authUser,targetId,target);
-                paths.add(path);
-                multipartFiles.add(file);
-                Long saveId = saveAttachmentData(path, file, user, targetId, target);
-                fileIds.add(new AttachmentResponse.AttachmentResponseGet(saveId));
-            }
-        } catch (Exception e) {
-            throw new FileException(FILE_IO_ERROR);
+        for ( MultipartFile file : files ) {
+            AttachmentValidator.isInExtension(file);
+            AttachmentValidator.isSizeBig(file);
+            Path path = pathService.mkPath(file,authUser,targetId,target);
+            Long saveId = saveAttachmentGetId(path, file, user, targetId, target);
+            AttachmentResponse.AttachmentResponseGet attachmentResponseGet = new AttachmentResponse.AttachmentResponseGet(saveId);
+            fileIds.add(attachmentResponseGet);
+            s3Service.upload(path, file);
         }
-        s3Service.uploadAll(paths, multipartFiles);
         return ApiResponse.of(FILE_OK,fileIds);
     }
+
+
 
     /**
      * @title 사용자로부터 들러온 파일들의 정보를, DB에 저장하는 메서드
@@ -83,15 +80,15 @@ public class AttachmentUploadServiceImpl implements AttachmentUploadService {
      * @author 김경민
      */
     @Transactional
-    protected Long saveAttachmentData(Path path, MultipartFile file,User user, Long targetId, AttachmentTargetType target){
+    protected Long saveAttachmentGetId(Path path, MultipartFile file,User user, Long targetId, AttachmentTargetType target){
         String fullPath = pathService.mkfullPath(path);
         Attachment attachment = Attachment.builder()
                 .user(user)
                 .targetId(targetId)
-                .file_absolute_path(fullPath)
-                .file_relative_path(String.valueOf(path))
-                .file_original_name(file.getOriginalFilename())
-                .file_size(file.getSize())
+                .attachment_absolute_path(fullPath)
+                .attachment_relative_path(String.valueOf(path))
+                .attachment_original_name(file.getOriginalFilename())
+                .attachment_size(file.getSize())
                 .target(target)
                 .build();
         Attachment saveAttachment = attachmentRepository.save(attachment);

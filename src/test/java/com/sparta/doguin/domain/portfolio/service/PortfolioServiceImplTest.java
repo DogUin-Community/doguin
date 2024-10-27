@@ -98,7 +98,7 @@ class PortfolioServiceImplTest {
             // given
 
             // when
-            portfolioService.createPortfolio(portfolioRequestCreate1,authUser1);
+            portfolioService.createPortfolio(portfolioRequestCreate1,authUser1,null);
 
             // then - 저장 한번 호출됐는지와, 예상 데이터와 실제 데이터가 일치 하는지 확인
             Mockito.verify(portfolioRepository,Mockito.times(1)).save(Mockito.argThat( portfolio ->
@@ -117,7 +117,7 @@ class PortfolioServiceImplTest {
             given(portfolioRepository.findById(portfolioId1)).willReturn(Optional.of(portfolio1));
 
             // when
-            portfolioService.updatePortfolio(portfolioId1, portfolioRequestUpdate1,authUser1);
+            portfolioService.updatePortfolio(portfolioId1, portfolioRequestUpdate1,authUser1,null);
 
             // then - 저장(수정) 한번 호출됐는지와, 예상 데이터와 실제 데이터가 일치 하는지 확인
             Mockito.verify(portfolioRepository,Mockito.times(1)).save(Mockito.argThat( portfolio ->
@@ -136,7 +136,7 @@ class PortfolioServiceImplTest {
             given(portfolioRepository.findById(portfolioId1)).willReturn(Optional.of(portfolio1));
 
             // when
-            portfolioService.deletePortfolio(portfolioId1,authUser1);
+            portfolioService.deletePortfolio(portfolioId1,authUser1,null);
 
             // then - 저장(수정) 한번 호출됐는지와, 예상 데이터와 실제 데이터가 일치 하는지 확인
             Mockito.verify(portfolioRepository,Mockito.times(1)).delete(Mockito.argThat( portfolio ->
