@@ -1,6 +1,8 @@
 package com.sparta.doguin.domain.setup;
 
 import com.sparta.doguin.config.security.AuthUser;
+import com.sparta.doguin.domain.answer.entity.Answer;
+import com.sparta.doguin.domain.answer.enums.AnswerType;
 import com.sparta.doguin.domain.bookmark.constans.BookmarkTargetType;
 import com.sparta.doguin.domain.bookmark.entity.Bookmark;
 import com.sparta.doguin.domain.bookmark.model.BookmarkRequest;
@@ -282,6 +284,13 @@ public class DataUtil {
                 questionRequestCreate2().secondCategory(),
                 questionRequestCreate2().lastCategory()
         );
+    }
+
+    public static Answer answer1() {
+        Question question = DataUtil.question1();
+        User user = DataUtil.user1();
+
+        return new Answer("content", user, question, AnswerType.QUESTION);
     }
 
     public static PortfolioRequest.PortfolioRequestCreate portfolioRequestCreate1(){

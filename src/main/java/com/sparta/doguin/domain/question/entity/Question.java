@@ -59,6 +59,16 @@ public class Question {
         this.lastCategory = lastCategory;
     }
 
+    public Question(Long id, String title, String content, FirstCategory firstCategory, SecondCategory secondCategory, LastCategory lastCategory, User user) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.firstCategory = firstCategory;
+        this.secondCategory = secondCategory;
+        this.lastCategory = lastCategory;
+        this.user = user;
+    }
+
     public Question(String title, String content, FirstCategory firstCategory, SecondCategory secondCategory, LastCategory lastCategory, User user) {
         this.title = title;
         this.content = content;

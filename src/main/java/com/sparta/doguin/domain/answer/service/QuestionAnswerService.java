@@ -114,7 +114,7 @@ public class QuestionAnswerService implements AnswerService {
         // 대답변을 포함하여 응답 반환
         Page<AnswerResponse.GetResponse> response = answers.map(this::getResponseWithApply);
 
-        return ApiResponse.of(ApiResponseAnswerEnum.COMMENT_ANSWER_FIND_ALL_SUCCESS, response);
+        return ApiResponse.of(ApiResponseAnswerEnum.QUESTION_ANSWER_FIND_ALL_SUCCESS, response);
     }
 
     @Override
@@ -139,7 +139,7 @@ public class QuestionAnswerService implements AnswerService {
         // 대답변을 포함하여 응답 반환
         AnswerResponse.GetResponse response = getResponseWithApply(answer);
 
-        return ApiResponse.of(ApiResponseAnswerEnum.COMMENT_ANSWER_FIND_ONE_SUCCESS, response);
+        return ApiResponse.of(ApiResponseAnswerEnum.QUESTION_ANSWER_FIND_ONE_SUCCESS, response);
     }
 
 
