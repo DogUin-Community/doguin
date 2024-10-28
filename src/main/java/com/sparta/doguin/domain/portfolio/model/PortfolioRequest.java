@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
-public sealed interface PortfolioRequest permits PortfolioRequest.PortfolioRequestCreate, PortfolioRequest.PortfolioRequestUpdate, PortfolioRequest.PortfolioRequestDelete  {
+public sealed interface PortfolioRequest permits PortfolioRequest.PortfolioRequestCreate, PortfolioRequest.PortfolioRequestUpdate {
     record PortfolioRequestCreate(
             @NotNull String title,
             @NotNull String content,
@@ -22,10 +22,6 @@ public sealed interface PortfolioRequest permits PortfolioRequest.PortfolioReque
             String work_type,
             String proejct_history,
             AreaType area,
-            List<Long> fileIds
-    ) implements PortfolioRequest {}
-
-    record PortfolioRequestDelete(
             List<Long> fileIds
     ) implements PortfolioRequest {}
 }

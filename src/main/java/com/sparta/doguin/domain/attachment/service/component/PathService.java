@@ -1,6 +1,6 @@
 package com.sparta.doguin.domain.attachment.service.component;
 
-import com.sparta.doguin.config.security.AuthUser;
+import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.attachment.constans.AttachmentTargetType;
 import com.sparta.doguin.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;

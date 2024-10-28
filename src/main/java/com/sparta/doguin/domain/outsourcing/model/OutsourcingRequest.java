@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public sealed interface OutsourcingRequest permits OutsourcingRequest.OutsourcingRequestCreate, OutsourcingRequest.OutsourcingRequestUpdate {
     record OutsourcingRequestCreate (
@@ -32,7 +33,8 @@ public sealed interface OutsourcingRequest permits OutsourcingRequest.Outsourcin
              LocalDateTime recruit_end_date,
              LocalDateTime work_start_date,
              LocalDateTime work_end_date,
-             AreaType area
+             AreaType area,
+             List<Long> fileIds
     ) implements OutsourcingRequest {
 
     }

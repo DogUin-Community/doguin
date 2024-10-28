@@ -1,4 +1,4 @@
-package com.sparta.doguin.config.security;
+package com.sparta.doguin.security;
 
 import com.sparta.doguin.domain.user.enums.UserRole;
 import com.sparta.doguin.domain.user.enums.UserType;

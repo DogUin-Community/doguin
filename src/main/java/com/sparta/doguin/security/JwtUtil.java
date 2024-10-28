@@ -1,6 +1,6 @@
-package com.sparta.doguin.config.security;
+package com.sparta.doguin.security;
 
-import com.sparta.doguin.config.security.dto.JwtUtilRequest;
+import com.sparta.doguin.security.dto.JwtUtilRequest;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
