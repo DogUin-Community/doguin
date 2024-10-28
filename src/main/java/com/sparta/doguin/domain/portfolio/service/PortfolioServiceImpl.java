@@ -82,8 +82,8 @@ public class PortfolioServiceImpl implements PortfolioService {
             return ApiResponse.of(PORTFOLIO_OK,portfolioResponse);
         } else {
             attachmentUploadService.upload(files,authUser,savePortfolio.getId(), AttachmentTargetType.PORTFOLIO);
-            List<Long> fileIds = attachmentGetService.getFileIds(portfolio.getUser().getId(), portfolio.getId(), AttachmentTargetType.PORTFOLIO);
-            PortfolioResponse portfolioResponse = PortfolioResponse.PortfolioResponseGetIds.of(portfolio,fileIds);
+            List<Long> attachmentIds = attachmentGetService.getFileIds(portfolio.getUser().getId(), portfolio.getId(), AttachmentTargetType.PORTFOLIO);
+            PortfolioResponse portfolioResponse = PortfolioResponse.PortfolioResponseGetIds.of(portfolio,attachmentIds);
             return ApiResponse.of(PORTFOLIO_OK,portfolioResponse);
         }
     }
@@ -99,21 +99,21 @@ public class PortfolioServiceImpl implements PortfolioService {
      */
     @Transactional
     @Override
-    public ApiResponse<Void> updatePortfolio(Long portfolioId, PortfolioRequest.PortfolioRequestUpdate portfolioRequestUpdate, AuthUser authUser, List<MultipartFile> files) {
+    public ApiResponse<Void> updatePortfolio(Long portfolioId, PortfolioRequest.PortfolioRequestUpdate portfolioRequestUpdate, AuthUser authUser, List<MultipartFile> updateFiles) {
         User user = User.fromAuthUser(authUser);
         Portfolio findPortfolio = findById(portfolioId);
         Portfolio portfolio = Portfolio.builder()
                 .id(findPortfolio.getId())
                 .user(findPortfolio.getUser())
-                .title(portfolioRequestUpdate.title())
-                .content(portfolioRequestUpdate.content())
-                .work_experience(portfolioRequestUpdate.work_experience())
-                .work_type(portfolioRequestUpdate.work_type())
-                .project_history(portfolioRequestUpdate.proejct_history())
-                .area(portfolioRequestUpdate.area())
+                .title(portfolioRequestUpdate.title() == null ? findPortfolio.getTitle() : portfolioRequestUpdate.title())
+                .content(portfolioRequestUpdate.content() == null ? findPortfolio.getContent() : portfolioRequestUpdate.content())
+                .work_experience(portfolioRequestUpdate.work_experience() == null ? findPortfolio.getWork_experience() : portfolioRequestUpdate.work_experience())
+                .work_type(portfolioRequestUpdate.work_type() == null ? findPortfolio.getWork_type() : portfolioRequestUpdate.work_type())
+                .project_history(portfolioRequestUpdate.proejct_history() == null ? findPortfolio.getProject_history() : portfolioRequestUpdate.proejct_history())
+                .area(portfolioRequestUpdate.area() == null ? findPortfolio.getArea() : portfolioRequestUpdate.area())
                 .build();
-        if (files != null) {
-            attachmentUpdateService.update(files,portfolioRequestUpdate.fileIds(),authUser);
+        if (updateFiles != null) {
+            attachmentUpdateService.update(updateFiles,portfolioRequestUpdate.fileIds(),authUser);
         }
         PortfolioValidator.isMe(user.getId(),findPortfolio.getUser().getId());
         portfolioRepository.save(portfolio);
@@ -131,10 +131,14 @@ public class PortfolioServiceImpl implements PortfolioService {
     @Transactional
     @Override
     public ApiResponse<Void> deletePortfolio(
-            Long portfolioId,AuthUser authUser,
+            Long portfolioId,
+            AuthUser authUser,
             PortfolioRequest.PortfolioRequestDelete portfolioRequestDelete
     ) {
+        Portfolio portfolio = findById(portfolioId);
+        PortfolioValidator.isMe(authUser.getUserId(),portfolio.getUser().getId());
         attachmentDeleteService.delete(authUser,portfolioRequestDelete.fileIds());
+        portfolioRepository.delete(portfolio);
         return ApiResponse.of(PORTFOLIO_OK);
     }
 

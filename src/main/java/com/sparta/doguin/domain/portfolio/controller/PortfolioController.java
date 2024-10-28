@@ -41,6 +41,27 @@ public class PortfolioController {
         return ApiResponse.of(apiResponse);
     }
 
+    @PutMapping("/{portfolioId}")
+    ResponseEntity<ApiResponse<Void>> updatePortfolio(
+            @PathVariable Long portfolioId,
+            @RequestPart PortfolioRequest.PortfolioRequestUpdate portfolioRequestUpdate,
+            @RequestPart(required = false) List<MultipartFile> files,
+            @AuthenticationPrincipal AuthUser authUser
+    ) {
+        ApiResponse<Void> apiResponse = portfolioService.updatePortfolio(portfolioId,portfolioRequestUpdate,authUser,files);
+        return ApiResponse.of(apiResponse);
+    }
+
+    @DeleteMapping("/{portfolioId}")
+    ResponseEntity<ApiResponse<Void>> deletePortfolio(
+            @PathVariable Long portfolioId,
+            @RequestPart PortfolioRequest.PortfolioRequestDelete portfolioRequestDelete,
+            @AuthenticationPrincipal AuthUser authUser
+    ) {
+        ApiResponse<Void> apiResponse = portfolioService.deletePortfolio(portfolioId,authUser,portfolioRequestDelete);
+        return ApiResponse.of(apiResponse);
+    }
+
     /**
      * 자신의 포트폴리오들 조회
      */
@@ -71,27 +92,6 @@ public class PortfolioController {
         Sort.Direction direction = Sort.Direction.fromString(sort);
         Pageable pageable = PageRequest.of(page, size, direction,"createdAt");
         ApiResponse<Page<PortfolioResponse>> apiResponse = portfolioService.getAllOtherPortfolio(pageable,area);
-        return ApiResponse.of(apiResponse);
-    }
-
-    @PutMapping("/{portfolioId}")
-    ResponseEntity<ApiResponse<Void>> updatePortfolio(
-            @PathVariable Long portfolioId,
-            @RequestPart PortfolioRequest.PortfolioRequestUpdate portfolioRequestUpdate,
-            @RequestPart(required = false) List<MultipartFile> files,
-            @AuthenticationPrincipal AuthUser authUser
-    ) {
-        ApiResponse<Void> apiResponse = portfolioService.updatePortfolio(portfolioId,portfolioRequestUpdate,authUser,files);
-        return ApiResponse.of(apiResponse);
-    }
-
-    @DeleteMapping("/{portfolioId}")
-    ResponseEntity<ApiResponse<Void>> deletePortfolio(
-            @PathVariable Long portfolioId,
-            @RequestPart PortfolioRequest.PortfolioRequestDelete portfolioRequestDelete,
-            @AuthenticationPrincipal AuthUser authUser
-    ) {
-        ApiResponse<Void> apiResponse = portfolioService.deletePortfolio(portfolioId,authUser,portfolioRequestDelete);
         return ApiResponse.of(apiResponse);
     }
 

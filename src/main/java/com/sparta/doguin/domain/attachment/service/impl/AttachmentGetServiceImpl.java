@@ -77,8 +77,7 @@ public class AttachmentGetServiceImpl implements AttachmentGetService {
     }
 
     /**
-     * @title 파일 ID의 값들로 파일을 찾고, 해당 파일의 User와 로그인 되있는 User가 동일한지 확인하는 메서드
-     * @description 수정 및 삭제시, 본인이 작업한 파일에 대해서만 기능이 동작해야 하기 때문에 만들어짐
+     * @title 파일 ID의 값들로 파일을 찾고, 파일들을 반환
      *
      * @param attachmentIds 파일 ID들
      * @return 파일 ID에 해당하는 모든 파일을 반환

@@ -3,14 +3,12 @@ package com.sparta.doguin.domain.attachment.service.impl;
 import com.sparta.doguin.config.security.AuthUser;
 import com.sparta.doguin.domain.attachment.constans.AttachmentTargetType;
 import com.sparta.doguin.domain.attachment.entity.Attachment;
-import com.sparta.doguin.domain.attachment.model.AttachmentResponse;
 import com.sparta.doguin.domain.attachment.repository.AttachmentRepository;
 import com.sparta.doguin.domain.attachment.service.component.PathService;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
 import com.sparta.doguin.domain.attachment.service.s3.S3Service;
 import com.sparta.doguin.domain.attachment.validate.AttachmentValidator;
 import com.sparta.doguin.domain.common.exception.FileException;
-import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,7 +19,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.sparta.doguin.domain.common.response.ApiResponseFileEnum.FILE_OK;
+import static com.sparta.doguin.domain.common.response.ApiResponseFileEnum.FILE_IO_ERROR;
 
 @Service
 @RequiredArgsConstructor
@@ -48,21 +46,24 @@ public class AttachmentUploadServiceImpl implements AttachmentUploadService {
      */
     @Transactional
     @Override
-    public ApiResponse<List<AttachmentResponse.AttachmentResponseGet>> upload(List<MultipartFile> files, AuthUser authUser, Long targetId, AttachmentTargetType target) {
+    public void upload(List<MultipartFile> files, AuthUser authUser, Long targetId, AttachmentTargetType target){
         User user = User.fromAuthUser(authUser);
+        List<byte[]> fileBytesList = new ArrayList<>();
         List<Path> paths = new ArrayList<>();
-        List<AttachmentResponse.AttachmentResponseGet> attachmentIds = new ArrayList<>();
         for ( MultipartFile file : files ) {
             AttachmentValidator.isInExtension(file);
             AttachmentValidator.isSizeBig(file);
             Path path = pathService.mkPath(file,authUser,targetId,target);
-            Long saveId = saveAttachmentGetId(path, file, user, targetId, target);
+            try {
+                fileBytesList.add(file.getBytes());
+            } catch (Exception e){
+                throw new FileException(FILE_IO_ERROR);
+            }
+
             paths.add(path);
-            AttachmentResponse.AttachmentResponseGet attachmentResponseGet = new AttachmentResponse.AttachmentResponseGet(saveId);
-            attachmentIds.add(attachmentResponseGet);
+            saveAttachmentGetId(path,file,user,targetId,target);
         }
-        s3Service.uploadAllAsync(paths,files);
-        return ApiResponse.of(FILE_OK,attachmentIds);
+        s3Service.uploadAllAsync(paths,fileBytesList);
     }
 
 
@@ -84,7 +85,7 @@ public class AttachmentUploadServiceImpl implements AttachmentUploadService {
      * @author 김경민
      */
     @Transactional
-    protected Long saveAttachmentGetId(Path path, MultipartFile file,User user, Long targetId, AttachmentTargetType target){
+    protected void saveAttachmentGetId(Path path, MultipartFile file,User user, Long targetId, AttachmentTargetType target){
         String fullPath = pathService.mkfullPath(path);
         Attachment attachment = Attachment.builder()
                 .user(user)
@@ -95,7 +96,6 @@ public class AttachmentUploadServiceImpl implements AttachmentUploadService {
                 .attachment_size(file.getSize())
                 .target(target)
                 .build();
-        Attachment saveAttachment = attachmentRepository.save(attachment);
-        return saveAttachment.getId();
+        attachmentRepository.save(attachment);
     }
 }
