@@ -1,6 +1,6 @@
 package com.sparta.doguin.domain.mypage.service;
 
-import com.sparta.doguin.config.security.AuthUser;
+import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.board.entity.Board;
 import com.sparta.doguin.domain.board.service.BulletinService;
 import com.sparta.doguin.domain.board.service.InquiryService;
