@@ -19,14 +19,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class NoticeService implements BoardService{
 
     private final BoardRepository boardRepository;
     private final NoticeAnswerService noticeAnswerService;
+    private final ViewTrackingService viewTrackingService;
+
     private final BoardType boardType = BoardType.BOARD_NOTICE;
 
     /**
@@ -76,6 +76,7 @@ public class NoticeService implements BoardService{
      * 공지 게시물 단건 조회
      *
      * @param boardId 조회 대상 공지 게시물의 id
+     * @param user 로그인 한 계정 (로그인 안할 수 있음)
      * @return 조회된 공지 게시물 객체
      * @throws HandleNotFound          공지 게시물 조회 시 데이터가 없을 경우 발생
      * @throws InvalidRequestException 게시물 타입이 공지 게시물이 아닐 경우 발생
@@ -83,7 +84,7 @@ public class NoticeService implements BoardService{
      * @since 1.0
      */
     @Override
-    public BoardResponse.BoardWithAnswer viewOne(Long boardId) {
+    public BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId, User user) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.NOTICE_NOT_FOUND));
         if (board.getBoardType() != boardType) {
@@ -91,7 +92,12 @@ public class NoticeService implements BoardService{
         }
         Page<AnswerResponse.Response> responses = noticeAnswerService.findByBoardId(boardId,PageRequest.of(0,10));
 
-        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(), responses);
+        if(user!=null){
+            viewTrackingService.trackUserView(boardId, user.getId());
+        }
+
+        Long viewCount =viewTrackingService.getDailyUniqueViewCount(boardId)+board.getView();
+        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(),viewCount, responses);
     }
 
     /**

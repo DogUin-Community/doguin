@@ -15,6 +15,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,8 +32,33 @@ public class PortfolioController {
     }
 
     @PostMapping
-    ResponseEntity<ApiResponse<Void>> createPortfolio(@Valid @RequestBody PortfolioRequest.PortfolioRequestCreate portfolioRequest, @AuthenticationPrincipal AuthUser authUser) {
-        ApiResponse<Void> apiResponse = portfolioService.createPortfolio(portfolioRequest, authUser);
+    ResponseEntity<ApiResponse<PortfolioResponse>> createPortfolio(
+            @Valid @RequestPart PortfolioRequest.PortfolioRequestCreate portfolioRequest,
+            @RequestPart(required = false) List<MultipartFile> files,
+            @AuthenticationPrincipal AuthUser authUser
+    ) {
+        ApiResponse<PortfolioResponse> apiResponse = portfolioService.createPortfolio(portfolioRequest, authUser,files);
+        return ApiResponse.of(apiResponse);
+    }
+
+    @PutMapping("/{portfolioId}")
+    ResponseEntity<ApiResponse<Void>> updatePortfolio(
+            @PathVariable Long portfolioId,
+            @RequestPart PortfolioRequest.PortfolioRequestUpdate portfolioRequestUpdate,
+            @RequestPart(required = false) List<MultipartFile> files,
+            @AuthenticationPrincipal AuthUser authUser
+    ) {
+        ApiResponse<Void> apiResponse = portfolioService.updatePortfolio(portfolioId,portfolioRequestUpdate,authUser,files);
+        return ApiResponse.of(apiResponse);
+    }
+
+    @DeleteMapping("/{portfolioId}")
+    ResponseEntity<ApiResponse<Void>> deletePortfolio(
+            @PathVariable Long portfolioId,
+            @RequestPart PortfolioRequest.PortfolioRequestDelete portfolioRequestDelete,
+            @AuthenticationPrincipal AuthUser authUser
+    ) {
+        ApiResponse<Void> apiResponse = portfolioService.deletePortfolio(portfolioId,authUser,portfolioRequestDelete);
         return ApiResponse.of(apiResponse);
     }
 
@@ -64,19 +92,6 @@ public class PortfolioController {
         Sort.Direction direction = Sort.Direction.fromString(sort);
         Pageable pageable = PageRequest.of(page, size, direction,"createdAt");
         ApiResponse<Page<PortfolioResponse>> apiResponse = portfolioService.getAllOtherPortfolio(pageable,area);
-        return ApiResponse.of(apiResponse);
-    }
-
-
-    @PutMapping("/{portfolioId}")
-    ResponseEntity<ApiResponse<Void>> updatePortfolio(@PathVariable Long portfolioId, @RequestBody PortfolioRequest.PortfolioRequestUpdate portfolioRequestUpdate, @AuthenticationPrincipal AuthUser authUser) {
-        ApiResponse<Void> apiResponse = portfolioService.updatePortfolio(portfolioId,portfolioRequestUpdate,authUser);
-        return ApiResponse.of(apiResponse);
-    }
-
-    @DeleteMapping("/{portfolioId}")
-    ResponseEntity<ApiResponse<Void>> deletePortfolio(@PathVariable Long portfolioId,@AuthenticationPrincipal AuthUser authUser) {
-        ApiResponse<Void> apiResponse = portfolioService.deletePortfolio(portfolioId,authUser);
         return ApiResponse.of(apiResponse);
     }
 

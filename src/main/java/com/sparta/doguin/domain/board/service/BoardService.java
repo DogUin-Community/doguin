@@ -7,8 +7,6 @@ import com.sparta.doguin.domain.board.entity.Board;
 import com.sparta.doguin.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
-
 public interface BoardService {
 
     // 게시글 생성
@@ -17,36 +15,28 @@ public interface BoardService {
     // 게시글 수정
     Board update(User user, Long boardId, BoardCommonRequest boardRequest);
 
+    // 게시글 단일 조회
+    BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId,User user);
 
-    default BoardResponse.BoardWithAnswer viewOne(Long boardId) {
-        throw new UnsupportedOperationException("viewOne operation not supported");
-    }
-
-
+    // 게시글 전체 조회
     default Page<BoardCommonResponse> viewAll(int page, int size) {
         throw new UnsupportedOperationException("viewAll operation not supported");
     }
 
-
+    // 게시글 검색
     default Page<BoardCommonResponse> search(int page, int size, String title) {
         throw new UnsupportedOperationException("search operation not supported");
     }
 
-    default BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId,User user) {
-        throw new UnsupportedOperationException("viewOne operation not supported");
-    }
-
-
+    // 특정 작성자의 게시물 반환
     default Page<BoardCommonResponse> viewAllWithUser(int page, int size,User user) {
         throw new UnsupportedOperationException("viewAll operation not supported");
     }
 
-
+    // 특정 작성자가 작성한 문의 게시물
     default Page<BoardCommonResponse> searchWithUser(int page, int size, String title,User user) {
         throw new UnsupportedOperationException("search operation not supported");
     }
-
-
 
     // 게시글 삭제
     void delete(User user, Long boardId);

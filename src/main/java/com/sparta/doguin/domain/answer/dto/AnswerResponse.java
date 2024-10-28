@@ -1,7 +1,9 @@
 package com.sparta.doguin.domain.answer.dto;
 
-public sealed interface AnswerResponse permits AnswerResponse.Response {
+import java.util.List;
 
-    record Response(Long id,
-                  String content) implements AnswerResponse {}
+public sealed interface AnswerResponse permits AnswerResponse.Response, AnswerResponse.GetResponse {
+    record Response(Long id, String content) implements AnswerResponse {}
+
+    record GetResponse(Long id, String content, List<GetResponse> apply) implements AnswerResponse {}
 }

@@ -1,6 +1,8 @@
 package com.sparta.doguin.domain.setup;
 
 import com.sparta.doguin.config.security.AuthUser;
+import com.sparta.doguin.domain.answer.entity.Answer;
+import com.sparta.doguin.domain.answer.enums.AnswerType;
 import com.sparta.doguin.domain.board.BoardType;
 import com.sparta.doguin.domain.board.entity.Board;
 import com.sparta.doguin.domain.bookmark.constans.BookmarkTargetType;
@@ -25,6 +27,7 @@ import com.sparta.doguin.domain.user.enums.UserType;
 import org.springframework.data.domain.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DataUtil {
@@ -283,6 +286,13 @@ public class DataUtil {
         );
     }
 
+    public static Answer answer1() {
+        Question question = DataUtil.question1();
+        User user = DataUtil.user1();
+
+        return new Answer("content", user, question, AnswerType.QUESTION);
+    }
+
     public static PortfolioRequest.PortfolioRequestCreate portfolioRequestCreate1(){
         return new PortfolioRequest.PortfolioRequestCreate(
                 "Senior Developer Portfolio",
@@ -306,24 +316,28 @@ public class DataUtil {
     }
 
     public static PortfolioRequest.PortfolioRequestUpdate portfolioRequestUpdate1(){
+        List<Long> fileIds = new ArrayList<>();
         return new PortfolioRequest.PortfolioRequestUpdate(
                 "Senior Developer Portfolio11",
                 "This portfolio highlight1s my experience in backend development with Java and Spring1.",
                 5L,
                 "Remot2e1",
                 "Dev22e1loped multiple microservices for an e-commerce platform.",
-                AreaType.SEOUL
+                AreaType.SEOUL,
+                fileIds
         );
     }
 
     public static PortfolioRequest.PortfolioRequestUpdate portfolioRequestUpdate2(){
+        List<Long> fileIds = new ArrayList<>();
         return new PortfolioRequest.PortfolioRequestUpdate(
                 "Senior Developer Portfolio33",
                 "This portfolio highlight31s my experience in backend development with Java and Spring1.",
                 4L,
                 "Remot233e1",
                 "Dev22333e1loped multiple microservices for an e-commerce platform.",
-                AreaType.SEOUL
+                AreaType.SEOUL,
+                fileIds
         );
     }
 

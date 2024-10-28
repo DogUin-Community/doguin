@@ -27,6 +27,7 @@ public class Board extends Timestamped {
     @JoinColumn(name = "user_id")
     private User user;
 
+    private Long view;
 
     public Board(Long id, String title, String content) {
         this.id = id;
@@ -39,6 +40,7 @@ public class Board extends Timestamped {
         this.content = content;
         this.boardType = boardType;
         this.user = user;
+        this.view=0L;
     }
 
     public void update(String title, String content){
@@ -49,4 +51,9 @@ public class Board extends Timestamped {
             this.content = content;
         }
     }
+
+    public void setTotalViewCount(Long now , Long today){
+        this.view = now + today;
+    }
+
 }

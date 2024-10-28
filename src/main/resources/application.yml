@@ -18,6 +18,22 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+  data:
+    redis:
+      port: ${REDIS_PORT}
+      host: ${REDIS_HOST}
+      password: ${REDIS_PASSWORD}
 jwt:
   secret:
     key: ${JWT_SECRET_KEY}
+
+cloud:
+  aws:
+    s3:
+      bucket: ${BUCKET}
+    stack.auto: false
+    region.static: ${REGION_STATIC}
+    credentials:
+      accessKey: ${ACCESS_KEY}
+      secretKey: ${SECRET_KEY}
+

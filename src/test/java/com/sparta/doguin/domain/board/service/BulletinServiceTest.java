@@ -47,6 +47,8 @@ class BulletinServiceTest {
     private BoardRepository boardRepository;
     @Mock
     private BulletinAnswerService bulletinAnswerService;
+    @Mock
+    private ViewTrackingService viewTrackingService;
 
     @InjectMocks
     private BulletinService bulletinService;
@@ -132,7 +134,8 @@ class BulletinServiceTest {
         given(boardRepository.findById(anyLong())).willReturn(Optional.of(board));
         given(bulletinAnswerService.findByBoardId(1L, pageable)).willReturn(responsePage);
 
-        BoardResponse.BoardWithAnswer result = bulletinService.viewOne( 1L);
+
+        BoardResponse.BoardWithAnswer result = bulletinService.viewOneWithUser( 1L,user);
         assertThat(result.title()).isEqualTo("일반 게시물");
         assertThat(responsePage.getContent().get(0).content()).isEqualTo("답글1");
     }
@@ -145,7 +148,7 @@ class BulletinServiceTest {
 
         // When
         InvalidRequestException exception = assertThrows(InvalidRequestException.class, () ->
-                bulletinService.viewOne(1L )
+                bulletinService.viewOneWithUser( 2L,user)
         );
 
         // Then
