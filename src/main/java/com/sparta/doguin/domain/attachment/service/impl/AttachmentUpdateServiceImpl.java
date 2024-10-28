@@ -45,7 +45,7 @@ public class AttachmentUpdateServiceImpl implements AttachmentUpdateService {
     @Override
     public void update(List<MultipartFile> updateFiles, List<Long> fileIds,AuthUser authUser) {
         List<Attachment> prvAattachments = attachmentGetService.getFiles(fileIds);
-        AttachmentValidator.isCountEqual(fileIds.size(), updateFiles.size());
+        AttachmentValidator.isCountEqual(fileIds.size(), prvAattachments.size());
         updateAttachmentsWithNewFiles(prvAattachments,updateFiles,authUser);
     }
 
