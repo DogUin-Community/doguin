@@ -113,7 +113,7 @@ public class QuestionAnswerService implements AnswerService {
                     return new AnswerResponse.GetResponse(answer.getId(), answer.getContent(), applyResponse);
                 });
 
-        return ApiResponse.of(ApiResponseAnswerEnum.COMMENT_ANSWER_FIND_ALL_SUCCESS, response);
+        return ApiResponse.of(ApiResponseAnswerEnum.QUESTION_ANSWER_FIND_ALL_SUCCESS, response);
     }
 
     @Override
@@ -135,7 +135,7 @@ public class QuestionAnswerService implements AnswerService {
 
         AnswerResponse.GetResponse response = new AnswerResponse.GetResponse(answer.getId(), answer.getContent(), applyresponse);
 
-        return ApiResponse.of(ApiResponseAnswerEnum.COMMENT_ANSWER_FIND_ONE_SUCCESS, response);
+        return ApiResponse.of(ApiResponseAnswerEnum.QUESTION_ANSWER_FIND_ONE_SUCCESS, response);
     }
 
     @Override
