@@ -10,6 +10,7 @@ import com.sparta.doguin.domain.common.exception.AnswerException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseAnswerEnum;
 import com.sparta.doguin.domain.question.entity.Question;
+import com.sparta.doguin.domain.question.service.QuestionService;
 import com.sparta.doguin.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ public class ApplyAnswerService implements AnswerService {
 
     private final AnswerRepository answerRepository;
     private final AnswerType answerType = AnswerType.QUESTION;
+    private final QuestionService questionService;
 
     @Override
     @Transactional
@@ -28,24 +30,23 @@ public class ApplyAnswerService implements AnswerService {
         // 로그인한 사용자의 인증 정보
         User user = User.fromAuthUser(authUser);
 
-        // 질문 찾기
-        Answer findAnswer = answerRepository.findFirstByQuestionId(questionId)
-                .orElseThrow(() -> new AnswerException(ApiResponseAnswerEnum.QUESTION_NOT_FOUND));
+        // 질문이 존재하는지 확인
+        Question question = questionService.findById(questionId);
+        if (question == null) {
+            throw new AnswerException(ApiResponseAnswerEnum.QUESTION_NOT_FOUND);
+        }
 
-        // Question 가져오기
-        Question question = findAnswer.getQuestion();
-
-        // 상위 댓글 찾기
+        // 해당 답변이 없을 때 예외처리
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new AnswerException(ApiResponseAnswerEnum.QUESTION_ANSWER_NOT_FOUND));
 
-        // 본인이 생성한 글인지 확인
-        if (!answer.getUser().getId().equals(user.getId())) {
-            throw new AnswerException(ApiResponseAnswerEnum.UPDATE_ACCESS_DENIED);
+        // 답변이 해당 질문에 속하는지 확인
+        if (!answer.getQuestionId().equals(questionId)) {
+            throw new AnswerException(ApiResponseAnswerEnum.ANSWER_BELONG_TO_QUESTION);
         }
 
         // 답변 생성
-        Answer newAnswer = new Answer(request.content(), user, question, answerType);
+        Answer newAnswer = new Answer(request.content(), user, question, answer, answerType);
 
         // 답변 저장
         answerRepository.save(newAnswer);
@@ -60,19 +61,18 @@ public class ApplyAnswerService implements AnswerService {
         // 로그인 한 사용자의 인증 정보
         User user = User.fromAuthUser(authUser);
 
-        // 질문 찾기
-        Answer findAnswer = answerRepository.findFirstByQuestionId(questionId)
-                .orElseThrow(() -> new AnswerException(ApiResponseAnswerEnum.QUESTION_NOT_FOUND));
+        // 해당 질문이 없을 때 예외처리
+        Question question = questionService.findById(questionId);
+        if (question == null) {
+            throw new AnswerException(ApiResponseAnswerEnum.QUESTION_NOT_FOUND);
+        }
 
-        // Question 가져오기
-        Question question = findAnswer.getQuestion();
-
-        // 상위 댓글 찾기
-        Answer parentAnswer = answerRepository.findById(parentId)
+        // 해당 답변이 없을 때 예외처리
+        Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new AnswerException(ApiResponseAnswerEnum.QUESTION_ANSWER_NOT_FOUND));
 
-        // 대답변 찾기
-        Answer answer = answerRepository.findById(answerId)
+        // 해당 대답변이 없을 때 예외처리
+        Answer parentAnswer = answerRepository.findById(parentId)
                 .orElseThrow(() -> new AnswerException(ApiResponseAnswerEnum.QUESTION_ANSWER_NOT_FOUND));
 
         // 해당 대답변이 상위 댓글에 속하는지 검증
@@ -83,6 +83,11 @@ public class ApplyAnswerService implements AnswerService {
         // 본인이 생성한 글인지 확인
         if (!answer.getUser().getId().equals(user.getId())) {
             throw new AnswerException(ApiResponseAnswerEnum.UPDATE_ACCESS_DENIED);
+        }
+
+        // 답변이 해당 질문에 속하는지 확인
+        if (!answer.getQuestionId().equals(questionId)) {
+            throw new AnswerException(ApiResponseAnswerEnum.ANSWER_BELONG_TO_QUESTION);
         }
 
         // 답변 수정
@@ -101,29 +106,33 @@ public class ApplyAnswerService implements AnswerService {
         // 로그인 한 사용자의 인증 정보
         User user = User.fromAuthUser(authUser);
 
+        // 해당 질문이 없을 때 예외처리
+        Question question = questionService.findById(questionId);
+        if (question == null) {
+            throw new AnswerException(ApiResponseAnswerEnum.QUESTION_NOT_FOUND);
+        }
 
-        // 질문 찾기
-        Answer findAnswer = answerRepository.findFirstByQuestionId(questionId)
-                .orElseThrow(() -> new AnswerException(ApiResponseAnswerEnum.QUESTION_NOT_FOUND));
+        // 해당 답변이 없을 때 예외처리
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new AnswerException(ApiResponseAnswerEnum.QUESTION_ANSWER_NOT_FOUND));
 
-        Question question = findAnswer.getQuestion();
-
-        // 상위 댓글 찾기
+        // 해당 대답변이 없을 때 예외처리
         Answer parentAnswer = answerRepository.findById(parentId)
                 .orElseThrow(() -> new AnswerException(ApiResponseAnswerEnum.QUESTION_ANSWER_NOT_FOUND));
 
-        // 대답변 찾기
-        Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> new AnswerException(ApiResponseAnswerEnum.QUESTION_ANSWER_NOT_FOUND));
+        // 해당 대답변이 상위 댓글에 속하는지 검증
+        if (answer.getParent() == null || !answer.getParent().getId().equals(parentAnswer.getId())) {
+            throw new AnswerException(ApiResponseAnswerEnum.APPLY_ANSWER_NOT_FOUND);
+        }
 
         // 본인이 생성한 글인지 확인
         if (!answer.getUser().getId().equals(user.getId())) {
             throw new AnswerException(ApiResponseAnswerEnum.UPDATE_ACCESS_DENIED);
         }
 
-        // 해당 대답변이 상위 댓글에 속하는지 검증
-        if (answer.getParent() == null || !answer.getParent().getId().equals(parentAnswer.getId())) {
-            throw new AnswerException(ApiResponseAnswerEnum.APPLY_ANSWER_NOT_FOUND);
+        // 답변이 해당 질문에 속하는지 확인
+        if (!answer.getQuestionId().equals(questionId)) {
+            throw new AnswerException(ApiResponseAnswerEnum.ANSWER_BELONG_TO_QUESTION);
         }
 
         // 대댓글 삭제

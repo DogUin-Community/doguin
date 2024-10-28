@@ -70,8 +70,13 @@ public class Answer extends Timestamped {
         this.depth = 1; // 대댓글 depth는 2
     }
 
+    // 수정
     public void update(AnswerRequest.Request request) {
         this.content = request.content();
+    }
+
+    public Long getQuestionId() {
+        return question != null ? question.getId() : null;
     }
 
 }

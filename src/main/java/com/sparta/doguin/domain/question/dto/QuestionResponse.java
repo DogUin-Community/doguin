@@ -5,7 +5,8 @@ import com.sparta.doguin.domain.question.enums.FirstCategory;
 import com.sparta.doguin.domain.question.enums.LastCategory;
 import com.sparta.doguin.domain.question.enums.QuestionStatus;
 import com.sparta.doguin.domain.question.enums.SecondCategory;
-import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 public sealed interface QuestionResponse permits QuestionResponse.CreatedQuestion, QuestionResponse.GetQuestions, QuestionResponse.GetQuestion {
 
@@ -32,5 +33,5 @@ public sealed interface QuestionResponse permits QuestionResponse.CreatedQuestio
                        SecondCategory secondCategory,
                        LastCategory lastCategory,
                        QuestionStatus questionStatus,
-                       Page<AnswerResponse.GetResponse> comment) implements QuestionResponse {}
+                       List<AnswerResponse.GetResponse> answer) implements QuestionResponse {}
 }
