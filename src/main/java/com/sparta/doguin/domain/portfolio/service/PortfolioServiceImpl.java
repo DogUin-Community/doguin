@@ -1,6 +1,6 @@
 package com.sparta.doguin.domain.portfolio.service;
 
-import com.sparta.doguin.config.security.AuthUser;
+import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.attachment.constans.AttachmentTargetType;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteService;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentGetService;
@@ -50,7 +50,7 @@ public class PortfolioServiceImpl implements PortfolioService {
     public ApiResponse<PortfolioResponse> getPortfolio(Long portfolioId) {
         Portfolio portfolio = findById(portfolioId);
         List<String> filePaths = attachmentGetService.getAllAttachmentPath(portfolio.getUser().getId(), portfolio.getId(), AttachmentTargetType.PORTFOLIO);
-        PortfolioResponse portfolioResponse = PortfolioResponse.PortfolioResponseGet.of(portfolio,filePaths);
+        PortfolioResponse portfolioResponse = PortfolioResponse.PortfolioResponseGetFilePaths.of(portfolio,filePaths);
         return ApiResponse.of(PORTFOLIO_OK,portfolioResponse);
     }
 
@@ -78,7 +78,7 @@ public class PortfolioServiceImpl implements PortfolioService {
                 .build();
         Portfolio savePortfolio = portfolioRepository.save(portfolio);
         if (files == null) {
-            PortfolioResponse portfolioResponse = PortfolioResponse.PortfolioResponseGet.of(portfolio);
+            PortfolioResponse portfolioResponse = PortfolioResponse.PortfolioResponseGetFilePaths.of(portfolio);
             return ApiResponse.of(PORTFOLIO_OK,portfolioResponse);
         } else {
             attachmentUploadService.upload(files,authUser,savePortfolio.getId(), AttachmentTargetType.PORTFOLIO);
@@ -132,12 +132,12 @@ public class PortfolioServiceImpl implements PortfolioService {
     @Override
     public ApiResponse<Void> deletePortfolio(
             Long portfolioId,
-            AuthUser authUser,
-            PortfolioRequest.PortfolioRequestDelete portfolioRequestDelete
+            AuthUser authUser
     ) {
         Portfolio portfolio = findById(portfolioId);
         PortfolioValidator.isMe(authUser.getUserId(),portfolio.getUser().getId());
-        attachmentDeleteService.delete(authUser,portfolioRequestDelete.fileIds());
+        List<Long> fileIds = attachmentGetService.getFileIds(portfolio.getUser().getId(), portfolio.getId(), AttachmentTargetType.PORTFOLIO);
+        attachmentDeleteService.delete(authUser,fileIds);
         portfolioRepository.delete(portfolio);
         return ApiResponse.of(PORTFOLIO_OK);
     }
@@ -156,7 +156,7 @@ public class PortfolioServiceImpl implements PortfolioService {
         Page<PortfolioResponse> portfolios = pageablePortfolio.map(portfolio -> {
             // 각 포트폴리오에 대해 file_paths를 가져옴
             List<String> filePaths = attachmentGetService.getAllAttachmentPath(authUser.getUserId(), portfolio.getId(), AttachmentTargetType.PORTFOLIO);
-            return PortfolioResponse.PortfolioResponseGet.of(portfolio, filePaths); // filePaths를 포함하여 변환
+            return PortfolioResponse.PortfolioResponseGetFilePaths.of(portfolio, filePaths); // filePaths를 포함하여 변환
         });
 
         return ApiResponse.of(PORTFOLIO_OK,portfolios);
@@ -175,7 +175,7 @@ public class PortfolioServiceImpl implements PortfolioService {
         Page<PortfolioResponse> portfolios = pageablePortfolio.map(portfolio -> {
             // 각 포트폴리오에 대해 file_paths를 가져옴
             List<String> filePaths = attachmentGetService.getAllAttachmentPath(portfolio.getId(), AttachmentTargetType.PORTFOLIO);
-            return PortfolioResponse.PortfolioResponseGet.of(portfolio, filePaths); // filePaths를 포함하여 변환
+            return PortfolioResponse.PortfolioResponseGetFilePaths.of(portfolio, filePaths); // filePaths를 포함하여 변환
         });
 
         return ApiResponse.of(PORTFOLIO_OK,portfolios);
