@@ -1,6 +1,6 @@
 package com.sparta.doguin.domain.attachment.controller;
 
-import com.sparta.doguin.config.security.AuthUser;
+import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.attachment.constans.AttachmentTargetType;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteService;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDownloadService;

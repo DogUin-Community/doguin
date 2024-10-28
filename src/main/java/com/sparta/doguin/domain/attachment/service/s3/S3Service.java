@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.net.URLConnection;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -65,7 +66,13 @@ public class S3Service {
                 Path path = paths.get(i);
                 byte[] fileBytes = fileBytesList.get(i);
 
+                String contentType = URLConnection.guessContentTypeFromName(path.toString());
+                if (contentType == null) {
+                    contentType = "application/octet-stream"; // 기본값으로 설정
+                }
+
                 ObjectMetadata metadata = new ObjectMetadata();
+                metadata.setContentType(contentType); // 추론된 MIME 타입 설정
                 metadata.setContentLength(fileBytes.length);
 
                 try (InputStream inputStream = new ByteArrayInputStream(fileBytes)) {
@@ -87,6 +94,7 @@ public class S3Service {
      * @since 1.0
      * @author 김경민
      */
+    //TODO: 파일이 사라져서 안되는건가 아까 됐던거같은데 으악
     @Async
     public void deleteAllAsync(List<Attachment> attachments){
         for (Attachment attachment : attachments) {

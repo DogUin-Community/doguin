@@ -1,6 +1,6 @@
 package com.sparta.doguin.domain.portfolio.controller;
 
-import com.sparta.doguin.config.security.AuthUser;
+import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.outsourcing.constans.AreaType;
 import com.sparta.doguin.domain.portfolio.model.PortfolioRequest;
@@ -55,10 +55,9 @@ public class PortfolioController {
     @DeleteMapping("/{portfolioId}")
     ResponseEntity<ApiResponse<Void>> deletePortfolio(
             @PathVariable Long portfolioId,
-            @RequestPart PortfolioRequest.PortfolioRequestDelete portfolioRequestDelete,
             @AuthenticationPrincipal AuthUser authUser
     ) {
-        ApiResponse<Void> apiResponse = portfolioService.deletePortfolio(portfolioId,authUser,portfolioRequestDelete);
+        ApiResponse<Void> apiResponse = portfolioService.deletePortfolio(portfolioId,authUser);
         return ApiResponse.of(apiResponse);
     }
 

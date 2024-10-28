@@ -1,6 +1,6 @@
 package com.sparta.doguin.domain.setup;
 
-import com.sparta.doguin.config.security.AuthUser;
+import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.answer.entity.Answer;
 import com.sparta.doguin.domain.answer.enums.AnswerType;
 import com.sparta.doguin.domain.bookmark.constans.BookmarkTargetType;
@@ -126,7 +126,8 @@ public class DataUtil {
                 LocalDateTime.of(2024, 10, 31, 9, 0, 0),
                 LocalDateTime.of(2024, 11, 10, 9, 0, 0),
                 LocalDateTime.of(2025, 10, 1, 9, 0, 0),
-                AreaType.SEOUL
+                AreaType.SEOUL,
+                null
         );
     }
 
@@ -141,7 +142,8 @@ public class DataUtil {
                 LocalDateTime.of(2024, 10, 31, 9, 0, 0),
                 LocalDateTime.of(2024, 11, 10, 9, 0, 0),
                 LocalDateTime.of(2025, 10, 1, 9, 0, 0),
-                AreaType.SEOUL
+                AreaType.SEOUL,
+                null
         );
     }
 

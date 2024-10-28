@@ -1,7 +1,7 @@
 package com.sparta.doguin.domain.attachment.service.impl;
 
 
-import com.sparta.doguin.config.security.AuthUser;
+import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.attachment.entity.Attachment;
 import com.sparta.doguin.domain.attachment.repository.AttachmentRepository;
 import com.sparta.doguin.domain.attachment.service.component.PathService;
