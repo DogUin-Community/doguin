@@ -6,8 +6,8 @@ import com.sparta.doguin.domain.portfolio.entity.Portfolio;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public sealed interface PortfolioResponse permits PortfolioResponse.PortfolioResponseGet,PortfolioResponse.PortfolioResponseGetIds {
-    record PortfolioResponseGet(
+public sealed interface PortfolioResponse permits PortfolioResponse.PortfolioResponseGetFilePaths,PortfolioResponse.PortfolioResponseGetIds {
+    record PortfolioResponseGetFilePaths(
             Long id,
             Long user_id,
             String title,
@@ -20,8 +20,8 @@ public sealed interface PortfolioResponse permits PortfolioResponse.PortfolioRes
             LocalDateTime createdAt,
             LocalDateTime updatedAt
     ) implements PortfolioResponse {
-        public static PortfolioResponseGet of(Portfolio portfolio) {
-            return new PortfolioResponseGet(
+        public static PortfolioResponseGetFilePaths of(Portfolio portfolio) {
+            return new PortfolioResponseGetFilePaths(
                     portfolio.getId(),
                     portfolio.getUser().getId(),
                     portfolio.getTitle(),
@@ -36,8 +36,8 @@ public sealed interface PortfolioResponse permits PortfolioResponse.PortfolioRes
             );
         }
 
-        public static PortfolioResponseGet of(Portfolio portfolio, List<String> filePaths) {
-            return new PortfolioResponseGet(
+        public static PortfolioResponseGetFilePaths of(Portfolio portfolio, List<String> filePaths) {
+            return new PortfolioResponseGetFilePaths(
                     portfolio.getId(),
                     portfolio.getUser().getId(),
                     portfolio.getTitle(),

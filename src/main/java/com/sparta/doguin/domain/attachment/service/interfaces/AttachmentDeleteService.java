@@ -1,7 +1,7 @@
 package com.sparta.doguin.domain.attachment.service.interfaces;
 
 
-import com.sparta.doguin.config.security.AuthUser;
+import com.sparta.doguin.security.AuthUser;
 
 import java.util.List;
 

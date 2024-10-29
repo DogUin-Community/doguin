@@ -1,7 +1,10 @@
 package com.sparta.doguin.domain.user.service;
 
-import com.sparta.doguin.config.security.JwtUtil;
-import com.sparta.doguin.config.security.dto.JwtUtilRequest;
+import com.sparta.doguin.domain.attachment.constans.AttachmentTargetType;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
+import com.sparta.doguin.security.AuthUser;
+import com.sparta.doguin.security.JwtUtil;
+import com.sparta.doguin.security.dto.JwtUtilRequest;
 import com.sparta.doguin.domain.common.exception.UserException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseEnum;
@@ -16,6 +19,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,18 +29,20 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
+    private final AttachmentUploadService attachmentUploadService;
 
     /**
      * 회원가입 요청을 처리하는 메서드
      *
      * @param signupRequest 회원가입에 필요한 정보를 담은 dto
+     * @param files 회원가입 시 프로필 이미지 업로드할 파일
      * @return ApiResponse<String> JWT 토큰을 포함한 회원가입 성공 메시지
      * @throws UserException 중복된 이메일이 있는 경우 예외 처리
      * @author 황윤서
-     * @since 1.3
+     * @since 1.4
      */
     @Transactional
-    public ApiResponse<String> signup(UserRequest.Signup signupRequest) {
+    public ApiResponse<String> signup(UserRequest.Signup signupRequest, List<MultipartFile> files) {
         // 중복 이메일 체크
         if (userRepository.findByEmail(signupRequest.email()).isPresent()) {
             throw new UserException(ApiResponseUserEnum.USER_ALREADY_EXISTS); // 중복 회원가입 예외 처리
@@ -58,6 +66,8 @@ public class AuthService {
         );
 
         User saveduser = userRepository.save(newUser);
+        AuthUser authUser = new AuthUser(saveduser.getId(),saveduser.getEmail(), saveduser.getNickname(),saveduser.getUserType(),saveduser.getUserRole());
+        attachmentUploadService.upload(files,authUser, authUser.getUserId(), AttachmentTargetType.PORTFOLIO);
         ApiResponseEnum apiResponse = ApiResponseUserEnum.USER_CREATE_SUCCESS;
 
         return ApiResponse.of(apiResponse);

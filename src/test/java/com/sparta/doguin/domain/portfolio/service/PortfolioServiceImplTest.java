@@ -1,6 +1,6 @@
 package com.sparta.doguin.domain.portfolio.service;
 
-import com.sparta.doguin.config.security.AuthUser;
+import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.outsourcing.constans.AreaType;
 import com.sparta.doguin.domain.portfolio.entity.Portfolio;
@@ -82,7 +82,7 @@ class PortfolioServiceImplTest {
 
             // when
             ApiResponse<PortfolioResponse> actual = portfolioService.getPortfolio(portfolioId1);
-            PortfolioResponse.PortfolioResponseGet actualData = (PortfolioResponse.PortfolioResponseGet) actual.getData();
+            PortfolioResponse.PortfolioResponseGetFilePaths actualData = (PortfolioResponse.PortfolioResponseGetFilePaths) actual.getData();
 
             // then - 예상한 데이터와 실제 데이터가 동일한지 확인
             assertEquals(portfolio1.getUser().getId(),actualData.user_id());
@@ -160,8 +160,8 @@ class PortfolioServiceImplTest {
             // when
             ApiResponse<Page<PortfolioResponse>> actual = portfolioService.getAllMyPortfolio(pageable,area,authUser1);
             List<PortfolioResponse> actualDatas = actual.getData().getContent();
-            List<PortfolioResponse.PortfolioResponseGet> actualDataConvert = actualDatas.stream()
-                    .map(actualData -> (PortfolioResponse.PortfolioResponseGet) actualData)
+            List<PortfolioResponse.PortfolioResponseGetFilePaths> actualDataConvert = actualDatas.stream()
+                    .map(actualData -> (PortfolioResponse.PortfolioResponseGetFilePaths) actualData)
                     .toList();
             // then - 예상한 데이터와, 실제 데이터의 값이 일치하는지 검증
             assertEquals( actualDatas.size(), portfolios.size() );
@@ -186,8 +186,8 @@ class PortfolioServiceImplTest {
             // when
             ApiResponse<Page<PortfolioResponse>> actual = portfolioService.getAllMyPortfolio(pageable,null,authUser1);
             List<PortfolioResponse> actualDatas = actual.getData().getContent();
-            List<PortfolioResponse.PortfolioResponseGet> actualDataConvert = actualDatas.stream()
-                    .map(actualData -> (PortfolioResponse.PortfolioResponseGet) actualData)
+            List<PortfolioResponse.PortfolioResponseGetFilePaths> actualDataConvert = actualDatas.stream()
+                    .map(actualData -> (PortfolioResponse.PortfolioResponseGetFilePaths) actualData)
                     .toList();
             // then - 예상한 데이터와, 실제 데이터의 값이 일치하는지 검증
             assertEquals( actualDatas.size(), portfolios.size() );
@@ -215,8 +215,8 @@ class PortfolioServiceImplTest {
             // when
             ApiResponse<Page<PortfolioResponse>> actual = portfolioService.getAllOtherPortfolio(pageable,area);
             List<PortfolioResponse> actualDatas = actual.getData().getContent();
-            List<PortfolioResponse.PortfolioResponseGet> actualDataConvert = actualDatas.stream()
-                    .map(actualData -> (PortfolioResponse.PortfolioResponseGet) actualData)
+            List<PortfolioResponse.PortfolioResponseGetFilePaths> actualDataConvert = actualDatas.stream()
+                    .map(actualData -> (PortfolioResponse.PortfolioResponseGetFilePaths) actualData)
                     .toList();
             // then - 예상한 데이터와, 실제 데이터의 값이 일치하는지 검증
             assertEquals( actualDatas.size(), portfolios.size() );
@@ -241,8 +241,8 @@ class PortfolioServiceImplTest {
             // when
             ApiResponse<Page<PortfolioResponse>> actual = portfolioService.getAllOtherPortfolio(pageable,area);
             List<PortfolioResponse> actualDatas = actual.getData().getContent();
-            List<PortfolioResponse.PortfolioResponseGet> actualDataConvert = actualDatas.stream()
-                    .map(actualData -> (PortfolioResponse.PortfolioResponseGet) actualData)
+            List<PortfolioResponse.PortfolioResponseGetFilePaths> actualDataConvert = actualDatas.stream()
+                    .map(actualData -> (PortfolioResponse.PortfolioResponseGetFilePaths) actualData)
                     .toList();
             // then - 예상한 데이터와, 실제 데이터의 값이 일치하는지 검증
             assertEquals( actualDatas.size(), portfolios.size() );

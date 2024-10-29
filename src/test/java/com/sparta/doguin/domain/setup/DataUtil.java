@@ -1,8 +1,10 @@
 package com.sparta.doguin.domain.setup;
 
-import com.sparta.doguin.config.security.AuthUser;
+import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.answer.entity.Answer;
 import com.sparta.doguin.domain.answer.enums.AnswerType;
+import com.sparta.doguin.domain.board.BoardType;
+import com.sparta.doguin.domain.board.entity.Board;
 import com.sparta.doguin.domain.bookmark.constans.BookmarkTargetType;
 import com.sparta.doguin.domain.bookmark.entity.Bookmark;
 import com.sparta.doguin.domain.bookmark.model.BookmarkRequest;
@@ -22,9 +24,7 @@ import com.sparta.doguin.domain.question.enums.SecondCategory;
 import com.sparta.doguin.domain.user.entity.User;
 import com.sparta.doguin.domain.user.enums.UserRole;
 import com.sparta.doguin.domain.user.enums.UserType;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -126,7 +126,8 @@ public class DataUtil {
                 LocalDateTime.of(2024, 10, 31, 9, 0, 0),
                 LocalDateTime.of(2024, 11, 10, 9, 0, 0),
                 LocalDateTime.of(2025, 10, 1, 9, 0, 0),
-                AreaType.SEOUL
+                AreaType.SEOUL,
+                null
         );
     }
 
@@ -141,7 +142,8 @@ public class DataUtil {
                 LocalDateTime.of(2024, 10, 31, 9, 0, 0),
                 LocalDateTime.of(2024, 11, 10, 9, 0, 0),
                 LocalDateTime.of(2025, 10, 1, 9, 0, 0),
-                AreaType.SEOUL
+                AreaType.SEOUL,
+                null
         );
     }
 
@@ -363,7 +365,7 @@ public class DataUtil {
                 portfolioRequestCreate2().work_experience(),
                 portfolioRequestCreate2().work_type(),
                 portfolioRequestCreate2().proejct_history(),
-                portfolioRequestCreate1().area()
+                portfolioRequestCreate2().area()
         );
     }
 
@@ -411,5 +413,33 @@ public class DataUtil {
                 outsourcing2(),
                 MathingStatusType.READY
         );
+    }
+
+    public static Board bulletin1() {
+        return new Board("Bulletin Title 1", "Bulletin Content 1", BoardType.BOARD_BULLETIN, user1());
+    }
+
+    public static Board bulletin2() {
+        return new Board("Bulletin Title 2", "Bulletin Content 2", BoardType.BOARD_BULLETIN, user1());
+    }
+
+    public static Board inquiry1() {
+        return new Board("Inquiry Title 1", "Inquiry Content 1", BoardType.BOARD_INQUIRY, user1());
+    }
+
+    public static Board inquiry2() {
+        return new Board("Inquiry Title 2", "Inquiry Content 2", BoardType.BOARD_INQUIRY, user1());
+    }
+
+    // bulletinBoard의 Page 타입 반환 메서드 추가(마이페이지 조회 시 Board 객체는 Page타입을 반환하고 있어서 이 메서드를 추가하였음)
+    public static Page<Board> bulletinBoardPage() {
+        List<Board> bulletins = List.of(bulletin1(), bulletin2());
+        return new PageImpl<>(bulletins);  // List를 Page로 변환
+    }
+
+    // inquirie의 Page 타입 반환 메서드 추가(마이페이지 조회 시 Board 객체는 Page타입을 반환하고 있어서 이 메서드를 추가하였음)
+    public static Page<Board> inquiryBoardPage() {
+        List<Board> inquiries = List.of(inquiry1(), inquiry2());
+        return new PageImpl<>(inquiries);
     }
 }
