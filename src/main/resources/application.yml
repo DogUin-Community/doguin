@@ -23,6 +23,11 @@ spring:
       port: ${REDIS_PORT}
       host: ${REDIS_HOST}
       password: ${REDIS_PASSWORD}
+  date:
+    mongodb:
+      host: ${MONGO_HOST}
+      port: ${MONGO_PORT}
+      database: ${MONGO_DB_NAME}
 jwt:
   secret:
     key: ${JWT_SECRET_KEY}
@@ -36,4 +41,3 @@ cloud:
     credentials:
       accessKey: ${ACCESS_KEY}
       secretKey: ${SECRET_KEY}
-
