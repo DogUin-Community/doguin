@@ -1,13 +1,13 @@
 package com.sparta.doguin.domain.attachment.controller;
 
-import com.sparta.doguin.config.security.AuthUser;
+import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.attachment.constans.AttachmentTargetType;
-import com.sparta.doguin.domain.attachment.model.AttachmentResponse;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteService;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDownloadService;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUpdateService;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
 import com.sparta.doguin.domain.common.response.ApiResponse;
+import com.sparta.doguin.domain.common.response.ApiResponseFileEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,13 +26,14 @@ public class AttachmentController {
     private final AttachmentDeleteService attachmentDeleteService;
 
     @PostMapping("/targetId/{targetId}/target/{target}")
-    public ResponseEntity<ApiResponse<List<AttachmentResponse.AttachmentResponseGet>>> attachmentUpload(
+    public ResponseEntity<ApiResponse<Void>> attachmentUpload(
             @PathVariable Long targetId,
             @PathVariable AttachmentTargetType target,
             @RequestPart List<MultipartFile> files,
             @AuthenticationPrincipal AuthUser authUser
     ) {
-        ApiResponse<List<AttachmentResponse.AttachmentResponseGet>> apiResponse = attachmentUploadService.upload(files, authUser, targetId, target);
+        attachmentUploadService.upload(files, authUser, targetId, target);
+        ApiResponse<Void> apiResponse = new ApiResponse<>(ApiResponseFileEnum.FILE_OK);
         return ApiResponse.of(apiResponse);
     }
 

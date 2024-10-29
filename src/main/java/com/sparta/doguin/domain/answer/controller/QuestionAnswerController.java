@@ -1,6 +1,6 @@
 package com.sparta.doguin.domain.answer.controller;
 
-import com.sparta.doguin.config.security.AuthUser;
+import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.answer.dto.AnswerRequest;
 import com.sparta.doguin.domain.answer.dto.AnswerResponse;
 import com.sparta.doguin.domain.answer.service.AnswerService;
@@ -40,15 +40,15 @@ public class QuestionAnswerController {
 
     @GetMapping("question/{questionId}/answer")
     public ResponseEntity<ApiResponse<Page<AnswerResponse.GetResponse>>> viewAllQuestionAnswer(@PathVariable long questionId,
-                                                                                               @RequestParam(defaultValue = "1") int page,
-                                                                                               @RequestParam(defaultValue = "10") int size) {
+                                                                                            @RequestParam(defaultValue = "1") int page,
+                                                                                            @RequestParam(defaultValue = "10") int size) {
         return ApiResponse.of(answerService.viewAllQuestionAnswer(questionId, page, size));
     }
 
     @GetMapping("question/{questionId}/answer/{answerId}")
     public ResponseEntity<ApiResponse<AnswerResponse.GetResponse>> viewOneQuestionAnswer(@PathVariable long questionId,
-                                                                                      @PathVariable long answerId) {
-    return ApiResponse.of(answerService.viewOneQuestionAnswer(questionId, answerId));
+                                                                                         @PathVariable long answerId) {
+        return ApiResponse.of(answerService.viewOneQuestionAnswer(questionId, answerId));
     }
 
     // 질문 답변 삭제

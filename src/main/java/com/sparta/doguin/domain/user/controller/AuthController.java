@@ -7,10 +7,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,13 +22,17 @@ public class AuthController {
      * 회원가입 요청을 처리하는 메서드
      *
      * @param signupRequest 회원가입에 필요한 정보를 담은 DTO
+     * @param files 회원가입 시 프로필 이미지 업로드할 파일
      * @return ResponseEntity<ApiResponse<String>> 회원가입 성공 시 JWT 토큰과 함께 응답
-     * @since 1.1
+     * @since 1.2
      * @author 황윤서
      */
     @PostMapping("signup")
-    public ResponseEntity<ApiResponse<String>> signup(@RequestBody @Valid UserRequest.Signup signupRequest) {
-        ApiResponse<String> apiResponse = authService.signup(signupRequest);
+    public ResponseEntity<ApiResponse<String>> signup(
+            @RequestPart(name = "signupRequest") @Valid UserRequest.Signup signupRequest,
+            @RequestPart(name = "files", required = false) List<MultipartFile> files
+    ) {
+        ApiResponse<String> apiResponse = authService.signup(signupRequest,files);
         return ApiResponse.of(apiResponse);
     }
 

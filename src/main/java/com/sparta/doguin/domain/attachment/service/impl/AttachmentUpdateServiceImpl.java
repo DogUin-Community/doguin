@@ -1,7 +1,7 @@
 package com.sparta.doguin.domain.attachment.service.impl;
 
 
-import com.sparta.doguin.config.security.AuthUser;
+import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.attachment.entity.Attachment;
 import com.sparta.doguin.domain.attachment.repository.AttachmentRepository;
 import com.sparta.doguin.domain.attachment.service.component.PathService;
@@ -9,13 +9,17 @@ import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentGetServi
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUpdateService;
 import com.sparta.doguin.domain.attachment.service.s3.S3Service;
 import com.sparta.doguin.domain.attachment.validate.AttachmentValidator;
+import com.sparta.doguin.domain.common.exception.FileException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.sparta.doguin.domain.common.response.ApiResponseFileEnum.FILE_IO_ERROR;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +34,7 @@ public class AttachmentUpdateServiceImpl implements AttachmentUpdateService {
      * @description1 기존 파일아이디로 파링 이외의 데이터 ( id,user ... ) 등을 가져와서, 데이터를 넣어줍니다
      * @description2 수정된 파일들을 넣어줍니다
      *
-     * @param updateAttachments 수정할 파일들
+     * @param updateFiles 수정할 파일들
      * @param authUser 로그인 한 유저
      * @param fileIds 기존 파일들
      * @since 1.0
@@ -39,10 +43,10 @@ public class AttachmentUpdateServiceImpl implements AttachmentUpdateService {
 
     @Transactional
     @Override
-    public void update(List<MultipartFile> updateAttachments, List<Long> fileIds,AuthUser authUser) {
+    public void update(List<MultipartFile> updateFiles, List<Long> fileIds,AuthUser authUser) {
         List<Attachment> prvAattachments = attachmentGetService.getFiles(fileIds);
         AttachmentValidator.isCountEqual(fileIds.size(), prvAattachments.size());
-        updateAttachmentsWithNewFiles(prvAattachments,updateAttachments,authUser);
+        updateAttachmentsWithNewFiles(prvAattachments,updateFiles,authUser);
     }
 
     /**
@@ -56,6 +60,8 @@ public class AttachmentUpdateServiceImpl implements AttachmentUpdateService {
      */
     @Transactional
     protected void updateAttachmentsWithNewFiles(List<Attachment> prvAattachments,List<MultipartFile> updateAttachments,AuthUser authUser) {
+        List<byte[]> fileBytesList = new ArrayList<>();
+        List<Path> paths = new ArrayList<>();
         for (int i = 0; i < prvAattachments.size(); i++) {
             Attachment originAttachment = prvAattachments.get(i);
             MultipartFile updateFile = updateAttachments.get(i);
@@ -74,9 +80,15 @@ public class AttachmentUpdateServiceImpl implements AttachmentUpdateService {
                     updateFile.getSize(),
                     originAttachment.getTarget()
             );
-            s3Service.delete(originAttachment);
-            s3Service.upload(path,updateFile);
+            paths.add(path);
+            try {
+                fileBytesList.add(updateFile.getBytes());
+            } catch (Exception e){
+                throw new FileException(FILE_IO_ERROR);
+            }
             attachmentRepository.save(attachment);
         }
+        s3Service.uploadAllAsync(paths,fileBytesList);
+        s3Service.deleteAllAsync(prvAattachments);
     }
 }

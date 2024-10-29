@@ -39,6 +39,12 @@ public enum ApiResponseAnswerEnum implements ApiResponseEnum {
     COMMENT_ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."),
     INQUIRY_ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "문의 답변을 찾을 수 없습니다."),
 
+    BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."),
+
+    // 400
+    ANSWER_BELONG_TO_QUESTION(HttpStatus.BAD_REQUEST, "질문에 속해 있는 답변이 아닙니다."),
+    INVALID_BOARD_TYPE(HttpStatus.BAD_REQUEST, "잘못된 게시판 유형입니다."),
+
     // 401
     UPDATE_ACCESS_DENIED(HttpStatus.UNAUTHORIZED, "본인이 작성한 글만 수정이 가능합니다."),
     DELETE_ACCESS_DENIED(HttpStatus.UNAUTHORIZED, "본인이 작성한 글만 삭제가 가능합니다.");

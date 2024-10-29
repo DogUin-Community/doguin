@@ -1,6 +1,6 @@
 package com.sparta.doguin.domain.mypage.service;
 
-import com.sparta.doguin.config.security.AuthUser;
+import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.board.entity.Board;
 import com.sparta.doguin.domain.board.service.BulletinService;
 import com.sparta.doguin.domain.board.service.InquiryService;
@@ -45,6 +45,7 @@ public class MypageService {
 
         // 작성한 Bulletin 게시글들의 타이틀만 조회
         List<String> bulletinBoards = bulletinService.findByUserId(user.getId())
+                .getContent()
                 .stream()
                 .map(Board::getTitle)
                 .toList();
@@ -57,6 +58,7 @@ public class MypageService {
 
         // 작성한 1대1문의글들의 타이틀만 조회
         List<String> inquiryBoards = inquiryService.findByUserId(user.getId())
+                .getContent()
                 .stream()
                 .map(Board::getTitle)
                 .toList();

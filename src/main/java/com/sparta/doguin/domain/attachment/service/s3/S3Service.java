@@ -5,18 +5,24 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.sparta.doguin.domain.attachment.entity.Attachment;
 import com.sparta.doguin.domain.common.exception.FileException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.net.URLConnection;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static com.sparta.doguin.domain.common.response.ApiResponseFileEnum.FILE_IO_ERROR;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j(topic = "S3Service")
 public class S3Service {
 
     @Value("${cloud.aws.s3.bucket}")
@@ -48,26 +54,38 @@ public class S3Service {
      * @title S3에 파일 비동기 업로드 메서드
      *
      * @param paths 업로드할 경로
-     * @param files 업로드할 파일
+     * @param fileBytesList 업로드할 파일 바이트(데이터)들
      * @throws FileException 파일 업로드중 예외 발생 처리 로직
      * @since 1.0
      * @author 김경민
      */
     @Async
-    public void uploadAllAsync(List<Path> paths, List<MultipartFile> files) {
+    public CompletableFuture<Void> uploadAllAsync(List<Path> paths, List<byte[]> fileBytesList) {
         try {
             for (int i = 0; i < paths.size(); i++) {
                 Path path = paths.get(i);
-                MultipartFile file = files.get(i);
+                byte[] fileBytes = fileBytesList.get(i);
+
+                String contentType = URLConnection.guessContentTypeFromName(path.toString());
+                if (contentType == null) {
+                    contentType = "application/octet-stream"; // 기본값으로 설정
+                }
+
                 ObjectMetadata metadata = new ObjectMetadata();
-                metadata.setContentType(file.getContentType());
-                metadata.setContentLength(file.getSize());
-                amazonS3Client.putObject(bucket, path.toString(), file.getInputStream(), metadata);
+                metadata.setContentType(contentType); // 추론된 MIME 타입 설정
+                metadata.setContentLength(fileBytes.length);
+
+                try (InputStream inputStream = new ByteArrayInputStream(fileBytes)) {
+                    amazonS3Client.putObject(bucket, path.toString(), inputStream, metadata);
+                }
             }
-        } catch(Exception e){
-            throw  new FileException(FILE_IO_ERROR);
+            return CompletableFuture.completedFuture(null);
+        } catch (Exception e) {
+            log.error("Error uploading file to S3", e);
+            return CompletableFuture.failedFuture(new FileException(FILE_IO_ERROR));
         }
     }
+
 
     /**
      * @title 모든 파일을 S3에서 제거 하는 메서드
@@ -76,6 +94,7 @@ public class S3Service {
      * @since 1.0
      * @author 김경민
      */
+    //TODO: 파일이 사라져서 안되는건가 아까 됐던거같은데 으악
     @Async
     public void deleteAllAsync(List<Attachment> attachments){
         for (Attachment attachment : attachments) {

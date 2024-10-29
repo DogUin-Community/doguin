@@ -1,6 +1,6 @@
 package com.sparta.doguin.domain.outsourcing.service;
 
-import com.sparta.doguin.config.security.AuthUser;
+import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.outsourcing.constans.AreaType;
 import com.sparta.doguin.domain.outsourcing.entity.Outsourcing;
@@ -79,7 +79,7 @@ class OutsourcingServiceTest {
 
             // when
             ApiResponse<OutsourcingResponse> actual = outsourcingService.getOutsourcing(outsourcingId1);
-            OutsourcingResponse.OutsourcingResponseGet actualData = (OutsourcingResponse.OutsourcingResponseGet) actual.getData();
+            OutsourcingResponse.OutsourcingResponseGetIds actualData = (OutsourcingResponse.OutsourcingResponseGetIds) actual.getData();
 
             // then - 외주 아이디에 대한 데이터로, 각각의 값이 일치하는지 확인
             assertEquals( outsourcing1.getUser().getId(), actualData.user_id() );
@@ -161,8 +161,8 @@ class OutsourcingServiceTest {
 
             // when
             ApiResponse<Page<OutsourcingResponse>> actual = outsourcingService.getAllOutsourcing(pageable,area);
-            List<OutsourcingResponse.OutsourcingResponseGet> actualData = actual.getData().getContent().stream()
-                    .map(outsourcing -> (OutsourcingResponse.OutsourcingResponseGet) outsourcing)
+            List<OutsourcingResponse.OutsourcingResponseGetIds> actualData = actual.getData().getContent().stream()
+                    .map(outsourcing -> (OutsourcingResponse.OutsourcingResponseGetIds) outsourcing)
                     .toList();
 
             // then - 예상한 데이터와, 실제 데이터가 일치하는지 검증
@@ -188,8 +188,8 @@ class OutsourcingServiceTest {
 
             // when
             ApiResponse<Page<OutsourcingResponse>> actual = outsourcingService.getAllOutsourcing(pageable,area);
-            List<OutsourcingResponse.OutsourcingResponseGet> actualData = actual.getData().getContent().stream()
-                    .map(outsourcing -> (OutsourcingResponse.OutsourcingResponseGet) outsourcing)
+            List<OutsourcingResponse.OutsourcingResponseGetIds> actualData = actual.getData().getContent().stream()
+                    .map(outsourcing -> (OutsourcingResponse.OutsourcingResponseGetIds) outsourcing)
                     .toList();
 
             // then - 예상한 데이터와, 실제 데이터가 일치하는지 검증

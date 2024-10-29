@@ -1,11 +1,12 @@
 package com.sparta.doguin.domain.answer.service;
 
-import com.sparta.doguin.config.security.AuthUser;
+import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.answer.dto.AnswerRequest;
 import com.sparta.doguin.domain.answer.dto.AnswerResponse;
 import com.sparta.doguin.domain.answer.entity.Answer;
 import com.sparta.doguin.domain.answer.enums.AnswerType;
 import com.sparta.doguin.domain.answer.repository.AnswerRepository;
+import com.sparta.doguin.domain.board.BoardType;
 import com.sparta.doguin.domain.board.entity.Board;
 import com.sparta.doguin.domain.board.repository.BoardRepository;
 import com.sparta.doguin.domain.common.exception.AnswerException;
@@ -28,15 +29,22 @@ public class EventAnswerService implements AnswerService {
 
     private final BoardRepository boardRepository;
 
-    // 자유게시판 댓글 생성
     @Override
     @Transactional
     public ApiResponse<AnswerResponse.Response> create(AuthUser authUser, long boardId, AnswerRequest.Request request) {
         // 로그인한 사용자의 인증 정보
         User user = User.fromAuthUser(authUser);
 
-        // 댓글 찾기
-        Board board = boardRepository.findById(boardId).orElseThrow(null);
+        // 게시글이 존재하는지 확인
+        Board board = answerRepository.findBoardById(boardId);
+        if (board == null) {
+            throw new AnswerException(ApiResponseAnswerEnum.BOARD_NOT_FOUND);
+        }
+
+        // 댓글 보드 타입 검증
+        if(!board.getBoardType().equals(BoardType.BOARD_EVENT)) {
+            throw new AnswerException(ApiResponseAnswerEnum.INVALID_BOARD_TYPE);
+        }
 
         // 생성
         Answer answer = new Answer(request.content(), user, board);
@@ -52,8 +60,16 @@ public class EventAnswerService implements AnswerService {
         // 로그인한 사용자의 인증 정보
         User user = User.fromAuthUser(authUser);
 
-        // 게시판 찾기
-        Board board = boardRepository.findById(boardId).orElseThrow(null);
+        // 게시글이 존재하는지 확인
+        Board board = answerRepository.findBoardById(boardId);
+        if (board == null) {
+            throw new AnswerException(ApiResponseAnswerEnum.BOARD_NOT_FOUND);
+        }
+
+        // 댓글 보드 타입 검증
+        if(!board.getBoardType().equals(BoardType.BOARD_EVENT)) {
+            throw new AnswerException(ApiResponseAnswerEnum.INVALID_BOARD_TYPE);
+        }
 
         // 댓글 찾기
         Answer answer = answerRepository.findById(answerId)
@@ -79,13 +95,18 @@ public class EventAnswerService implements AnswerService {
     public ApiResponse<Page<AnswerResponse.Response>> viewAll(long boardId, int page, int size) {
         Pageable pageable = PageRequest.of(page -1, size);
 
-        // 게시판 찾기
-        Board board = boardRepository.findById(boardId).orElseThrow(null);
+        // 게시글이 존재하는지 확인
+        Board board = answerRepository.findBoardById(boardId);
+        if (board == null) {
+            throw new AnswerException(ApiResponseAnswerEnum.BOARD_NOT_FOUND);
+        }
 
-        Page<Answer> answers = answerRepository.findAll(pageable);
+        // 댓글 보드 타입 검증
+        if(!board.getBoardType().equals(BoardType.BOARD_EVENT)) {
+            throw new AnswerException(ApiResponseAnswerEnum.INVALID_BOARD_TYPE);
+        }
 
-        Page<AnswerResponse.Response> response = answers
-                .map(answer -> new AnswerResponse.Response(answer.getId(), answer.getContent()));
+        Page<AnswerResponse.Response> response = findByBoardId(boardId, pageable);
 
         return ApiResponse.of(ApiResponseAnswerEnum.COMMENT_ANSWER_FIND_ALL_SUCCESS, response);
     }
@@ -93,8 +114,16 @@ public class EventAnswerService implements AnswerService {
     @Override
     @Transactional(readOnly = true)
     public ApiResponse<AnswerResponse.Response> viewOne(long boardId, long answerId) {
-        // 게시판 찾기
-        Board board = boardRepository.findById(boardId).orElseThrow(null);
+        // 게시글이 존재하는지 확인
+        Board board = answerRepository.findBoardById(boardId);
+        if (board == null) {
+            throw new AnswerException(ApiResponseAnswerEnum.BOARD_NOT_FOUND);
+        }
+
+        // 댓글 보드 타입 검증
+        if(!board.getBoardType().equals(BoardType.BOARD_EVENT)) {
+            throw new AnswerException(ApiResponseAnswerEnum.INVALID_BOARD_TYPE);
+        }
 
         // 댓글 찾기
         Answer answer = answerRepository.findById(answerId)
@@ -109,8 +138,16 @@ public class EventAnswerService implements AnswerService {
         // 로그인한 사용자의 인증 정보
         User user = User.fromAuthUser(authUser);
 
-        // 게시판 찾기
-        Board board = boardRepository.findById(boardId).orElseThrow(null);
+        // 게시글이 존재하는지 확인
+        Board board = answerRepository.findBoardById(boardId);
+        if (board == null) {
+            throw new AnswerException(ApiResponseAnswerEnum.BOARD_NOT_FOUND);
+        }
+
+        // 댓글 보드 타입 검증
+        if(!board.getBoardType().equals(BoardType.BOARD_EVENT)) {
+            throw new AnswerException(ApiResponseAnswerEnum.INVALID_BOARD_TYPE);
+        }
 
         // 댓글 찾기
         Answer answer = answerRepository.findById(answerId)
@@ -118,7 +155,7 @@ public class EventAnswerService implements AnswerService {
 
         // 본인이 생성한 답변인지 확인
         if (!answer.getUser().getId().equals(user.getId())) {
-            throw new AnswerException(ApiResponseAnswerEnum.DELETE_ACCESS_DENIED);
+            throw new AnswerException(ApiResponseAnswerEnum.UPDATE_ACCESS_DENIED);
         }
 
         // 삭제

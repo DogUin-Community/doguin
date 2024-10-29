@@ -1,6 +1,6 @@
 package com.sparta.doguin.domain.follow.controller;
 
-import com.sparta.doguin.config.security.AuthUser;
+import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.follow.dto.FollowResponse;
 import com.sparta.doguin.domain.follow.service.FollowService;

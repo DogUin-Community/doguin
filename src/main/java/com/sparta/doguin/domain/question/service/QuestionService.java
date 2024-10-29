@@ -1,10 +1,8 @@
 package com.sparta.doguin.domain.question.service;
 
-import com.sparta.doguin.config.security.AuthUser;
+import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.answer.dto.AnswerResponse;
-import com.sparta.doguin.domain.answer.entity.Answer;
 import com.sparta.doguin.domain.answer.repository.AnswerRepository;
-import com.sparta.doguin.domain.answer.service.QuestionAnswerService;
 import com.sparta.doguin.domain.common.exception.HandleNotFound;
 import com.sparta.doguin.domain.common.exception.QuestionException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
@@ -29,7 +27,6 @@ public class QuestionService {
 
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
-    private final QuestionAnswerService questionAnswerService;
 
     /**
      * 질문 생성
@@ -40,26 +37,12 @@ public class QuestionService {
      * @author 유태이
      */
     public ApiResponse<QuestionResponse.CreatedQuestion> createdQuestion(AuthUser authUser, QuestionRequest.CreatedQuestion request) {
-
-        // 사용자가 로그인 했는지 검증
-        if (authUser == null) {
-            throw new QuestionException(ApiResponseQuestionEnum.QUESTION_UNAUTHORIZED_USER);
-        }
-
         // 로그인한 사용자의 인증 정보
         User user = User.fromAuthUser(authUser);
-
         // 질문 생성
-        Question newQuestion = new Question(request.title(),
-                                            request.content(),
-                                            request.firstCategory(),
-                                            request.secondCategory(),
-                                            request.lastCategory(),
-                                            user);
-        
+        Question newQuestion = new Question(request.title(), request.content(), request.firstCategory(), request.secondCategory(), request.lastCategory(), user);
         // 질문 저장
         questionRepository.save(newQuestion);
-
         // 성공 응답 반환
         return ApiResponse.of(ApiResponseQuestionEnum.QUESTION_CREATE_SUCCESS, new QuestionResponse.CreatedQuestion(newQuestion.getId(), newQuestion.getTitle(), newQuestion.getContent(), newQuestion.getFirstCategory(), newQuestion.getSecondCategory(), newQuestion.getLastCategory(), newQuestion.getQuestionStatus()));
     }
@@ -75,12 +58,6 @@ public class QuestionService {
      * @author 유태이
      */
     public ApiResponse<QuestionResponse.CreatedQuestion> updatedQuestion(AuthUser authUser, long questionId, QuestionRequest.UpdateQuestion request) {
-
-        // 사용자가 로그인 했는지 검증
-        if (authUser == null) {
-            throw new QuestionException(ApiResponseQuestionEnum.QUESTION_UNAUTHORIZED_USER);
-        }
-
         // 해당 댓글 있는지 검증
         Question question = findById(questionId);
 
@@ -138,22 +115,25 @@ public class QuestionService {
      * @author 유태이
      */
     public ApiResponse<QuestionResponse.GetQuestion> getQuestion(long questionId) {
-        // 질문 가져오기
-        Question question = findById(questionId);
 
-        Pageable pageable = PageRequest.of(0, 10); // 필요에 따라 페이지 크기를 조정 가능
-        Page<Answer> answers = answerRepository.findByQuestionId(questionId, pageable);
+        // 질문과 답변 및 대답변 조회
+        Question question = questionRepository.findByIdWithAnswers(questionId)
+                .orElseThrow(() -> new HandleNotFound(ApiResponseQuestionEnum.QUESTION_NOT_FOUND));
 
-        // 답변과 대답변 리스트 변환
-        Page<AnswerResponse.GetResponse> comment = answers.map(answer -> {
-            List<AnswerResponse.GetResponse> commentResponse = answerRepository.findByParentId(answer.getId()).stream()
-                    .map(comments -> new AnswerResponse.GetResponse(comments.getId(), comments.getContent(), new ArrayList<>()))
-                    .toList();
+        // 답변과 대답변 리스트 반환
+        List<AnswerResponse.GetResponse> answers = question.getAnswerList().stream()
+                .map(answer -> {
+                    // answer의 parent가 동일한 대답변 필터링
+                    List<AnswerResponse.GetResponse> commentResponses = question.getAnswerList().stream()
+                            .filter(apply -> apply.getParent() != null && apply.getParent().getId().equals(answer.getId()))
+                            .map(apply -> new AnswerResponse.GetResponse(apply.getId(), apply.getContent(), new ArrayList<>()))
+                            .toList();
 
-            return new AnswerResponse.GetResponse(answer.getId(), answer.getContent(), commentResponse);
-        });
+                    return new AnswerResponse.GetResponse(answer.getId(), answer.getContent(), commentResponses);
+                })
+                .toList();
 
-        // 질문과 답변 데이터 통합하여 반환
+        // 질문과 답변 데이터를 통합하여 반환
         QuestionResponse.GetQuestion response = new QuestionResponse.GetQuestion(
                 question.getId(),
                 question.getTitle(),
@@ -162,7 +142,7 @@ public class QuestionService {
                 question.getSecondCategory(),
                 question.getLastCategory(),
                 question.getQuestionStatus(),
-                comment
+                answers
         );
 
         return ApiResponse.of(ApiResponseQuestionEnum.QUESTION_FIND_ONE_SUCCESS, response);
