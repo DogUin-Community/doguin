@@ -1,17 +1,18 @@
 package com.sparta.doguin.domain.answer.service;
 
 
-import com.sparta.doguin.config.security.AuthUser;
 import com.sparta.doguin.domain.answer.dto.AnswerRequest;
 import com.sparta.doguin.domain.answer.dto.AnswerResponse;
 import com.sparta.doguin.domain.answer.entity.Answer;
 import com.sparta.doguin.domain.answer.enums.AnswerType;
 import com.sparta.doguin.domain.answer.repository.AnswerRepository;
+import com.sparta.doguin.domain.board.BoardType;
 import com.sparta.doguin.domain.board.entity.Board;
 import com.sparta.doguin.domain.common.exception.AnswerException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseAnswerEnum;
 import com.sparta.doguin.domain.user.entity.User;
+import com.sparta.doguin.security.AuthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,7 +30,7 @@ public class NoticeAnswerService implements AnswerService {
     // 공지사항 댓글 생성
     @Override
     @Transactional
-    public ApiResponse<AnswerResponse.Response> create(AuthUser authUser, long boardId, AnswerRequest.Request request) {
+    public ApiResponse<AnswerResponse.Response> create(com.sparta.doguin.security.AuthUser authUser, long boardId, AnswerRequest.Request request) {
         // 로그인한 사용자의 인증 정보
         User user = User.fromAuthUser(authUser);
 
