@@ -1,6 +1,5 @@
 package com.sparta.doguin.domain.matching.service;
 
-import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.common.exception.MatchingException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseMatchingEnum;
@@ -15,14 +14,19 @@ import com.sparta.doguin.domain.outsourcing.service.OutsourcingServiceImpl;
 import com.sparta.doguin.domain.portfolio.entity.Portfolio;
 import com.sparta.doguin.domain.portfolio.service.PortfolioServiceImpl;
 import com.sparta.doguin.domain.user.entity.User;
+import com.sparta.doguin.security.AuthUser;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.sparta.doguin.domain.common.response.ApiResponseMatchingEnum.MATCHING_LOCK;
 import static com.sparta.doguin.domain.common.response.ApiResponseMatchingEnum.MATHCING_SUCCESS;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MatchingServiceImpl implements MatchingService {
@@ -70,18 +74,15 @@ public class MatchingServiceImpl implements MatchingService {
     @Transactional
     @Override
     public ApiResponse<Void> updateMatching(Long matchingId, MatchingRequest.MatchingRequestUpdate updateReqDto, AuthUser authUser) {
-        User user = User.fromAuthUser(authUser);
-        Matching findMatching = findById(matchingId);
-        MatchingValidator.isMe(user.getId(),findMatching.getUser().getId());
-        Matching updateMatching = Matching.builder()
-                .id(findMatching.getId())
-                .user(findMatching.getUser())
-                .portfolio(findMatching.getPortfolio())
-                .outsourcing(findMatching.getOutsourcing())
-                .status(updateReqDto.status())
-                .build();
-        matchingRepository.save(updateMatching);
-        return ApiResponse.of(MATHCING_SUCCESS);
+        try {
+            MatchingValidator.isNotCompany(authUser);
+            Matching findMatching = findById(matchingId);
+            findMatching.statusChange(updateReqDto.status());
+            matchingRepository.flush();
+            return ApiResponse.of(MATHCING_SUCCESS);
+        } catch (OptimisticLockingFailureException e) {
+            throw new MatchingException(MATCHING_LOCK);
+        }
     }
 
     /**

@@ -96,7 +96,7 @@ class OutsourcingServiceTest {
             // given
 
             // when
-            outsourcingService.createOutsourcing(outsourctingRequestCreate1, authUser1);
+            outsourcingService.createOutsourcing(outsourctingRequestCreate1, authUser1,null);
 
             // then - 1번 호출 됐는지, 예상한 데이터와 실제 데이터가 일치하는지 검증
             Mockito.verify(outsourcingRepository, Mockito.times(1)).save(Mockito.argThat(outsourcing ->
@@ -117,7 +117,7 @@ class OutsourcingServiceTest {
             given(outsourcingRepository.findById(outsourcingId1)).willReturn(Optional.of(outsourcing1));
 
             // when
-            outsourcingService.updateOutsourcing(outsourcingId1, outsourctingRequestUpdate1, authUser1);
+            outsourcingService.updateOutsourcing(outsourcingId1, outsourctingRequestUpdate1, authUser1,null);
 
             // then - 1번 호출 됐는지, 예상한 데이터와 실제 데이터가 일치하는지 검증
             Mockito.verify(outsourcingRepository, Mockito.times(1)).save(Mockito.argThat(outsourcing ->

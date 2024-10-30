@@ -1,7 +1,6 @@
 package com.sparta.doguin.domain.attachment.service.impl;
 
 
-import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.attachment.entity.Attachment;
 import com.sparta.doguin.domain.attachment.repository.AttachmentRepository;
 import com.sparta.doguin.domain.attachment.service.component.PathService;
@@ -10,12 +9,12 @@ import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUpdateSe
 import com.sparta.doguin.domain.attachment.service.s3.S3Service;
 import com.sparta.doguin.domain.attachment.validate.AttachmentValidator;
 import com.sparta.doguin.domain.common.exception.FileException;
+import com.sparta.doguin.security.AuthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,21 +60,21 @@ public class AttachmentUpdateServiceImpl implements AttachmentUpdateService {
     @Transactional
     protected void updateAttachmentsWithNewFiles(List<Attachment> prvAattachments,List<MultipartFile> updateAttachments,AuthUser authUser) {
         List<byte[]> fileBytesList = new ArrayList<>();
-        List<Path> paths = new ArrayList<>();
+        List<String> paths = new ArrayList<>();
         for (int i = 0; i < prvAattachments.size(); i++) {
             Attachment originAttachment = prvAattachments.get(i);
             MultipartFile updateFile = updateAttachments.get(i);
             AttachmentValidator.isInExtension(updateFile);
             AttachmentValidator.isMe(authUser.getUserId(), originAttachment.getUser().getId());
             AttachmentValidator.isSizeBig(updateFile);
-            Path path = pathService.mkPath(updateFile, authUser, originAttachment.getTargetId(), originAttachment.getTarget());
+            String path = pathService.mkPath(updateFile, authUser, originAttachment.getTargetId(), originAttachment.getTarget());
             String fullPath = pathService.mkfullPath(path);
             Attachment attachment = new Attachment(
                     originAttachment.getId(),
                     originAttachment.getUser(),
                     originAttachment.getTargetId(),
                     fullPath,
-                    path.toString(),
+                    path,
                     updateFile.getOriginalFilename(),
                     updateFile.getSize(),
                     originAttachment.getTarget()

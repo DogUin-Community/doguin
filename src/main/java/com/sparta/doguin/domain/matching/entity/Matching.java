@@ -33,7 +33,21 @@ public class Matching extends Timestamped {
     @JoinColumn(name = "outsourcing_id")
     private Outsourcing outsourcing;
 
+    @Version
+    private int version;
+
     // 지역
     @Enumerated(value = EnumType.STRING)
     private MathingStatusType status;
+
+    public Matching(User user, Portfolio portfolio, Outsourcing outsourcing, MathingStatusType status) {
+        this.user = user;
+        this.portfolio = portfolio;
+        this.outsourcing = outsourcing;
+        this.status = status;
+    }
+
+    public void statusChange(MathingStatusType status){
+        this.status = status;
+    }
 }

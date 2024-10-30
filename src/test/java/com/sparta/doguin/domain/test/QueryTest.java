@@ -1,4 +1,4 @@
-package com.sparta.doguin.domain.query;
+package com.sparta.doguin.domain.test;
 
 import com.sparta.doguin.domain.attachment.constans.AttachmentTargetType;
 import com.sparta.doguin.domain.attachment.entity.Attachment;
