@@ -1,6 +1,5 @@
 package com.sparta.doguin.domain.attachment.service.impl;
 
-import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.attachment.constans.AttachmentTargetType;
 import com.sparta.doguin.domain.attachment.entity.Attachment;
 import com.sparta.doguin.domain.attachment.repository.AttachmentRepository;
@@ -10,12 +9,12 @@ import com.sparta.doguin.domain.attachment.service.s3.S3Service;
 import com.sparta.doguin.domain.attachment.validate.AttachmentValidator;
 import com.sparta.doguin.domain.common.exception.FileException;
 import com.sparta.doguin.domain.user.entity.User;
+import com.sparta.doguin.security.AuthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,11 +48,11 @@ public class AttachmentUploadServiceImpl implements AttachmentUploadService {
     public void upload(List<MultipartFile> files, AuthUser authUser, Long targetId, AttachmentTargetType target){
         User user = User.fromAuthUser(authUser);
         List<byte[]> fileBytesList = new ArrayList<>();
-        List<Path> paths = new ArrayList<>();
+        List<String> paths = new ArrayList<>();
         for ( MultipartFile file : files ) {
             AttachmentValidator.isInExtension(file);
             AttachmentValidator.isSizeBig(file);
-            Path path = pathService.mkPath(file,authUser,targetId,target);
+            String path = pathService.mkPath(file,authUser,targetId,target);
             try {
                 fileBytesList.add(file.getBytes());
             } catch (Exception e){
@@ -65,10 +64,6 @@ public class AttachmentUploadServiceImpl implements AttachmentUploadService {
         }
         s3Service.uploadAllAsync(paths,fileBytesList);
     }
-
-
-
-
 
     /**
      * @title 사용자로부터 들러온 파일들의 정보를, DB에 저장하는 메서드
@@ -85,13 +80,13 @@ public class AttachmentUploadServiceImpl implements AttachmentUploadService {
      * @author 김경민
      */
     @Transactional
-    protected void saveAttachmentGetId(Path path, MultipartFile file,User user, Long targetId, AttachmentTargetType target){
+    protected void saveAttachmentGetId(String path, MultipartFile file,User user, Long targetId, AttachmentTargetType target){
         String fullPath = pathService.mkfullPath(path);
         Attachment attachment = Attachment.builder()
                 .user(user)
                 .targetId(targetId)
                 .attachment_absolute_path(fullPath)
-                .attachment_relative_path(String.valueOf(path))
+                .attachment_relative_path(path)
                 .attachment_original_name(file.getOriginalFilename())
                 .attachment_size(file.getSize())
                 .target(target)
