@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache>
+    <!-- 구조
+     name = 캐시 이름
+     maxElementsInMemory = 메모리에 저장할 요수의 최대 개수
+     maxElementsOnDisk = 디스크에 저장할 요수의 최대 개수
+     eternal = 캐시항목을 영원히 유지할것인지?
+     statistics JMX 통계정보 갱신 옵션
+     timeToIdleSeconds = 캐시된 데이터가 idle 상태인체로 유지되는 최대 시간.
+     timeToLiveSeconds = 캐시 데이터의 수명
+     overflowToDisk = 메모리에 저장된 데이터가 메모리 한계 초과시 디스크로 넘길지 여부
+     diskPersistent = 디스크에 저장된 데이터가 시스템 재시작 후에도 유지되어야 하는지 여부
+     memoryStoreEvictionPolicy = 메모리가 꽉 찼을 때 데이터 제거 알고리즘 옵션 [LRU(가장 오랫동안 안쓴거), LFU(빈도가 낮은거), FIFO(먼저온가)]
+     -->
+
+    <defaultCache
+            maxElementsInMemory="1000"
+            maxElementsOnDisk="0"
+            eternal="false"
+            statistics="false"
+            timeToIdleSeconds="10"
+            timeToLiveSeconds="10"
+            overflowToDisk="false"
+            diskPersistent="false"
+            memoryStoreEvictionPolicy="LRU"/>
+
+    <cache
+            name="NoticeReadMapper.findAll"
+            maxElementsInMemory="100"
+            maxElementsOnDisk="0"
+            eternal="false"
+            statistics="false"
+            timeToIdleSeconds="10"
+            timeToLiveSeconds="10"
+            overflowToDisk="false"
+            diskPersistent="false"
+            memoryStoreEvictionPolicy="LRU"/>
+
+    <cache
+            name="NoticeReadMapper.findByPage"
+            maxElementsInMemory="100"
+            maxElementsOnDisk="0"
+            eternal="false"
+            statistics="false"
+            timeToIdleSeconds="10"
+            timeToLiveSeconds="10"
+            overflowToDisk="false"
+            diskPersistent="false"
+            memoryStoreEvictionPolicy="LRU"/>
+
+</ehcache>

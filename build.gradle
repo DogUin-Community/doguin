@@ -90,6 +90,10 @@ dependencies {
     implementation 'com.sun.activation:javax.activation:1.2.0'
 
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+    // Encache
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'net.sf.ehcache:ehcache'
 }
 
 tasks.named('test') {
