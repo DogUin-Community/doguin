@@ -3,13 +3,15 @@ package com.sparta.doguin.domain.board.dto;
 import com.sparta.doguin.domain.answer.dto.AnswerResponse;
 import org.springframework.data.domain.Page;
 
+import java.io.Serializable;
+
 public sealed interface BoardResponse permits BoardResponse.BoardCommonResponse, BoardResponse.BoardWithAnswer {
 
     record BoardCommonResponse(
             Long id,
             String title,
             String content
-            ) implements BoardResponse {
+            ) implements BoardResponse, Serializable {
     }
 
     record BoardWithAnswer(
@@ -18,7 +20,7 @@ public sealed interface BoardResponse permits BoardResponse.BoardCommonResponse,
             String content,
             Long view,
             Page<AnswerResponse.Response> response
-    )implements  BoardResponse{}
+    )implements  BoardResponse, Serializable {}
 
 
 }

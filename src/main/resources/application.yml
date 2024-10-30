@@ -28,6 +28,9 @@ spring:
       host: ${MONGO_HOST}
       port: ${MONGO_PORT}
       database: ${MONGO_DB_NAME}
+  cache:
+    jcache:
+      config: classpath:ehcache.xml
 jwt:
   secret:
     key: ${JWT_SECRET_KEY}
@@ -41,3 +44,4 @@ cloud:
     credentials:
       accessKey: ${ACCESS_KEY}
       secretKey: ${SECRET_KEY}
+
