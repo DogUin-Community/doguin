@@ -1,6 +1,6 @@
 package com.sparta.doguin.domain.question.service;
 
-import com.sparta.doguin.config.security.AuthUser;
+import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.answer.entity.Answer;
 import com.sparta.doguin.domain.answer.repository.AnswerRepository;
 import com.sparta.doguin.domain.common.response.ApiResponse;

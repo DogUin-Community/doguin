@@ -60,13 +60,13 @@ public class S3Service {
      * @author 김경민
      */
     @Async
-    public CompletableFuture<Void> uploadAllAsync(List<Path> paths, List<byte[]> fileBytesList) {
+    public CompletableFuture<Void> uploadAllAsync(List<String> paths, List<byte[]> fileBytesList) {
         try {
             for (int i = 0; i < paths.size(); i++) {
-                Path path = paths.get(i);
+                String path = paths.get(i);
                 byte[] fileBytes = fileBytesList.get(i);
 
-                String contentType = URLConnection.guessContentTypeFromName(path.toString());
+                String contentType = URLConnection.guessContentTypeFromName(path);
                 if (contentType == null) {
                     contentType = "application/octet-stream"; // 기본값으로 설정
                 }
@@ -76,7 +76,7 @@ public class S3Service {
                 metadata.setContentLength(fileBytes.length);
 
                 try (InputStream inputStream = new ByteArrayInputStream(fileBytes)) {
-                    amazonS3Client.putObject(bucket, path.toString(), inputStream, metadata);
+                    amazonS3Client.putObject(bucket, path, inputStream, metadata);
                 }
             }
             return CompletableFuture.completedFuture(null);
