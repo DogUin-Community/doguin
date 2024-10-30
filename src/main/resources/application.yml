@@ -23,6 +23,9 @@ spring:
       port: ${REDIS_PORT}
       host: ${REDIS_HOST}
       password: ${REDIS_PASSWORD}
+  cache:
+    jcache:
+      config: classpath:ehcache.xml
 jwt:
   secret:
     key: ${JWT_SECRET_KEY}
@@ -36,4 +39,9 @@ cloud:
     credentials:
       accessKey: ${ACCESS_KEY}
       secretKey: ${SECRET_KEY}
+
+logging:
+  level:
+    org.springframework.cache: DEBUG
+
 
