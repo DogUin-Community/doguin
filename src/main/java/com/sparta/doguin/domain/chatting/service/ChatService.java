@@ -1,125 +1,115 @@
 package com.sparta.doguin.domain.chatting.service;
 
-import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.chatting.dto.ChatRequest;
 import com.sparta.doguin.domain.chatting.dto.ChatResponse;
+import com.sparta.doguin.domain.chatting.entity.ChatMessage;
 import com.sparta.doguin.domain.chatting.entity.ChatRoom;
-import com.sparta.doguin.domain.chatting.entity.Message;
-import com.sparta.doguin.domain.chatting.entity.UserChatRoom;
+import com.sparta.doguin.domain.chatting.repository.ChatMessageRepository;
 import com.sparta.doguin.domain.chatting.repository.ChatRoomRepository;
-import com.sparta.doguin.domain.chatting.repository.MessageRepository;
-import com.sparta.doguin.domain.chatting.repository.UserChatRoomRepository;
 import com.sparta.doguin.domain.common.exception.ChatException;
 import com.sparta.doguin.domain.common.response.ApiResponseChatEnum;
-import com.sparta.doguin.domain.user.entity.User;
-import com.sparta.doguin.domain.user.service.UserService;
+import com.sparta.doguin.domain.matching.constans.MathingStatusType;
+import com.sparta.doguin.domain.matching.entity.Matching;
+import com.sparta.doguin.domain.matching.repository.MatchingRepository;
+import com.sparta.doguin.domain.user.enums.UserType;
+import com.sparta.doguin.security.AuthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class ChatService {
-
-    private static final int MAX_CHAT_ROOM_CAPACITY = 1000;
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-
     private final ChatRoomRepository chatRoomRepository;
-    private final MessageRepository messageRepository;
-    private final UserService userService;
-    private final UserChatRoomRepository userChatRoomRepository;
-    private final SimpMessagingTemplate messagingTemplate;
+    private final ChatMessageRepository chatMessageRepository;
+    private final MatchingRepository matchingRepository;
     private final RedisTemplate<String, Object> redisTemplate;
 
 
-    // 채팅방 생성
-    public ChatResponse.ChatRoomResponse createChatRoom(ChatRequest.ChatRoomRequest chatRoomRequest) {
-        ChatRoom chatRoom = new ChatRoom();
-        chatRoom.setTitle(chatRoomRequest.title());
-        chatRoomRepository.save(chatRoom);
+    // 메시지 전송 처리
+    public ChatResponse.MessageResponse processSendMessage(Long userId, ChatRequest.MessageSendRequest messageDto) {
+        ChatRoom chatRoom = validateUserInRoom(userId, messageDto.roomId());
+        ChatMessage savedMessage = saveMessage(chatRoom.getRoomId(), userId, messageDto.content());
 
-        return new ChatResponse.ChatRoomResponse(chatRoom.getId(), chatRoom.getTitle());
-    }
+        redisTemplate.convertAndSend("/topic/chat/" + chatRoom.getRoomId(), savedMessage);
 
-    // 메시지 전송
-    public void sendMessage(ChatRequest.MessageRequest messageRequest, AuthUser authUser) {
-        User user = getUserFromAuth(authUser);
-        ChatRoom chatRoom = findChatRoomById(messageRequest.chatRoomId());
-
-        Message message = createAndSaveMessage(chatRoom, user, messageRequest.content());
-        sendMessageToTopic(messageRequest.chatRoomId(), user.getNickname(), messageRequest.content(), message.getCreatedAt());
-    }
-
-    // 유저 입장 처리
-    public void userEnter(Long chatRoomId, AuthUser authUser) {
-        checkRoomCapacity(chatRoomId); // 인원 제한 체크
-        User user = getUserFromAuth(authUser);
-        sendSystemMessage(chatRoomId, user.getNickname() + "님이 입장하셨습니다.");
-    }
-
-    // 유저 퇴장 처리 및 방 삭제 여부 확인
-    public void userExit(Long chatRoomId, AuthUser authUser) {
-        User user = getUserFromAuth(authUser);
-        sendSystemMessage(chatRoomId, user.getNickname() + "님이 퇴장하셨습니다.");
-        checkAndDeleteEmptyChatRoom(chatRoomId);
-    }
-
-    // 유저 정보 가져오기
-    private User getUserFromAuth(AuthUser authUser) {
-        return userService.findById(authUser.getUserId());
-    }
-
-    // 채팅방 찾기
-    private ChatRoom findChatRoomById(Long chatRoomId) {
-        return chatRoomRepository.findById(chatRoomId)
-                .orElseThrow(() -> new ChatException(ApiResponseChatEnum.CHATROOM_NOT_FOUND));
-    }
-
-    // 채팅방 인원 제한 체크
-    private void checkRoomCapacity(Long chatRoomId) {
-        if (isRoomFull(chatRoomId)) {
-            throw new ChatException(ApiResponseChatEnum.CHATROOM_FULL);
-        }
-    }
-
-    @Transactional(readOnly = true)
-    public boolean isRoomFull(Long chatRoomId) {
-        List<UserChatRoom> userChatRooms = userChatRoomRepository.findByChatRoom_Id(chatRoomId);
-        return userChatRooms.size() >= MAX_CHAT_ROOM_CAPACITY;
-    }
-
-    // 채팅방이 비어 있으면 삭제
-    private void checkAndDeleteEmptyChatRoom(Long chatRoomId) {
-        List<UserChatRoom> userChatRooms = userChatRoomRepository.findByChatRoom_Id(chatRoomId);
-        if (userChatRooms.isEmpty()) {
-            redisTemplate.delete("chatroom:" + chatRoomId);
-            chatRoomRepository.deleteById(chatRoomId);
-        }
-    }
-
-    // 메시지 생성 및 저장
-    private Message createAndSaveMessage(ChatRoom chatRoom, User user, String content) {
-        Message message = new Message(chatRoom, user, content);
-        return messageRepository.save(message);
-    }
-
-    // 메시지 전송
-    private void sendMessageToTopic(Long chatRoomId, String sender, String content, LocalDateTime createdAt) {
-        ChatRequest.ChatMessageRequest chatMessage = new ChatRequest.ChatMessageRequest(
-                sender, content, chatRoomId, createdAt.format(formatter)
+        return new ChatResponse.MessageResponse(
+                savedMessage.getId(), savedMessage.getRoomId(), userId, savedMessage.getContent(), savedMessage.getTimestamp()
         );
-        messagingTemplate.convertAndSend("/topic/" + chatRoomId, chatMessage);
     }
 
-    // 시스템 메시지 전송
-    private void sendSystemMessage(Long chatRoomId, String messageContent) {
-        sendMessageToTopic(chatRoomId, "System", messageContent, LocalDateTime.now());
+    // 메시지 저장 메서드
+    public ChatMessage saveMessage(String roomId, Long senderId, String content) {
+        ChatMessage message = new ChatMessage(roomId, senderId, content, LocalDateTime.now());
+        return chatMessageRepository.save(message);
+    }
+
+    // 채팅방 나가기 처리
+    public void leaveRoom(Long userId, String roomId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new ChatException(ApiResponseChatEnum.CHATROOM_NOT_FOUND));
+
+        if (chatRoom.removeUser(userId) && chatRoom.isEmpty()) {
+            deleteRoom(roomId);
+        }
+    }
+
+    // 채팅방 삭제
+    public void deleteRoom(String roomId) {
+        chatRoomRepository.deleteByRoomId(roomId);
+        chatMessageRepository.deleteAll(chatMessageRepository.findByRoomId(roomId));
+    }
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void deleteExpiredRooms() {
+        LocalDateTime expirationTime = LocalDateTime.now().minusMonths(6);
+        chatRoomRepository.deleteByCreatedAtBefore(expirationTime);
+    }
+
+    // 채팅방 생성 처리
+    public ChatResponse.RoomResponse processCreateRoom(AuthUser authUser, Long applicantId) {
+        if (authUser.getUserType() != UserType.COMPANY) {
+            throw new ChatException(ApiResponseChatEnum.INVALID_USER_TYPE);
+        }
+
+        Long userId = authUser.getUserId();
+        Matching matching = matchingRepository.findByUserIdAndOutsourcingUserId(applicantId, userId)
+                .orElseThrow(() -> new ChatException(ApiResponseChatEnum.INVALID_APPLICATION_STATUS));
+
+        // 지원 상태 검증
+        if (matching.getStatus() != MathingStatusType.READY && matching.getStatus() != MathingStatusType.YES) {
+            throw new ChatException(ApiResponseChatEnum.INVALID_APPLICATION_STATUS);
+        }
+
+        // 기존 채팅방 중복 생성 방지
+        ChatRoom chatRoom = chatRoomRepository.findByCreatorIdAndApplicantId(userId, applicantId)
+                .orElseGet(() -> {
+                    ChatRoom room = new ChatRoom();
+                    room.setRoomId(userId + "_" + applicantId);
+                    room.setCreatorId(userId);
+                    room.setApplicantId(applicantId);
+                    room.setCreatedAt(LocalDateTime.now());
+                    return chatRoomRepository.save(room);
+                });
+
+        return new ChatResponse.RoomResponse(
+                chatRoom.getRoomId(), chatRoom.getCreatorId(), chatRoom.getApplicantId(), List.of()
+        );
+    }
+
+    // 유저가 방에 있는지 검증
+    private ChatRoom validateUserInRoom(Long userId, String roomId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new ChatException(ApiResponseChatEnum.CHATROOM_NOT_FOUND));
+
+        if (!chatRoom.getActiveUsers().contains(userId)) {
+            throw new ChatException(ApiResponseChatEnum.USER_NOT_IN_ROOM);
+        }
+
+        return chatRoom;
     }
 }

@@ -1,17 +1,9 @@
 package com.sparta.doguin.domain.chatting.dto;
 
-public sealed interface ChatResponse permits ChatResponse.ChatRoomResponse, ChatResponse.MessageResponse, ChatResponse.ChatMessageResponse,  ChatResponse.ErrorMessage {
+import java.time.LocalDateTime;
+import java.util.List;
 
-    record ChatRoomResponse(Long id, String title) implements ChatResponse {}
-
-    record MessageResponse(Long chatRoomId,
-                           String content) implements ChatResponse {}
-
-    record ChatMessageResponse(String email,
-                               String content,
-                               Long chatRoomId,
-                               String timestamp) implements ChatResponse {}
-
-    record ErrorMessage(String errorMessage) implements ChatResponse {}
-
+public sealed interface ChatResponse permits ChatResponse.MessageResponse, ChatResponse.RoomResponse {
+    record MessageResponse(String messageId, String roomId, Long senderId, String content, LocalDateTime timestamp) implements ChatResponse {}
+    record RoomResponse(String roomId, Long creatorId, Long applicantId, List<MessageResponse> messages) implements ChatResponse {}
 }
