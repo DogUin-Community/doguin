@@ -13,6 +13,7 @@ import com.sparta.doguin.domain.common.exception.InvalidRequestException;
 import com.sparta.doguin.domain.common.response.ApiResponseBoardEnum;
 import com.sparta.doguin.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +29,7 @@ public class NoticeService implements BoardService{
     private final ViewTrackingService viewTrackingService;
 
     private final BoardType boardType = BoardType.BOARD_NOTICE;
+    private final static String NOTICE_CACHE = "boardNotice";
 
     /**
      * 공지 게시물 생성
@@ -84,6 +86,7 @@ public class NoticeService implements BoardService{
      * @since 1.0
      */
     @Override
+    @Cacheable(value = NOTICE_CACHE,key = "'단건조회'+#boardId")
     public BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId, User user) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.NOTICE_NOT_FOUND));
@@ -110,6 +113,7 @@ public class NoticeService implements BoardService{
      * @author 김창민
      */
     @Override
+    @Cacheable(value = NOTICE_CACHE,key = "'다중조회'+#page+#size")
     public Page<BoardCommonResponse> viewAll(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
@@ -120,7 +124,6 @@ public class NoticeService implements BoardService{
                 notice.getTitle(),
                 notice.getContent()
         ));
-
     }
 
     /**
@@ -134,6 +137,7 @@ public class NoticeService implements BoardService{
      * @author 김창민
      */
     @Override
+    @Cacheable(value = NOTICE_CACHE,key = "'검색조회'+#page+#size+#title")
     public Page<BoardCommonResponse> search(int page,int size,String title) {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Board> boards = boardRepository.findAllByTitleAndBoardType(pageable,title,boardType);
