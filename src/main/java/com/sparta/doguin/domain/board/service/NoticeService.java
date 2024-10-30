@@ -86,7 +86,7 @@ public class NoticeService implements BoardService{
      * @since 1.0
      */
     @Override
-    @Cacheable(value = NOTICE_CACHE,key = "#boardId")
+    @Cacheable(value = NOTICE_CACHE,key = "'단건조회'+#boardId")
     public BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId, User user) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.NOTICE_NOT_FOUND));
@@ -113,6 +113,7 @@ public class NoticeService implements BoardService{
      * @author 김창민
      */
     @Override
+    @Cacheable(value = NOTICE_CACHE,key = "'다중조회'+#page+#size")
     public Page<BoardCommonResponse> viewAll(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
@@ -136,6 +137,7 @@ public class NoticeService implements BoardService{
      * @author 김창민
      */
     @Override
+    @Cacheable(value = NOTICE_CACHE,key = "'검색조회'+#page+#size+#title")
     public Page<BoardCommonResponse> search(int page,int size,String title) {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Board> boards = boardRepository.findAllByTitleAndBoardType(pageable,title,boardType);

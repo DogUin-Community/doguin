@@ -3,13 +3,13 @@
         xsi:schemaLocation="http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core-3.10.xsd">
 
     <cache-template name="defaultCache">
-        <key-type>java.lang.Long</key-type>
-        <value-type>java.lang.String</value-type>
+        <key-type>java.lang.String</key-type>
+        <value-type>java.lang.Object</value-type>
         <heap unit="entries">100</heap>
     </cache-template>
 
     <cache alias="boardNotice">
-        <key-type>java.lang.Long</key-type>
+        <key-type>java.lang.String</key-type>
         <value-type>java.lang.Object</value-type>
         <expiry>
             <ttl unit="minutes">5</ttl>

@@ -11,7 +11,7 @@ public sealed interface BoardResponse permits BoardResponse.BoardCommonResponse,
             Long id,
             String title,
             String content
-            ) implements BoardResponse {
+            ) implements BoardResponse, Serializable {
     }
 
     record BoardWithAnswer(
