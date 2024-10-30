@@ -4,7 +4,7 @@ services:
     image: redis
     container_name: redis_container
     ports:
-      - "6379:6379"
+      - "6380:6379"
   # MySQL 서비스
   mysql:
     image: mysql
@@ -19,4 +19,4 @@ services:
     image: mongo
     container_name: mongo_container
     ports:
-      - "27017:27017"
+      - "27018:27017"

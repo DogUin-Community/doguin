@@ -93,6 +93,10 @@ dependencies {
 
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
+    implementation 'org.webjars:stomp-websocket:2.3.4'
+    implementation 'io.projectreactor.netty:reactor-netty:1.0.24'
+    implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
+
     // Encache
     implementation 'org.ehcache:ehcache:3.10.0'
     implementation 'javax.cache:cache-api:1.1.1'
