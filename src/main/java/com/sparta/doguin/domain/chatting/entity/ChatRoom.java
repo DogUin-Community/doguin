@@ -1,34 +1,35 @@
 package com.sparta.doguin.domain.chatting.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sparta.doguin.domain.common.Timestamped;
-import jakarta.persistence.*;
-import lombok.Getter;
+import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
-@Entity
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "chatroom")
-public class ChatRoom extends Timestamped {
+@Document(collection = "chatRooms")
+public class ChatRoom {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private String roomId;
 
-    @Column(nullable = false)
-    private String title;
+    private Long creatorId;         // 채팅방 생성한 기업 사용자 ID
+    private Long applicantId;       // 채팅방에 참여하는 지원자 ID
+    private Long outsourcingId;     // 외주 공고 ID
 
-    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<UserChatRoom> userChatRooms = new ArrayList<>();
+    private LocalDateTime createdAt;
+    private Set<Long> activeUsers = new HashSet<>(); // 현재 접속 중인 사용자 ID 관리
 
-    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Message> messages = new ArrayList<>();
+    public boolean removeUser(Long userId) {
+        return activeUsers.remove(userId);
+    }
 
+    public boolean isEmpty() {
+        return activeUsers.isEmpty();
+    }
 }

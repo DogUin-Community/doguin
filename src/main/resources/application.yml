@@ -44,4 +44,3 @@ cloud:
     credentials:
       accessKey: ${ACCESS_KEY}
       secretKey: ${SECRET_KEY}
-

@@ -41,16 +41,16 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
                 UserType userType = UserType.of(claims.get("userType", String.class));
                 UserRole userRole = UserRole.of(claims.get("userRole", String.class));
 
+                // AuthUser 생성 및 Principal 설정
                 AuthUser authUser = new AuthUser(userId, email, nickname, userType, userRole);
-                JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(authUser);
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                accessor.setUser(authUser); // STOMP 세션의 Principal로 설정
 
-                accessor.setUser(authenticationToken);
             } catch (Exception e) {
                 log.error("JWT 토큰 인증 실패", e);
                 SecurityContextHolder.clearContext();
             }
         }
+
 
         return message;
     }

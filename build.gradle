@@ -57,6 +57,7 @@ dependencies {
 
     // MySQL
     runtimeOnly 'com.mysql:mysql-connector-j'
+    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
 
     // Jakarta Validation API (Bean Validation)
     implementation 'jakarta.validation:jakarta.validation-api:3.0.2' // 추가된 부분
@@ -77,6 +78,7 @@ dependencies {
 
     // STOMP
     implementation 'org.webjars:stomp-websocket:2.3.4'
+    implementation 'io.projectreactor.netty:reactor-netty:1.0.24'
 
     // Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
