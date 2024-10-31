@@ -48,6 +48,7 @@ public class AuthService {
             throw new UserException(ApiResponseUserEnum.USER_ALREADY_EXISTS); // 중복 회원가입 예외 처리
         }
 
+        // 비밀번호를 암호화
         String encodedPassword = passwordEncoder.encode(signupRequest.password());
 
         User newUser = new User(

@@ -80,4 +80,22 @@ public class OutsourcingController {
         return ApiResponse.of(apiResponse);
     }
 
+    /**
+     * 제목,닉네임,본문 데이터가 들어온것에 맞게 외주 데이터 반환 컨트롤러
+     */
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<Page<OutsourcingResponse>>> search(
+            @RequestParam(defaultValue = "0", required = false) int page,
+            @RequestParam(defaultValue = "10", required = false) int size,
+            @RequestParam(defaultValue = "desc", required = false) String sort,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String nickname,
+            @RequestParam(required = false) String content
+    ){
+        Sort.Direction direction = Sort.Direction.fromString(sort);
+        Pageable pageable = PageRequest.of(page, size, direction,"createdAt");
+        ApiResponse<Page<OutsourcingResponse>> apiResponse = outsourcingService.search(pageable,title,nickname,content);
+        return ApiResponse.of(apiResponse);
+    }
+
 }

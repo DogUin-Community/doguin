@@ -36,6 +36,7 @@ public class OutsourcingServiceImpl implements OutsourcingService {
     private final AttachmentGetService attachmentGetService;
     private final AttachmentDeleteService attachmentDeleteService;
 
+
     /**
      * 외주 ID로 외주 데이터 반환 하는 메서드
      *
@@ -176,6 +177,28 @@ public class OutsourcingServiceImpl implements OutsourcingService {
             return OutsourcingResponse.OutsourcingResponseGetFilePaths.of(po,filePaths);
         });
         return ApiResponse.of(OUTSOURCING_SUCCESS,bookmarks);
+    }
+
+    /**
+     * 제목,본문,닉네임 의 데이터가 들어온것에 맞게 외주 데이터 반환 메서드
+     *
+     * @param pageable 조회할 페이지 정보 (페이지,사이즈,정렬여부)
+     * @param title 검색할 제목
+     * @param nickname 검색할 닉네임
+     * @param content 검색할 본문
+     * @return 검색결과에 맞는 데이터 반환
+     * @since 1.0
+     * @author 김경민
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public ApiResponse<Page<OutsourcingResponse>> search(Pageable pageable, String title, String nickname, String content) {
+        Long start = System.currentTimeMillis();
+        Page<Outsourcing> search = outsourcingRepository.search(title, content, nickname, pageable);
+        Page<OutsourcingResponse> responses = search.map(OutsourcingResponse.OutsourcingResponseGetNoLocalDateTime::of);
+        Long end = System.currentTimeMillis();
+        System.out.println(end - start);
+        return ApiResponse.of(OUTSOURCING_SUCCESS,responses);
     }
 
     /**

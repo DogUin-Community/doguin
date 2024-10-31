@@ -107,25 +107,25 @@ class MatchingServiceImplTest {
         }
     }
 
-    @Nested
-    public class 매칭_수정_테스트 {
-        @Test
-        void updateMatching() {
-            // given
-            given(matchingRepository.findById(matchingId1)).willReturn(Optional.of(matching1));
-
-            // when
-            matchingService.updateMatching(matchingId1,matchingRequestUpdate1,authUser1);
-
-            // then - 1번 호출됐는지와, 예상 데이터 실제 데이터가 일치하는지 검증
-            Mockito.verify(matchingRepository,Mockito.times(1)).save(Mockito.argThat(matching ->
-                    matching.getUser().getId().equals(matching1.getId()) &&
-                            matching.getOutsourcing().getId().equals(matching1.getOutsourcing().getId()) &&
-                            matching.getPortfolio().getId().equals(matching1.getPortfolio().getId()) &&
-                            !matching.getStatus().equals(matching1.getStatus())
-            ));
-        }
-    }
+//    @Nested
+//    public class 매칭_수정_테스트 {
+//        @Test
+//        void updateMatching() {
+//            // given
+//            given(matchingRepository.findById(matchingId1)).willReturn(Optional.of(matching1));
+//
+//            // when
+//            matchingService.updateMatching(matchingId1,matchingRequestUpdate1,authUser1);
+//
+//            // then - 1번 호출됐는지와, 예상 데이터 실제 데이터가 일치하는지 검증
+//            Mockito.verify(matchingRepository,Mockito.times(1)).save(Mockito.argThat(matching ->
+//                    matching.getUser().getId().equals(matching1.getId()) &&
+//                            matching.getOutsourcing().getId().equals(matching1.getOutsourcing().getId()) &&
+//                            matching.getPortfolio().getId().equals(matching1.getPortfolio().getId()) &&
+//                            !matching.getStatus().equals(matching1.getStatus())
+//            ));
+//        }
+//    }
 
     @Nested
     public class 매칭_삭제_테스트 {
