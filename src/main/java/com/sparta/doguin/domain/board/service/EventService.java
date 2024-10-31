@@ -25,7 +25,7 @@ public class EventService implements BoardService{
 
     private final BoardRepository boardRepository;
     private final NoticeAnswerService noticeAnswerService;
-    private final ViewTrackingService viewTrackingService;
+    private final PopularService popularService;
 
     private final BoardType boardType = BoardType.BOARD_EVENT;
 
@@ -96,10 +96,10 @@ public class EventService implements BoardService{
         Page<AnswerResponse.Response> responses = noticeAnswerService.findByBoardId(boardId,PageRequest.of(0,10));
 
         if(user!=null){
-            viewTrackingService.trackUserView(boardId, user.getId());
+            popularService.trackUserView(boardId, user.getId());
         }
 
-        Long viewCount =viewTrackingService.getDailyUniqueViewCount(boardId)+board.getView();
+        Long viewCount = popularService.getHourUniqueViewCount(boardId)+board.getView();
         return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(),viewCount, responses);
     }
 
@@ -120,8 +120,7 @@ public class EventService implements BoardService{
 
         return boards.map(notice -> new BoardCommonResponse(
                 notice.getId(),
-                notice.getTitle(),
-                notice.getContent()
+                notice.getTitle()
         ));
 
     }
@@ -143,8 +142,7 @@ public class EventService implements BoardService{
 
         return boards.map(notice -> new BoardCommonResponse(
                 notice.getId(),
-                notice.getTitle(),
-                notice.getContent()
+                notice.getTitle()
         ));
     }
 

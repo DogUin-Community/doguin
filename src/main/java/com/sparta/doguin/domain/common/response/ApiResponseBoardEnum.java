@@ -18,6 +18,7 @@ public enum ApiResponseBoardEnum implements ApiResponseEnum {
     BULLETIN_DELETE_SUCCESS(HttpStatus.OK,"일반 게시글 삭제에 성공하였습니다."),
     BULLETIN_FIND_ONE_SUCCESS(HttpStatus.OK,"일반 게시글 조회(단건)에 성공하였습니다."),
     BULLETIN_FIND_ALL_SUCCESS(HttpStatus.OK,"일반 게시글 조회(전체)에 성공하였습니다."),
+    BULLETIN_POPULAR__FIND_ALL_SUCCESS(HttpStatus.OK,"일반 게시글 조회(인기, 전체)에 성공하였습니다."),
     BULLETIN_SEARCH_SUCCESS(HttpStatus.OK,"일반 게시글 검색에 성공하였습니다."),
 
     EVENT_CREATE_SUCCESS(HttpStatus.OK,"이벤트 등록에 성공하였습니다."),

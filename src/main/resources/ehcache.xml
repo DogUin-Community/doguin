@@ -19,4 +19,16 @@
             <offheap unit="MB">500</offheap>
         </resources>
     </cache>
+
+    <cache alias="PopularBoard">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.lang.Object</value-type>
+        <expiry>
+            <ttl unit="minutes">5</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">100</heap>
+            <offheap unit="MB">500</offheap>
+        </resources>
+    </cache>
 </config>
