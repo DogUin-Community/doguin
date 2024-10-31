@@ -1,7 +1,6 @@
 package com.sparta.doguin.domain.board.service;
 
 import com.sparta.doguin.domain.answer.dto.AnswerResponse;
-import com.sparta.doguin.domain.answer.service.BulletinAnswerService;
 import com.sparta.doguin.domain.answer.service.NoticeAnswerService;
 import com.sparta.doguin.domain.board.BoardType;
 import com.sparta.doguin.domain.board.dto.BoardRequest;
@@ -48,7 +47,7 @@ class NoticeServiceTest {
     @Mock
     private NoticeAnswerService noticeAnswerService;
     @Mock
-    private ViewTrackingService viewTrackingService;
+    private PopularService popularService;
 
 
     @InjectMocks

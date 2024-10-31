@@ -9,8 +9,8 @@ public sealed interface BoardResponse permits BoardResponse.BoardCommonResponse,
 
     record BoardCommonResponse(
             Long id,
-            String title,
-            String content
+            String title
+
             ) implements BoardResponse, Serializable {
     }
 

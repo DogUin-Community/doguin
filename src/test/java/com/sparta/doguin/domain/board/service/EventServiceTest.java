@@ -49,7 +49,7 @@ class EventServiceTest {
     private NoticeAnswerService noticeAnswerService;
 
     @Mock
-    private ViewTrackingService viewTrackingService;
+    private PopularService popularService;
 
     @InjectMocks
     private EventService eventService;

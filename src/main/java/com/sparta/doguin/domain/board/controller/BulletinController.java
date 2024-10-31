@@ -29,7 +29,7 @@ public class BulletinController{
     public ResponseEntity<ApiResponse<BoardCommonResponse>> create(@AuthenticationPrincipal AuthUser authUser, @RequestBody BoardCommonRequest boardRequest){
         User user = User.fromAuthUser(authUser);
         Board board = boardService.create(user, boardRequest);
-        BoardCommonResponse response = new BoardCommonResponse(board.getId(),board.getTitle(),board.getContent());
+        BoardCommonResponse response = new BoardCommonResponse(board.getId(),board.getTitle());
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.BULLETIN_CREATE_SUCCESS, response));
     }
 
@@ -37,7 +37,7 @@ public class BulletinController{
     public ResponseEntity<ApiResponse<BoardCommonResponse>> update(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long boardId,@RequestBody BoardCommonRequest boardRequest) {
         User user = User.fromAuthUser(authUser);
         Board board = boardService.update(user, boardId, boardRequest);
-        BoardCommonResponse response = new BoardCommonResponse(board.getId(),board.getTitle(),board.getContent());
+        BoardCommonResponse response = new BoardCommonResponse(board.getId(),board.getTitle());
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.BULLETIN_UPDATE_SUCCESS, response));
     }
 
@@ -71,4 +71,14 @@ public class BulletinController{
         boardService.delete(user,boardId);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.BULLETIN_DELETE_SUCCESS));
     }
+
+
+    @GetMapping("/popular")
+    public ResponseEntity<ApiResponse<Page<Long>>> viewPopular(@RequestParam(defaultValue = "1") int page,
+                                                                              @RequestParam(defaultValue = "3") int size){
+
+        Page<Long> responses = boardService.viewPopular(page, size);
+        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.BULLETIN_POPULAR__FIND_ALL_SUCCESS, responses));
+    }
+
 }

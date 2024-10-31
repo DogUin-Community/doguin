@@ -48,7 +48,7 @@ class BulletinServiceTest {
     @Mock
     private BulletinAnswerService bulletinAnswerService;
     @Mock
-    private ViewTrackingService viewTrackingService;
+    private PopularService popularService;
 
     @InjectMocks
     private BulletinService bulletinService;
