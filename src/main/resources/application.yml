@@ -39,6 +39,9 @@ cloud:
     credentials:
       accessKey: ${ACCESS_KEY}
       secretKey: ${SECRET_KEY}
+slack:
+  bot-token: ${SLACK_BOT_TOKEN}
+  postMessageUrl : "https://slack.com/api/chat.postMessage"
 
 logging:
   level:

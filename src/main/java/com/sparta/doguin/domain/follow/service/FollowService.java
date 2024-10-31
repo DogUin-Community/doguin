@@ -122,4 +122,15 @@ public class FollowService {
     public long getFollowerCount(Long userId) {
         return followRepository.findByFollowerId(userId).size();
     }
+
+    @Transactional(readOnly = true)
+    public List<FollowResponse.Follow> getFollowerList(Long userId) {
+        // 나를 팔로우한 사용자 ID 목록 조회
+        List<FollowResponse.Follow> followerUserIds = followRepository.findByFollowedId(userId)
+                .stream()
+                .map(follow -> new FollowResponse.Follow(follow.getFollower().getId(), follow.getFollower().getEmail()))
+                .collect(Collectors.toList());
+
+        return followerUserIds;
+    }
 }
