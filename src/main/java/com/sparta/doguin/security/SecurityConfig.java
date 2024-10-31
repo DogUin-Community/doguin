@@ -42,6 +42,7 @@ public class SecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers("/api/v1/auth/signup", "/api/v1/auth/signin").permitAll()
+                                .requestMatchers("/api/v1/auth/oauth2/authorize/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/v1/boards/*/*").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/v1/boards/*").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/v1/boards/*/search").permitAll()
