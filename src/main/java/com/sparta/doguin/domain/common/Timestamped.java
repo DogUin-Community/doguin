@@ -23,4 +23,5 @@ public abstract class Timestamped {
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     protected LocalDateTime updatedAt;
+
 }
