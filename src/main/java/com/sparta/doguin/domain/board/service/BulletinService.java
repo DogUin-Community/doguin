@@ -12,10 +12,12 @@ import com.sparta.doguin.domain.common.exception.HandleNotFound;
 import com.sparta.doguin.domain.common.exception.InvalidRequestException;
 import com.sparta.doguin.domain.common.response.ApiResponseBoardEnum;
 import com.sparta.doguin.domain.user.entity.User;
+import com.sparta.doguin.notification.slack.SlackEventClass;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -35,6 +37,7 @@ public class BulletinService implements BoardService {
     private final BoardRepository boardRepository;
     private final BulletinAnswerService bulletinAnswerService;
     private final PopularService popularService;
+    private final ApplicationEventPublisher publisher;
 
     private final BoardType boardType = BoardType.BOARD_BULLETIN;
 
@@ -50,7 +53,9 @@ public class BulletinService implements BoardService {
     @Transactional
     public Board create(User user, BoardCommonRequest boardRequest) {
         Board board = new Board(boardRequest.title(), boardRequest.content(), boardType, user);
-        return boardRepository.save(board);
+        Board savedBoard = boardRepository.save(board);
+        publisher.publishEvent(new SlackEventClass(user.getId(), user.getNickname(), "(이)가 새 게시물을 등록했습니다."));
+        return boardRepository.save(savedBoard);
     }
 
     /**

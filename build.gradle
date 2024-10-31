@@ -102,6 +102,16 @@ dependencies {
     implementation 'javax.cache:cache-api:1.1.1'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
 
+    // 슬랙봇
+    implementation("com.slack.api:bolt:1.31.0")
+    implementation("com.slack.api:bolt-servlet:1.31.0")
+    implementation("com.slack.api:bolt-jetty:1.31.0")
+    implementation("org.slf4j:slf4j-simple:1.7.36")
+
+    // 데이터를 JSON으로 바꾸거나 json을 String으로 추출해주는 라이브러리
+    implementation 'com.google.code.gson:gson:2.8.9'
+
+
 }
 
 tasks.named('test') {
