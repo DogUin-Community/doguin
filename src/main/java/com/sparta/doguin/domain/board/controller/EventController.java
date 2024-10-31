@@ -29,7 +29,7 @@ public class EventController{
     public ResponseEntity<ApiResponse<BoardCommonResponse>> create(@AuthenticationPrincipal AuthUser authUser, @RequestBody BoardCommonRequest boardRequest){
         User user = User.fromAuthUser(authUser);
         Board board = boardService.create(user, boardRequest);
-        BoardCommonResponse response = new BoardCommonResponse(board.getId(),board.getTitle(),board.getContent());
+        BoardCommonResponse response = new BoardCommonResponse(board.getId(),board.getTitle());
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.EVENT_CREATE_SUCCESS, response));
     }
 
@@ -37,7 +37,7 @@ public class EventController{
     public ResponseEntity<ApiResponse<BoardCommonResponse>> update(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long boardId,@RequestBody BoardCommonRequest boardRequest) {
         User user = User.fromAuthUser(authUser);
         Board board = boardService.update(user, boardId, boardRequest);
-        BoardCommonResponse response = new BoardCommonResponse(board.getId(),board.getTitle(),board.getContent());
+        BoardCommonResponse response = new BoardCommonResponse(board.getId(),board.getTitle());
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.EVENT_UPDATE_SUCCESS, response));
     }
 

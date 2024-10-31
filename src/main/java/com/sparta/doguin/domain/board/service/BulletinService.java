@@ -13,19 +13,28 @@ import com.sparta.doguin.domain.common.exception.InvalidRequestException;
 import com.sparta.doguin.domain.common.response.ApiResponseBoardEnum;
 import com.sparta.doguin.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class BulletinService implements BoardService {
 
+    private static final Logger log = LoggerFactory.getLogger(BulletinService.class);
     private final BoardRepository boardRepository;
     private final BulletinAnswerService bulletinAnswerService;
-    private final ViewTrackingService viewTrackingService;
+    private final PopularService popularService;
 
     private final BoardType boardType = BoardType.BOARD_BULLETIN;
 
@@ -85,6 +94,7 @@ public class BulletinService implements BoardService {
      * @since 1.0
      */
     @Override
+    @Cacheable(value = "PopularBoard",key = "'게시글번호'+#boardId")
     public BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId, User user) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.BULLETIN_NOT_FOUND));
@@ -95,10 +105,11 @@ public class BulletinService implements BoardService {
         Page<AnswerResponse.Response> responses = bulletinAnswerService.findByBoardId(boardId,PageRequest.of(0,10));
 
         if(user!=null){
-            viewTrackingService.trackUserView(boardId, user.getId());
+            popularService.trackUserView(boardId, user.getId()); // 한시갖 노조회수
         }
 
-        Long viewCount =viewTrackingService.getDailyUniqueViewCount(boardId)+board.getView();
+        Long viewCount = popularService.getHourUniqueViewCount(boardId)+board.getView(); // 한시간 조회수 + 누적 조회수 로 토탈 조회수
+
         return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(),viewCount, responses);
     }
 
@@ -119,8 +130,7 @@ public class BulletinService implements BoardService {
 
         return boards.map(notice -> new BoardCommonResponse(
                 notice.getId(),
-                notice.getTitle(),
-                notice.getContent()
+                notice.getTitle()
         ));
     }
 
@@ -141,8 +151,7 @@ public class BulletinService implements BoardService {
 
         return boards.map(notice -> new BoardCommonResponse(
                 notice.getId(),
-                notice.getTitle(),
-                notice.getContent()
+                notice.getTitle()
         ));
     }
 
@@ -178,4 +187,39 @@ public class BulletinService implements BoardService {
         Pageable pageable = PageRequest.of( 0, 10);
         return boardRepository.findAllByBoardTypeAndUserId(pageable,boardType,userId);
     }
+
+    /**
+     * 인기 게시물 페이지 조회
+     *
+     * @param page
+     * @param size
+     * @since 1.0
+     * @author 김창민
+     */
+    public Page<Long> viewPopular(int page, int size){
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Set<Long> popularBoardIds = popularService.viewPopularBoardList();
+        log.info(String.valueOf(popularBoardIds.size()));
+
+        // 게시물 ID 목록이 없을 경우 빈 페이지 반환
+        if (popularBoardIds == null || popularBoardIds.isEmpty()) {
+            return new PageImpl<>(List.of(), pageable, 0);
+        }
+
+        // 인기 게시물 ID를 리스트로 변환
+        List<Long> popularBoardIdList = popularBoardIds.stream().collect(Collectors.toList());
+        log.info(String.valueOf(popularBoardIdList.size()));
+
+        // 페이지 처리
+        int start = Math.min((page-1) * size, popularBoardIdList.size());
+        int end = Math.min(start + size, popularBoardIdList.size());
+        List<Long> paginatedBoardIds = popularBoardIdList.subList(start, end);
+
+
+        return new PageImpl<>(paginatedBoardIds,pageable, popularBoardIdList.size());
+    }
+
+
+
+
 }

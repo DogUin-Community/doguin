@@ -41,5 +41,9 @@ public interface BoardService {
     // 게시글 삭제
     void delete(User user, Long boardId);
     Page<Board> findByUserId(Long userId);
+
+    default Page<Long> viewPopular(int page, int size){
+        throw new UnsupportedOperationException("viewAll popular operation not supported");
+    }
 }
 

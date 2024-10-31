@@ -48,7 +48,7 @@ class InquiryServiceTest {
     private InquiryAnswerService inquiryAnswerService;
 
     @Mock
-    private ViewTrackingService viewTrackingService;
+    private PopularService popularService;
 
     @InjectMocks
     private InquiryService inquiryService;

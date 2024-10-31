@@ -25,7 +25,7 @@ public class InquiryService implements BoardService{
 
     private final InquiryAnswerService inquiryAnswerService;
     private final BoardRepository boardRepository;
-    private final ViewTrackingService viewTrackingService;
+    private final PopularService popularService;
     private final BoardType boardType = BoardType.BOARD_INQUIRY;
 
     /**
@@ -88,8 +88,8 @@ public class InquiryService implements BoardService{
             throw new InvalidRequestException(ApiResponseBoardEnum.INQUIRY_WRONG);
         }
         Page<AnswerResponse.Response> responses = inquiryAnswerService.findByBoardId(boardId,PageRequest.of(0,10));
-        viewTrackingService.trackUserView(boardId, user.getId());
-        Long viewCount =viewTrackingService.getDailyUniqueViewCount(boardId)+board.getView();
+        popularService.trackUserView(boardId, user.getId());
+        Long viewCount = popularService.getHourUniqueViewCount(boardId)+board.getView();
 
         return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(),viewCount, responses);
     }
@@ -112,8 +112,7 @@ public class InquiryService implements BoardService{
 
         return boards.map(notice -> new BoardCommonResponse(
                 notice.getId(),
-                notice.getTitle(),
-                notice.getContent()
+                notice.getTitle()
         ));
 
     }
@@ -136,8 +135,7 @@ public class InquiryService implements BoardService{
 
         return boards.map(notice -> new BoardCommonResponse(
                 notice.getId(),
-                notice.getTitle(),
-                notice.getContent()
+                notice.getTitle()
         ));
     }
 

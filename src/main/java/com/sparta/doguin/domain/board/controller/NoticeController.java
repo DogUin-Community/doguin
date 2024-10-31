@@ -30,7 +30,7 @@ public class NoticeController {
     public ResponseEntity<ApiResponse<BoardCommonResponse>> create(@AuthenticationPrincipal AuthUser authUser, @RequestBody BoardCommonRequest boardRequest){
         User user = User.fromAuthUser(authUser);
         Board board = boardService.create(user, boardRequest);
-        BoardCommonResponse response = new BoardCommonResponse(board.getId(),board.getTitle(),board.getContent());
+        BoardCommonResponse response = new BoardCommonResponse(board.getId(),board.getTitle());
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.NOTICE_CREATE_SUCCESS, response));
     }
 
@@ -38,7 +38,7 @@ public class NoticeController {
     public ResponseEntity<ApiResponse<BoardCommonResponse>> update(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long boardId,@RequestBody BoardCommonRequest boardRequest) {
         User user = User.fromAuthUser(authUser);
         Board board = boardService.update(user, boardId, boardRequest);
-        BoardCommonResponse response = new BoardCommonResponse(board.getId(),board.getTitle(),board.getContent());
+        BoardCommonResponse response = new BoardCommonResponse(board.getId(),board.getTitle());
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.NOTICE_UPDATE_SUCCESS, response));
     }
 

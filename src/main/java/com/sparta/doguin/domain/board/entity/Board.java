@@ -52,7 +52,7 @@ public class Board extends Timestamped {
         }
     }
 
-    public void setTotalViewCount(Long now , Long today){
+    public void changeTotalViewCount(Long now , Long today){
         this.view = now + today;
     }
 
