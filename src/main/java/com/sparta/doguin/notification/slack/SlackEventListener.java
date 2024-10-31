@@ -2,6 +2,7 @@ package com.sparta.doguin.notification.slack;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.sparta.doguin.domain.follow.dto.FollowResponse;
 import com.sparta.doguin.domain.follow.service.FollowService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -36,24 +37,14 @@ public class SlackEventListener {
         String nickName = slackEventClass.getNickName();
         String message = slackEventClass.getMessage();
 
-//        List<FollowResponse.Follow> followerUserEmail = followService.getFollowerList(userId);
-//
-//        for(FollowResponse.Follow val : followerUserEmail){
-//            String userEmail = val.email();
-//            String slackId = findEmail(userEmail);
-//            sendPush(slackId,nickName,message);
-//        }
+        List<FollowResponse.Follow> followerUserEmail = followService.getFollowerList(userId);
 
-        List<String> emails = new ArrayList<>();
-        emails.add("ksjchm4@gmail.com");
-        emails.add("tiyuuuu9@gmail.com");
-        emails.add("chukye1216@gmail.com");
-        emails.add("dbstj4566@naver.com");
-        for (String email  : emails) {
-            String userEmail = email;
+        for(FollowResponse.Follow val : followerUserEmail){
+            String userEmail = val.email();
             String slackId = findEmail(userEmail);
             slackSendPush.sendPush(slackId, nickName, message);
         }
+
 
 
 
