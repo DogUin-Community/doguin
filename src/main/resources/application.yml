@@ -45,6 +45,9 @@ cloud:
 slack:
   bot-token: ${SLACK_BOT_TOKEN}
   postMessageUrl : "https://slack.com/api/chat.postMessage"
+discord:
+  report_url: ${DISCORD_URL_REPORT}
+  error_url: ${DISCORD_URL_ERROR}
 
 logging:
   level:
