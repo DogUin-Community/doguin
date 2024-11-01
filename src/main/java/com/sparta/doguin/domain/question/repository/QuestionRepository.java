@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface QuestionRepository extends JpaRepository<Question, Long> {
+public interface QuestionRepository extends JpaRepository<Question, Long>, QuestionRepositoryQuery {
     List<Question> findAllByUserId(long userId);
 
     // 답변과 대답변을 한 번에 가져옴
