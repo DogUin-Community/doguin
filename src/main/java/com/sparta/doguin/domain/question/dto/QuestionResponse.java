@@ -6,6 +6,7 @@ import com.sparta.doguin.domain.question.enums.LastCategory;
 import com.sparta.doguin.domain.question.enums.QuestionStatus;
 import com.sparta.doguin.domain.question.enums.SecondCategory;
 
+import java.io.Serializable;
 import java.util.List;
 
 public sealed interface QuestionResponse permits QuestionResponse.CreatedQuestion, QuestionResponse.GetQuestions, QuestionResponse.GetQuestion {
@@ -16,7 +17,7 @@ public sealed interface QuestionResponse permits QuestionResponse.CreatedQuestio
                            FirstCategory firstCategory,
                            SecondCategory secondCategory,
                            LastCategory lastCategory,
-                           QuestionStatus questionStatus) implements QuestionResponse {}
+                           QuestionStatus questionStatus) implements QuestionResponse, Serializable {}
 
     record GetQuestions(Long questionId,
                         String title,
@@ -24,7 +25,7 @@ public sealed interface QuestionResponse permits QuestionResponse.CreatedQuestio
                         FirstCategory firstCategory,
                         SecondCategory secondCategory,
                         LastCategory lastCategory,
-                        QuestionStatus questionStatus) implements QuestionResponse {}
+                        QuestionStatus questionStatus) implements QuestionResponse, Serializable {}
 
     record GetQuestion(Long questionId,
                        String title,
@@ -33,5 +34,6 @@ public sealed interface QuestionResponse permits QuestionResponse.CreatedQuestio
                        SecondCategory secondCategory,
                        LastCategory lastCategory,
                        QuestionStatus questionStatus,
-                       List<AnswerResponse.GetResponse> answer) implements QuestionResponse {}
+                       Long view,
+                       List<AnswerResponse.GetResponse> answer) implements QuestionResponse, Serializable {}
 }
