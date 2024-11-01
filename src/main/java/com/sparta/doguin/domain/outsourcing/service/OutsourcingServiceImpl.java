@@ -13,6 +13,7 @@ import com.sparta.doguin.domain.outsourcing.model.OutsourcingResponse;
 import com.sparta.doguin.domain.outsourcing.repository.OutsourcingRepository;
 import com.sparta.doguin.domain.outsourcing.validate.OutsourcingValidator;
 import com.sparta.doguin.domain.user.entity.User;
+import com.sparta.doguin.notification.slack.SlackSendPush;
 import com.sparta.doguin.security.AuthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,6 +36,7 @@ public class OutsourcingServiceImpl implements OutsourcingService {
     private final AttachmentUpdateService attachmentUpdateService;
     private final AttachmentGetService attachmentGetService;
     private final AttachmentDeleteService attachmentDeleteService;
+    private final SlackSendPush slackSendPush;
 
 
     /**
@@ -193,11 +195,8 @@ public class OutsourcingServiceImpl implements OutsourcingService {
     @Transactional(readOnly = true)
     @Override
     public ApiResponse<Page<OutsourcingResponse>> search(Pageable pageable, String title, String nickname, String content) {
-        Long start = System.currentTimeMillis();
         Page<Outsourcing> search = outsourcingRepository.search(title, content, nickname, pageable);
         Page<OutsourcingResponse> responses = search.map(OutsourcingResponse.OutsourcingResponseGetNoLocalDateTime::of);
-        Long end = System.currentTimeMillis();
-        System.out.println(end - start);
         return ApiResponse.of(OUTSOURCING_SUCCESS,responses);
     }
 

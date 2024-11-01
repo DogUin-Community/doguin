@@ -81,6 +81,14 @@ public class Question {
         this.questionStatus = QuestionStatus.COMMON;
     }
 
+    // 검색
+    public Question(Long id, String title, String content) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+    }
+
+    // 수정
     public void update(QuestionRequest.UpdateQuestion request) {
         this.title = request.title();
         this.content = request.content();
@@ -89,6 +97,7 @@ public class Question {
         this.lastCategory = request.lastCategory();
     }
 
+    // 조회수
     public void changeTotalViewCount(Long now , Long today){
         this.view = now + today;
     }
