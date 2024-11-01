@@ -1,18 +1,17 @@
 package com.sparta.doguin.domain.mypage.service;
 
-import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.board.entity.Board;
 import com.sparta.doguin.domain.board.service.BulletinService;
 import com.sparta.doguin.domain.board.service.InquiryService;
-import com.sparta.doguin.domain.common.response.ApiResponse;
-import com.sparta.doguin.domain.common.response.ApiResponseMypageEnum;
 import com.sparta.doguin.domain.follow.service.FollowService;
 import com.sparta.doguin.domain.mypage.dto.MypageResponse;
 import com.sparta.doguin.domain.question.entity.Question;
 import com.sparta.doguin.domain.question.service.QuestionService;
 import com.sparta.doguin.domain.user.entity.User;
 import com.sparta.doguin.domain.user.service.UserService;
+import com.sparta.doguin.security.AuthUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +25,8 @@ public class MypageService {
     private final BulletinService bulletinService;
     private final InquiryService inquiryService;
 
+    private final static String MAPAGE_CACHE = "mypageCache";
+
     /**
      * 사용자의 마이페이지 정보를 조회하는 메서드
      *
@@ -34,7 +35,11 @@ public class MypageService {
      * @since 1.0
      * @author 황윤서
      */
-    public ApiResponse<MypageResponse.Mypage> getMypage(AuthUser authUser) { //ApiResponse<MypageResponse>
+    @Cacheable(value = MAPAGE_CACHE, key = "'마이페이지조회'+(#authUser != null ? #authUser.userId : 'anonymous')")
+    public MypageResponse.Mypage getMypage(AuthUser authUser) {
+        // 시작 시간 기록
+        long startTime = System.currentTimeMillis();
+
         User user = userService.findById(authUser.getUserId());
 
         // 나를 팔로우한 사람들 수 조회
@@ -73,6 +78,13 @@ public class MypageService {
                 inquiryBoards
         );
 
-        return ApiResponse.of(ApiResponseMypageEnum.MYPAGE_GET_SUCCESS, getMypage);
+        // 끝 시간 기록
+        long endTime = System.currentTimeMillis();
+
+        // 실행 시간 계산
+        long executionTime = endTime - startTime;
+        System.out.println("마이페이지 조회 실행 시간: " + executionTime + "ms");
+
+        return getMypage;
     }
 }
