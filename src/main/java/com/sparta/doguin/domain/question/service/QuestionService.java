@@ -1,8 +1,6 @@
 package com.sparta.doguin.domain.question.service;
 
-import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.answer.dto.AnswerResponse;
-import com.sparta.doguin.domain.answer.repository.AnswerRepository;
 import com.sparta.doguin.domain.common.exception.HandleNotFound;
 import com.sparta.doguin.domain.common.exception.QuestionException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
@@ -12,7 +10,9 @@ import com.sparta.doguin.domain.question.dto.QuestionResponse;
 import com.sparta.doguin.domain.question.entity.Question;
 import com.sparta.doguin.domain.question.repository.QuestionRepository;
 import com.sparta.doguin.domain.user.entity.User;
+import com.sparta.doguin.security.AuthUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +26,9 @@ import java.util.List;
 public class QuestionService {
 
     private final QuestionRepository questionRepository;
-    private final AnswerRepository answerRepository;
+
+    private final QuestionViewService questionViewService;
+    private final static String QUESTION_CACHE = "questionBoard";
 
     /**
      * 질문 생성
@@ -114,11 +116,18 @@ public class QuestionService {
      * @return 요청한 질문
      * @author 유태이
      */
-    public ApiResponse<QuestionResponse.GetQuestion> getQuestion(long questionId) {
+    @Cacheable(value = QUESTION_CACHE, key = "'단건조회' + #questionId")
+    public QuestionResponse.GetQuestion getQuestion(User user, long questionId) {
 
         // 질문과 답변 및 대답변 조회
         Question question = questionRepository.findByIdWithAnswers(questionId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseQuestionEnum.QUESTION_NOT_FOUND));
+
+        if (user!=null){
+            questionViewService.trackUserView(questionId, user.getId());
+        }
+
+        Long viewCount = questionViewService.getHourUniqueViewCount(questionId) + (question.getView() != null ? question.getView() : 0L);
 
         // 답변과 대답변 리스트 반환
         List<AnswerResponse.GetResponse> answers = question.getAnswerList().stream()
@@ -133,8 +142,7 @@ public class QuestionService {
                 })
                 .toList();
 
-        // 질문과 답변 데이터를 통합하여 반환
-        QuestionResponse.GetQuestion response = new QuestionResponse.GetQuestion(
+        return new QuestionResponse.GetQuestion(
                 question.getId(),
                 question.getTitle(),
                 question.getContent(),
@@ -142,10 +150,9 @@ public class QuestionService {
                 question.getSecondCategory(),
                 question.getLastCategory(),
                 question.getQuestionStatus(),
+                viewCount,
                 answers
         );
-
-        return ApiResponse.of(ApiResponseQuestionEnum.QUESTION_FIND_ONE_SUCCESS, response);
     }
 
     /**

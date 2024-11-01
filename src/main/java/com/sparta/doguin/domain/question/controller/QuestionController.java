@@ -1,10 +1,12 @@
 package com.sparta.doguin.domain.question.controller;
 
-import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.common.response.ApiResponse;
+import com.sparta.doguin.domain.common.response.ApiResponseQuestionEnum;
 import com.sparta.doguin.domain.question.dto.QuestionRequest;
 import com.sparta.doguin.domain.question.dto.QuestionResponse;
 import com.sparta.doguin.domain.question.service.QuestionService;
+import com.sparta.doguin.domain.user.entity.User;
+import com.sparta.doguin.security.AuthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -72,8 +74,11 @@ public class QuestionController {
      * @author 유태이
      */
     @GetMapping("/{questionId}")
-    public ResponseEntity<ApiResponse<QuestionResponse.GetQuestion>> getQuestion(@PathVariable Long questionId) {
-        return ApiResponse.of(questionService.getQuestion(questionId));
+    public ResponseEntity<ApiResponse<QuestionResponse.GetQuestion>> getQuestion(@AuthenticationPrincipal AuthUser authUser,
+                                                                                 @PathVariable Long questionId) {
+        User user = authUser != null ? User.fromAuthUser(authUser) : null;
+        QuestionResponse.GetQuestion response = questionService.getQuestion(user, questionId);
+        return ApiResponse.of(ApiResponse.of(ApiResponseQuestionEnum.QUESTION_FIND_ONE_SUCCESS, response));
     }
 
     /**

@@ -40,6 +40,8 @@ public class Question {
     @Enumerated(EnumType.STRING)
     private QuestionStatus questionStatus;
 
+    private Long view = 0L;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="user_id")
     private User user;
@@ -85,5 +87,9 @@ public class Question {
         this.firstCategory = request.firstCategory();
         this.secondCategory = request.secondCategory();
         this.lastCategory = request.lastCategory();
+    }
+
+    public void changeTotalViewCount(Long now , Long today){
+        this.view = now + today;
     }
 }
