@@ -21,11 +21,10 @@ public class User extends Timestamped {
     private Long id;
 
     // 회원가입 시 필수 : 이메일
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String email;
 
-    // 회원가입 시 필수 : 비밀번호
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
 
     // 회원가입 시 필수 : 닉네임
@@ -39,6 +38,7 @@ public class User extends Timestamped {
 
     // 회원가입 시 필수 : 유저권한(유저/관리자)
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private UserRole userRole;
 
     // 회원가입 시 선택 : 프로필 이미지
@@ -64,7 +64,7 @@ public class User extends Timestamped {
     @Enumerated(EnumType.STRING)
     private UserGrade userGrade;
 
-    // 필수 정보 + 선택 정보 포함하는 생성자
+    // 회원가입 전용 생성자
     public User(Long id, String email, String password, String nickname, UserType userType, UserRole userRole,
                 String profileImage, String introduce, String homeAddress, String gitAddress, String blogAddress) {
         this.id = id;
@@ -94,6 +94,7 @@ public class User extends Timestamped {
         return User.builder()
                 .id(authUser.getUserId())
                 .email(authUser.getEmail())
+                .userType(authUser.getUserType())
                 .userRole(UserRole.of(roleName))
                 .build();  // 선택 필드들은 나중에 설정
     }
@@ -112,5 +113,12 @@ public class User extends Timestamped {
     // 비밀번호 업데이트 메서드
     public void updatePassword(String encodedPassword) {
         this.password = encodedPassword;
+    }
+
+    // 소셜 로그인 메서드
+    public void socialLogin(String email, String nickname) {
+        this.email = email;
+        this.nickname = nickname;
+        this.userRole = UserRole.ROLE_USER;
     }
 }

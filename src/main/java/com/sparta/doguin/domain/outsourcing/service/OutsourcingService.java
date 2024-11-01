@@ -17,4 +17,5 @@ public interface OutsourcingService {
     ApiResponse<Void> updateOutsourcing(Long outsourcingId, OutsourcingRequest.OutsourcingRequestUpdate reqDto, AuthUser authUser,List<MultipartFile> files);
     ApiResponse<Void> deleteOutsourcing(Long outsourcingId,AuthUser authUser);
     ApiResponse<Page<OutsourcingResponse>> getAllOutsourcing(Pageable pageable, AreaType area);
+    ApiResponse<Page<OutsourcingResponse>> search(Pageable pageable, String title, String nickname, String content);
 }

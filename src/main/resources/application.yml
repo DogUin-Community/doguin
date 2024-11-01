@@ -23,6 +23,8 @@ spring:
       port: ${REDIS_PORT}
       host: ${REDIS_HOST}
       password: ${REDIS_PASSWORD}
+
+# JWT config
   cache:
     jcache:
       config: classpath:ehcache.xml
@@ -30,6 +32,7 @@ jwt:
   secret:
     key: ${JWT_SECRET_KEY}
 
+# AWS S3 config
 cloud:
   aws:
     s3:
@@ -39,9 +42,36 @@ cloud:
     credentials:
       accessKey: ${ACCESS_KEY}
       secretKey: ${SECRET_KEY}
+slack:
+  bot-token: ${SLACK_BOT_TOKEN}
+  postMessageUrl : "https://slack.com/api/chat.postMessage"
 
 logging:
   level:
     org.springframework.cache: DEBUG
 
-
+# Social Login config
+social:
+  kakao:
+    client-id: ${KAKAO_CLIENT_ID}
+    redirect-uri: http://localhost:8080/api/v1/auth/oauth2/authorize/kakao
+    scope:
+      - profile_nickname
+      - account_email
+  naver:
+    client-id: ${NAVER_CLIENT_ID}
+    client-secret: ${NAVER_CLIENT_SECRET}
+    redirect-uri: http://localhost:8080/api/v1/auth/oauth2/authorize/naver
+    scope: "profile"
+  google:
+    client-id: ${GOOGLE_CLIENT_ID}
+    client-secret: ${GOOGLE_CLIENT_SECRET}
+    redirect-uri: http://localhost:8080/api/v1/auth/oauth2/authorize/google
+    scope:
+      - email
+      - profile
+  github:
+    client-id: ${GITHUB_CLIENT_ID}
+    client-secret: ${GITHUB_CLIENT_SECRET}
+    redirect-uri: http://localhost:8080/api/v1/auth/oauth2/authorize/github
+    scope: "user:email"
