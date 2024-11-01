@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -189,11 +190,24 @@ public class QuestionService {
         return ApiResponse.of(ApiResponseQuestionEnum.QUESTION_DELETE_SUCCESS);
     }
 
+    /**
+     * 질문 검색: 제목과 내용을 기준으로 검색, 페이징된 결과를 반환
+     * 검색 조건이 없을 경우 모든 질문을 페이징하여 반환
+     *
+     * @param pageable 페이징 정보
+     * @param title 검색할 제목(선택)
+     * @param content 검색할 내용(선택)
+     * @return 제목 및 내용에 따라 필터링된 질문 목록을 담은 객체
+     * @since 1.0
+     * @author 유태이
+     */
+    @Transactional(readOnly = true)
+    public ApiResponse<Page<QuestionResponse.SearchQuestion>> search(Pageable pageable, String title, String content) {
+        Page<Question> search = questionRepository.search(title, content, pageable);
+        Page<QuestionResponse.SearchQuestion> response = search.map(QuestionResponse.SearchQuestion::of);
 
-
-
-
-
+        return ApiResponse.of(ApiResponseQuestionEnum.QUESTION_SEARCH_SUCCESS, response);
+    }
 
 
 
