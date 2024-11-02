@@ -1,6 +1,5 @@
 package com.sparta.doguin.domain.user.service;
 
-import com.sparta.doguin.domain.attachment.constans.AttachmentTargetType;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
 import com.sparta.doguin.domain.common.exception.UserException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
@@ -11,7 +10,6 @@ import com.sparta.doguin.domain.user.entity.User;
 import com.sparta.doguin.domain.user.enums.UserRole;
 import com.sparta.doguin.domain.user.enums.UserType;
 import com.sparta.doguin.domain.user.repository.UserRepository;
-import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.security.JwtUtil;
 import com.sparta.doguin.security.dto.JwtUtilRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -66,8 +64,8 @@ public class AuthService {
         );
 
         User saveduser = userRepository.save(newUser);
-        AuthUser authUser = new AuthUser(saveduser.getId(),saveduser.getEmail(), saveduser.getNickname(), saveduser.getUserType(), saveduser.getUserRole());
-        attachmentUploadService.upload(files, authUser, authUser.getUserId(), AttachmentTargetType.PROFILE);
+//        AuthUser authUser = new AuthUser(saveduser.getId(),saveduser.getEmail(), saveduser.getNickname(), saveduser.getUserType(), saveduser.getUserRole());
+//        attachmentUploadService.upload(files, authUser, authUser.getUserId(), AttachmentTargetType.PROFILE);
         ApiResponseEnum apiResponse = ApiResponseUserEnum.USER_CREATE_SUCCESS;
 
         return ApiResponse.of(apiResponse);
