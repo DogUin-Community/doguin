@@ -48,9 +48,11 @@ public class MatchingServiceImpl implements MatchingService {
     @Transactional
     @Override
     public ApiResponse<Void> createMatching(MatchingRequest.MatchingRequestCreate reqDto, AuthUser authUser) {
+        MatchingValidator.isIndividual(authUser);
         User user = User.fromAuthUser(authUser);
         Outsourcing outsourcing = outsourcingService.findById(reqDto.outsourcingId());
         Portfolio portfolio = portfolioService.findById(reqDto.portfolioId());
+        MatchingValidator.isMe(portfolio.getUser().getId(), user.getId());
         Matching matching = Matching.builder()
                 .user(user)
                 .portfolio(portfolio)

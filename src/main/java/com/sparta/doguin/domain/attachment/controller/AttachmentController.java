@@ -8,6 +8,8 @@ import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUpdateSe
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseFileEnum;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@Tag(name = "파일 API",description = "파일 관련된 API를 확인 할 수 있습니다")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/attachments")
@@ -25,6 +28,7 @@ public class AttachmentController {
     private final AttachmentUpdateService attachmentUpdateService;
     private final AttachmentDeleteService attachmentDeleteService;
 
+    @Operation(summary = "파일 생성", description = "파일 생성 API")
     @PostMapping("/targetId/{targetId}/target/{target}")
     public ResponseEntity<ApiResponse<Void>> attachmentUpload(
             @PathVariable Long targetId,
@@ -37,6 +41,7 @@ public class AttachmentController {
         return ApiResponse.of(apiResponse);
     }
 
+    @Operation(summary = "파일 ID로, 파일들 조회하기", description = "파일 다건 조회 API")
     @GetMapping("fileIds/{fileIds}")
     public ResponseEntity<ApiResponse<List<String>>> attachmentDownload(
             @PathVariable List<Long> fileIds
@@ -45,6 +50,7 @@ public class AttachmentController {
         return ApiResponse.of(apiResponse);
     }
 
+    @Operation(summary = "파일들 다건 수정", description = "파일들 다건 수정 API")
     @PutMapping("fileIds/{fileIds}")
     public void attachmentUpdate(
             @PathVariable List<Long> fileIds,
@@ -54,6 +60,7 @@ public class AttachmentController {
         attachmentUpdateService.update(files,fileIds,authUser);
     }
 
+    @Operation(summary = "파일들 다건 삭제", description = "파일들 다건 삭제 API")
     @DeleteMapping("fileIds/{fileIds}")
     public void attachmentDelete(
             @PathVariable List<Long> fileIds,

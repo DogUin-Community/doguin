@@ -1,5 +1,6 @@
 package com.sparta.doguin.domain.mypage.dto;
 
+import java.io.Serializable;
 import java.util.List;
 
 public sealed interface MypageResponse permits MypageResponse.Mypage {
@@ -11,5 +12,5 @@ public sealed interface MypageResponse permits MypageResponse.Mypage {
             List<String> boards,
             List<String> questions,
             List<String> inquiries
-    ) implements MypageResponse {}
+    ) implements MypageResponse, Serializable {}
 }

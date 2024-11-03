@@ -1,8 +1,6 @@
 package com.sparta.doguin.domain.question.service;
 
-import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.answer.dto.AnswerResponse;
-import com.sparta.doguin.domain.answer.repository.AnswerRepository;
 import com.sparta.doguin.domain.common.exception.HandleNotFound;
 import com.sparta.doguin.domain.common.exception.QuestionException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
@@ -12,11 +10,14 @@ import com.sparta.doguin.domain.question.dto.QuestionResponse;
 import com.sparta.doguin.domain.question.entity.Question;
 import com.sparta.doguin.domain.question.repository.QuestionRepository;
 import com.sparta.doguin.domain.user.entity.User;
+import com.sparta.doguin.security.AuthUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,9 @@ import java.util.List;
 public class QuestionService {
 
     private final QuestionRepository questionRepository;
-    private final AnswerRepository answerRepository;
+
+    private final QuestionViewService questionViewService;
+    private final static String QUESTION_CACHE = "questionBoard";
 
     /**
      * 질문 생성
@@ -114,11 +117,18 @@ public class QuestionService {
      * @return 요청한 질문
      * @author 유태이
      */
-    public ApiResponse<QuestionResponse.GetQuestion> getQuestion(long questionId) {
+    @Cacheable(value = QUESTION_CACHE, key = "'단건조회' + #questionId")
+    public QuestionResponse.GetQuestion getQuestion(User user, long questionId) {
 
         // 질문과 답변 및 대답변 조회
         Question question = questionRepository.findByIdWithAnswers(questionId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseQuestionEnum.QUESTION_NOT_FOUND));
+
+        if (user!=null){
+            questionViewService.trackUserView(questionId, user.getId());
+        }
+
+        Long viewCount = questionViewService.getHourUniqueViewCount(questionId) + (question.getView() != null ? question.getView() : 0L);
 
         // 답변과 대답변 리스트 반환
         List<AnswerResponse.GetResponse> answers = question.getAnswerList().stream()
@@ -133,8 +143,7 @@ public class QuestionService {
                 })
                 .toList();
 
-        // 질문과 답변 데이터를 통합하여 반환
-        QuestionResponse.GetQuestion response = new QuestionResponse.GetQuestion(
+        return new QuestionResponse.GetQuestion(
                 question.getId(),
                 question.getTitle(),
                 question.getContent(),
@@ -142,10 +151,9 @@ public class QuestionService {
                 question.getSecondCategory(),
                 question.getLastCategory(),
                 question.getQuestionStatus(),
+                viewCount,
                 answers
         );
-
-        return ApiResponse.of(ApiResponseQuestionEnum.QUESTION_FIND_ONE_SUCCESS, response);
     }
 
     /**
@@ -182,11 +190,24 @@ public class QuestionService {
         return ApiResponse.of(ApiResponseQuestionEnum.QUESTION_DELETE_SUCCESS);
     }
 
+    /**
+     * 질문 검색: 제목과 내용을 기준으로 검색, 페이징된 결과를 반환
+     * 검색 조건이 없을 경우 모든 질문을 페이징하여 반환
+     *
+     * @param pageable 페이징 정보
+     * @param title 검색할 제목(선택)
+     * @param content 검색할 내용(선택)
+     * @return 제목 및 내용에 따라 필터링된 질문 목록을 담은 객체
+     * @since 1.0
+     * @author 유태이
+     */
+    @Transactional(readOnly = true)
+    public ApiResponse<Page<QuestionResponse.SearchQuestion>> search(Pageable pageable, String title, String content) {
+        Page<Question> search = questionRepository.search(title, content, pageable);
+        Page<QuestionResponse.SearchQuestion> response = search.map(QuestionResponse.SearchQuestion::of);
 
-
-
-
-
+        return ApiResponse.of(ApiResponseQuestionEnum.QUESTION_SEARCH_SUCCESS, response);
+    }
 
 
 

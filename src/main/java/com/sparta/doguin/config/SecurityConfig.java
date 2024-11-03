@@ -1,6 +1,7 @@
-package com.sparta.doguin.security;
+package com.sparta.doguin.config;
 
 import com.sparta.doguin.domain.user.enums.UserRole;
+import com.sparta.doguin.security.JwtSecurityFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,16 +42,26 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/api/v1/auth/signup", "/api/v1/auth/signin").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/v1/boards/*/*").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/v1/boards/*").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/v1/boards/*/search").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/v1/boards/events").hasAuthority(UserRole.Authority.ADMIN)
-                                .requestMatchers(HttpMethod.POST, "/api/v1/boards/notices").hasAuthority(UserRole.Authority.ADMIN)
-                                .requestMatchers(HttpMethod.POST, "/api/v1/boards/inquiries").hasAuthority(UserRole.Authority.USER)
-                                .requestMatchers(HttpMethod.PUT, "/api/v1/reports/*/accept").hasAuthority(UserRole.Authority.ADMIN)
-                                .requestMatchers(HttpMethod.PUT, "/api/v1/reports/*/inject").hasAuthority(UserRole.Authority.ADMIN)
-                                .requestMatchers(HttpMethod.GET, "/api/v1/reports/total/*").hasAuthority(UserRole.Authority.ADMIN)
+                        .requestMatchers("/api/v1/auth/signup", "/api/v1/auth/signin").permitAll()
+                        .requestMatchers("/api/v1/auth/oauth2/authorize/**").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/api-docs/**").permitAll()
+                        .requestMatchers("/api/test/**").permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/api/v1/boards/*/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/boards/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/boards/*/search").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/v1/outsourcing").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/v1/outsourcing/*").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/v1/portfolio/*").permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/api/v1/boards/events").hasAuthority(UserRole.Authority.ADMIN)
+                        .requestMatchers(HttpMethod.POST, "/api/v1/boards/notices").hasAuthority(UserRole.Authority.ADMIN)
+                        .requestMatchers(HttpMethod.POST, "/api/v1/boards/inquiries").hasAuthority(UserRole.Authority.USER)
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/reports/*/accept").hasAuthority(UserRole.Authority.ADMIN)
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/reports/*/inject").hasAuthority(UserRole.Authority.ADMIN)
+                        .requestMatchers(HttpMethod.GET, "/api/v1/reports/total/*").hasAuthority(UserRole.Authority.ADMIN)
+
                         .anyRequest().authenticated()
                 )
                 .build();

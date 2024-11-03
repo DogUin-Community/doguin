@@ -1,6 +1,9 @@
 package com.sparta.doguin.domain.portfolio.service;
 
-import com.sparta.doguin.security.AuthUser;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentGetService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUpdateService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.outsourcing.constans.AreaType;
 import com.sparta.doguin.domain.portfolio.entity.Portfolio;
@@ -9,6 +12,7 @@ import com.sparta.doguin.domain.portfolio.model.PortfolioResponse;
 import com.sparta.doguin.domain.portfolio.repository.PortfolioRepository;
 import com.sparta.doguin.domain.setup.DataUtil;
 import com.sparta.doguin.domain.user.entity.User;
+import com.sparta.doguin.security.AuthUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -25,6 +29,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
+import static com.sparta.doguin.domain.attachment.constans.AttachmentTargetType.PORTFOLIO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -34,6 +39,18 @@ class PortfolioServiceImplTest {
 
     @Mock
     PortfolioRepository portfolioRepository;
+
+    @Mock
+    AttachmentUploadService attachmentUploadService;
+
+    @Mock
+    AttachmentUpdateService attachmentUpdateService;
+
+    @Mock
+    AttachmentGetService attachmentGetService;
+
+    @Mock
+    AttachmentDeleteService attachmentDeleteService;
 
     @InjectMocks
     PortfolioServiceImpl portfolioService;
@@ -211,6 +228,7 @@ class PortfolioServiceImplTest {
             List<Portfolio> portfolios = List.of(portfolio1,portfolio2);
             Page<Portfolio> portfolioPages = new PageImpl<>(portfolios,pageable,portfolios.size());
             given(portfolioRepository.findAllByArea(any(),any())).willReturn(portfolioPages);
+            given(attachmentGetService.getAllAttachmentPath(portfolio1.getId(),PORTFOLIO)).willReturn(List.of("1"));
 
             // when
             ApiResponse<Page<PortfolioResponse>> actual = portfolioService.getAllOtherPortfolio(pageable,area);

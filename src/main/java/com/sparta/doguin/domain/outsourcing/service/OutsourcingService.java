@@ -12,9 +12,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface OutsourcingService {
-    ApiResponse<OutsourcingResponse> getOutsourcing(Long outsourcingId);
+    OutsourcingResponse getOutsourcing(Long outsourcingId);
     ApiResponse<OutsourcingResponse> createOutsourcing(OutsourcingRequest.OutsourcingRequestCreate reqDto, AuthUser authUser, List<MultipartFile> files);
     ApiResponse<Void> updateOutsourcing(Long outsourcingId, OutsourcingRequest.OutsourcingRequestUpdate reqDto, AuthUser authUser,List<MultipartFile> files);
     ApiResponse<Void> deleteOutsourcing(Long outsourcingId,AuthUser authUser);
-    ApiResponse<Page<OutsourcingResponse>> getAllOutsourcing(Pageable pageable, AreaType area);
+    Page<OutsourcingResponse> getAllOutsourcing(Pageable pageable, AreaType area);
+    Page<OutsourcingResponse> search(Pageable pageable, String title, String nickname, String content);
 }

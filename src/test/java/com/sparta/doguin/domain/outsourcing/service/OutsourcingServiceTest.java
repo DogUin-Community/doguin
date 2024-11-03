@@ -1,6 +1,9 @@
 package com.sparta.doguin.domain.outsourcing.service;
 
-import com.sparta.doguin.security.AuthUser;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentGetService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUpdateService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.outsourcing.constans.AreaType;
 import com.sparta.doguin.domain.outsourcing.entity.Outsourcing;
@@ -9,6 +12,7 @@ import com.sparta.doguin.domain.outsourcing.model.OutsourcingResponse;
 import com.sparta.doguin.domain.outsourcing.repository.OutsourcingRepository;
 import com.sparta.doguin.domain.setup.DataUtil;
 import com.sparta.doguin.domain.user.entity.User;
+import com.sparta.doguin.security.AuthUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -25,6 +29,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
+import static com.sparta.doguin.domain.attachment.constans.AttachmentTargetType.OUTSOURCING;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
 
@@ -33,6 +38,18 @@ class OutsourcingServiceTest {
 
     @Mock
     OutsourcingRepository outsourcingRepository;
+
+    @Mock
+    AttachmentUploadService attachmentUploadService;
+
+    @Mock
+    AttachmentUpdateService attachmentUpdateService;
+
+    @Mock
+    AttachmentGetService attachmentGetService;
+
+    @Mock
+    AttachmentDeleteService attachmentDeleteService;
 
     @InjectMocks
     OutsourcingServiceImpl outsourcingService;
@@ -76,10 +93,12 @@ class OutsourcingServiceTest {
         void test() {
             // given
             given(outsourcingRepository.findById(outsourcingId1)).willReturn(Optional.of(outsourcing1));
+            given(attachmentGetService.getAllAttachmentPath(outsourcingId1,OUTSOURCING)).willReturn(List.of("1"));
 
             // when
             ApiResponse<OutsourcingResponse> actual = outsourcingService.getOutsourcing(outsourcingId1);
-            OutsourcingResponse.OutsourcingResponseGetIds actualData = (OutsourcingResponse.OutsourcingResponseGetIds) actual.getData();
+            OutsourcingResponse.OutsourcingResponseGetFilePaths actualData = (OutsourcingResponse.OutsourcingResponseGetFilePaths) actual.getData();
+
 
             // then - 외주 아이디에 대한 데이터로, 각각의 값이 일치하는지 확인
             assertEquals( outsourcing1.getUser().getId(), actualData.user_id() );
@@ -135,6 +154,7 @@ class OutsourcingServiceTest {
         void test() {
             // given
             given(outsourcingRepository.findById(outsourcingId1)).willReturn(Optional.of(outsourcing1));
+            given(attachmentGetService.getFileIds(outsourcing1.getUser().getId(),outsourcing1.getId(),OUTSOURCING)).willReturn(List.of(1L));
 
             // when
             outsourcingService.deleteOutsourcing(outsourcingId1,authUser1);
@@ -161,8 +181,8 @@ class OutsourcingServiceTest {
 
             // when
             ApiResponse<Page<OutsourcingResponse>> actual = outsourcingService.getAllOutsourcing(pageable,area);
-            List<OutsourcingResponse.OutsourcingResponseGetIds> actualData = actual.getData().getContent().stream()
-                    .map(outsourcing -> (OutsourcingResponse.OutsourcingResponseGetIds) outsourcing)
+            List<OutsourcingResponse.OutsourcingResponseGetFilePaths> actualData = actual.getData().getContent().stream()
+                    .map(outsourcing -> (OutsourcingResponse.OutsourcingResponseGetFilePaths) outsourcing)
                     .toList();
 
             // then - 예상한 데이터와, 실제 데이터가 일치하는지 검증
@@ -188,8 +208,8 @@ class OutsourcingServiceTest {
 
             // when
             ApiResponse<Page<OutsourcingResponse>> actual = outsourcingService.getAllOutsourcing(pageable,area);
-            List<OutsourcingResponse.OutsourcingResponseGetIds> actualData = actual.getData().getContent().stream()
-                    .map(outsourcing -> (OutsourcingResponse.OutsourcingResponseGetIds) outsourcing)
+            List<OutsourcingResponse.OutsourcingResponseGetFilePaths> actualData = actual.getData().getContent().stream()
+                    .map(outsourcing -> (OutsourcingResponse.OutsourcingResponseGetFilePaths) outsourcing)
                     .toList();
 
             // then - 예상한 데이터와, 실제 데이터가 일치하는지 검증

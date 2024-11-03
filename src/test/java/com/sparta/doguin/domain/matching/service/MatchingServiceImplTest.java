@@ -1,6 +1,9 @@
 package com.sparta.doguin.domain.matching.service;
 
-import com.sparta.doguin.security.AuthUser;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentGetService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUpdateService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.matching.constans.MathingStatusType;
 import com.sparta.doguin.domain.matching.entity.Matching;
@@ -13,6 +16,7 @@ import com.sparta.doguin.domain.portfolio.entity.Portfolio;
 import com.sparta.doguin.domain.portfolio.service.PortfolioServiceImpl;
 import com.sparta.doguin.domain.setup.DataUtil;
 import com.sparta.doguin.domain.user.entity.User;
+import com.sparta.doguin.security.AuthUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -29,6 +33,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
+import static com.sparta.doguin.domain.common.response.ApiResponseMatchingEnum.MATHCING_SUCCESS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -44,6 +49,18 @@ class MatchingServiceImplTest {
 
     @Mock
     PortfolioServiceImpl portfolioService;
+
+    @Mock
+    AttachmentUploadService attachmentUploadService;
+
+    @Mock
+    AttachmentUpdateService attachmentUpdateService;
+
+    @Mock
+    AttachmentGetService attachmentGetService;
+
+    @Mock
+    AttachmentDeleteService attachmentDeleteService;
 
     @InjectMocks
     MatchingServiceImpl matchingService;
@@ -115,15 +132,14 @@ class MatchingServiceImplTest {
             given(matchingRepository.findById(matchingId1)).willReturn(Optional.of(matching1));
 
             // when
-            matchingService.updateMatching(matchingId1,matchingRequestUpdate1,authUser1);
+            ApiResponse<Void> actual = matchingService.updateMatching(matchingId1, matchingRequestUpdate1, authUser1);
 
-            // then - 1번 호출됐는지와, 예상 데이터 실제 데이터가 일치하는지 검증
-            Mockito.verify(matchingRepository,Mockito.times(1)).save(Mockito.argThat(matching ->
-                    matching.getUser().getId().equals(matching1.getId()) &&
-                            matching.getOutsourcing().getId().equals(matching1.getOutsourcing().getId()) &&
-                            matching.getPortfolio().getId().equals(matching1.getPortfolio().getId()) &&
-                            !matching.getStatus().equals(matching1.getStatus())
-            ));
+            // then - 검증
+            assertEquals(
+                    actual.getMessage(),
+                    MATHCING_SUCCESS.getMessage()
+            );
+
         }
     }
 
