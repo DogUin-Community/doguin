@@ -3,6 +3,7 @@ package com.sparta.doguin.domain.outsourcing.model;
 import com.sparta.doguin.domain.outsourcing.constans.AreaType;
 import com.sparta.doguin.domain.outsourcing.entity.Outsourcing;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public sealed interface OutsourcingResponse permits OutsourcingResponse.Outsourc
             AreaType area,
             LocalDateTime createdAt,
             LocalDateTime updatedAt
-    ) implements OutsourcingResponse {
+    ) implements OutsourcingResponse, Serializable {
         public static OutsourcingResponseGet of(Outsourcing outsourcing) {
             return new OutsourcingResponseGet(
                     outsourcing.getId(),
@@ -58,7 +59,7 @@ public sealed interface OutsourcingResponse permits OutsourcingResponse.Outsourc
              LocalDateTime createdAt,
              LocalDateTime updatedAt,
              List<Long> fileIds
-    ) implements OutsourcingResponse {
+    ) implements OutsourcingResponse,Serializable {
         public static OutsourcingResponseGetIds of(Outsourcing outsourcing, List<Long> fileIds) {
             return new OutsourcingResponseGetIds(
                     outsourcing.getId(),
@@ -95,7 +96,7 @@ public sealed interface OutsourcingResponse permits OutsourcingResponse.Outsourc
             LocalDateTime createdAt,
             LocalDateTime updatedAt,
             List<String> filePaths
-    ) implements OutsourcingResponse {
+    ) implements OutsourcingResponse,Serializable {
         public static OutsourcingResponseGetFilePaths of(Outsourcing outsourcing, List<String> filePaths) {
             return new OutsourcingResponseGetFilePaths(
                     outsourcing.getId(),

@@ -1,5 +1,6 @@
 package com.sparta.doguin.domain.portfolio.controller;
 
+import com.sparta.doguin.domain.common.response.ApiResponsePortfolioEnum;
 import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.outsourcing.constans.AreaType;
@@ -31,7 +32,8 @@ public class PortfolioController {
     @Operation(summary = "특정 ID의 포트폴리오 단건 가져오기", description = "특정 ID 포트폴리오 단건 조회 API")
     @GetMapping("/{portfolioId}")
     ResponseEntity<ApiResponse<PortfolioResponse>> getPortfolio(@PathVariable Long portfolioId) {
-        ApiResponse<PortfolioResponse> apiResponse = portfolioService.getPortfolio(portfolioId);
+        PortfolioResponse response = portfolioService.getPortfolio(portfolioId);
+        ApiResponse<PortfolioResponse> apiResponse = ApiResponse.of(ApiResponsePortfolioEnum.PORTFOLIO_OK, response);
         return ApiResponse.of(apiResponse);
     }
 
@@ -82,7 +84,8 @@ public class PortfolioController {
     ) {
         Sort.Direction direction = Sort.Direction.fromString(sort);
         Pageable pageable = PageRequest.of(page, size, direction,"createdAt");
-        ApiResponse<Page<PortfolioResponse>> apiResponse = portfolioService.getAllMyPortfolio(pageable,area,authUser);
+        Page<PortfolioResponse> response = portfolioService.getAllMyPortfolio(pageable,area,authUser);
+        ApiResponse<Page<PortfolioResponse>> apiResponse = ApiResponse.of(ApiResponsePortfolioEnum.PORTFOLIO_OK, response);
         return ApiResponse.of(apiResponse);
     }
 
@@ -99,7 +102,8 @@ public class PortfolioController {
     ) {
         Sort.Direction direction = Sort.Direction.fromString(sort);
         Pageable pageable = PageRequest.of(page, size, direction,"createdAt");
-        ApiResponse<Page<PortfolioResponse>> apiResponse = portfolioService.getAllOtherPortfolio(pageable,area);
+        Page<PortfolioResponse> response = portfolioService.getAllOtherPortfolio(pageable,area);
+        ApiResponse<Page<PortfolioResponse>> apiResponse = ApiResponse.of(ApiResponsePortfolioEnum.PORTFOLIO_OK, response);
         return ApiResponse.of(apiResponse);
     }
 

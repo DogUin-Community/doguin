@@ -22,6 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import static com.sparta.doguin.domain.common.response.ApiResponseOutsourcingEnum.OUTSOURCING_SUCCESS;
+
 @Tag(name = "외주 API",description = "외주 관련된 API를 확인 할 수 있습니다")
 @Slf4j
 @RestController
@@ -34,7 +36,8 @@ public class OutsourcingController {
     @Operation(summary = "특정 Id의 외주 단건 가져오기", description = "단건 외주 가져오기 API")
     @GetMapping("/{outsourcingId}")
     public ResponseEntity<ApiResponse<OutsourcingResponse>> getOutsourcing(@PathVariable Long outsourcingId){
-        ApiResponse<OutsourcingResponse> apiResponse = outsourcingService.getOutsourcing(outsourcingId);
+        OutsourcingResponse response = outsourcingService.getOutsourcing(outsourcingId);
+        ApiResponse<OutsourcingResponse> apiResponse = ApiResponse.of(OUTSOURCING_SUCCESS, response);
         return ApiResponse.of(apiResponse);
     }
 
@@ -85,7 +88,8 @@ public class OutsourcingController {
     ) {
         Sort.Direction direction = Sort.Direction.fromString(sort);
         Pageable pageable = PageRequest.of(page, size, direction,"createdAt");
-        ApiResponse<Page<OutsourcingResponse>> apiResponse = outsourcingService.getAllOutsourcing(pageable,area);
+        Page<OutsourcingResponse> response = outsourcingService.getAllOutsourcing(pageable,area);
+        ApiResponse<Page<OutsourcingResponse>> apiResponse = ApiResponse.of(OUTSOURCING_SUCCESS,response);
         return ApiResponse.of(apiResponse);
     }
 
@@ -104,7 +108,8 @@ public class OutsourcingController {
     ){
         Sort.Direction direction = Sort.Direction.fromString(sort);
         Pageable pageable = PageRequest.of(page, size, direction,"createdAt");
-        ApiResponse<Page<OutsourcingResponse>> apiResponse = outsourcingService.search(pageable,title,nickname,content);
+        Page<OutsourcingResponse> response = outsourcingService.search(pageable,title,nickname,content);
+        ApiResponse<Page<OutsourcingResponse>> apiResponse = ApiResponse.of(OUTSOURCING_SUCCESS,response);
         return ApiResponse.of(apiResponse);
     }
 

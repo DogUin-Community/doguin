@@ -3,10 +3,11 @@ package com.sparta.doguin.domain.portfolio.model;
 import com.sparta.doguin.domain.outsourcing.constans.AreaType;
 import com.sparta.doguin.domain.portfolio.entity.Portfolio;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public sealed interface PortfolioResponse permits PortfolioResponse.PortfolioResponseGetFilePaths,PortfolioResponse.PortfolioResponseGetIds {
+public sealed interface PortfolioResponse permits PortfolioResponse.PortfolioResponseGetFilePaths,PortfolioResponse.PortfolioResponseGetIds  {
     record PortfolioResponseGetFilePaths(
             Long id,
             Long user_id,
@@ -19,7 +20,7 @@ public sealed interface PortfolioResponse permits PortfolioResponse.PortfolioRes
             List<String> filePath,
             LocalDateTime createdAt,
             LocalDateTime updatedAt
-    ) implements PortfolioResponse {
+    ) implements PortfolioResponse, Serializable {
         public static PortfolioResponseGetFilePaths of(Portfolio portfolio) {
             return new PortfolioResponseGetFilePaths(
                     portfolio.getId(),
@@ -65,7 +66,7 @@ public sealed interface PortfolioResponse permits PortfolioResponse.PortfolioRes
             List<Long> fileId,
             LocalDateTime createdAt,
             LocalDateTime updatedAt
-    ) implements PortfolioResponse {
+    ) implements PortfolioResponse,Serializable {
         public static PortfolioResponseGetIds of(Portfolio portfolio, List<Long> fileIds) {
             return new PortfolioResponseGetIds(
                     portfolio.getId(),
