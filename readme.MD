@@ -2,10 +2,14 @@
 
 ---
 
-![DALL·E 2024-10-21 15 29 28 - A very simple and minimalist logo for a community platform, featuring a clean and basic design of a monkey wrench (spanner) as a central element  Use  (1)](https://github.com/user-attachments/assets/69950ba2-41e4-4fed-b5e5-b24a75a456dd)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/69950ba2-41e4-4fed-b5e5-b24a75a456dd">
+</p>
 
+<p align="center">
+   <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FDogUin-Community%2Fdoguin&count_bg=%2379C83D&title_bg=%23555555&icon=conda-forge.svg&icon_color=%23FFFFFF&title=hits&edge_flat=false">
+</p>
 
-[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FDogUin-Community%2Fdoguin&count_bg=%2379C83D&title_bg=%23555555&icon=conda-forge.svg&icon_color=%23FFFFFF&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
 # Community & Outsourcing Web Page [1.0]
 
