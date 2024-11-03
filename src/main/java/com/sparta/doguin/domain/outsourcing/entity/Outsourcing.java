@@ -61,4 +61,19 @@ public class Outsourcing extends Timestamped {
     @Enumerated(value = EnumType.STRING)
     private AreaType area;
 
+    public Outsourcing(Long id, User user, String title, String content, String preferential, String work_type, Long price, LocalDateTime recruit_start_date, LocalDateTime recruit_end_date, LocalDateTime work_start_date, LocalDateTime work_end_date, AreaType area,LocalDateTime createdAt,LocalDateTime updatedAt) {
+        super(createdAt,updatedAt);
+        this.id = id;
+        this.user = user;
+        this.title = title;
+        this.content = content;
+        this.preferential = preferential;
+        this.work_type = work_type;
+        this.price = price;
+        this.recruit_start_date = recruit_start_date;
+        this.recruit_end_date = recruit_end_date;
+        this.work_start_date = work_start_date;
+        this.work_end_date = work_end_date;
+        this.area = area;
+    }
 }
