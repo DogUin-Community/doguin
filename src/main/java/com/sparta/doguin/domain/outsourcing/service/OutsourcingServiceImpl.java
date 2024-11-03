@@ -70,6 +70,7 @@ public class OutsourcingServiceImpl implements OutsourcingService {
     @Transactional
     @Override
     public ApiResponse<OutsourcingResponse> createOutsourcing(OutsourcingRequest.OutsourcingRequestCreate reqDto, AuthUser authUser, List<MultipartFile> files) {
+        OutsourcingValidator.isNotCompany(authUser);
         User user = User.fromAuthUser(authUser);
         Outsourcing outsourcing = Outsourcing.builder()
                 .user(user)
@@ -109,6 +110,7 @@ public class OutsourcingServiceImpl implements OutsourcingService {
     @Transactional
     @Override
     public ApiResponse<Void> updateOutsourcing(Long outsourcingId, OutsourcingRequest.OutsourcingRequestUpdate reqDto, AuthUser authUser,List<MultipartFile> files) {
+        OutsourcingValidator.isNotCompany(authUser);
         User user = User.fromAuthUser(authUser);
         Outsourcing findOutsourcing = findById(outsourcingId);
         OutsourcingValidator.isMe(user.getId(),findOutsourcing.getUser().getId());
@@ -147,6 +149,7 @@ public class OutsourcingServiceImpl implements OutsourcingService {
     @Transactional
     @Override
     public ApiResponse<Void> deleteOutsourcing(Long outsourcingId, AuthUser authUser) {
+        OutsourcingValidator.isNotCompany(authUser);
         User user = User.fromAuthUser(authUser);
         Outsourcing outsourcing = findById(outsourcingId);
         OutsourcingValidator.isMe(user.getId(),outsourcing.getUser().getId());
@@ -196,7 +199,7 @@ public class OutsourcingServiceImpl implements OutsourcingService {
     @Override
     public ApiResponse<Page<OutsourcingResponse>> search(Pageable pageable, String title, String nickname, String content) {
         Page<Outsourcing> search = outsourcingRepository.search(title, content, nickname, pageable);
-        Page<OutsourcingResponse> responses = search.map(OutsourcingResponse.OutsourcingResponseGetNoLocalDateTime::of);
+        Page<OutsourcingResponse> responses = search.map(OutsourcingResponse.OutsourcingResponseGet::of);
         return ApiResponse.of(OUTSOURCING_SUCCESS,responses);
     }
 

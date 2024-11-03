@@ -55,7 +55,9 @@ public class OutsourcingRepositoryQueryImpl implements OutsourcingRepositoryQuer
                                 qOutsourcing.recruit_end_date,
                                 qOutsourcing.work_start_date,
                                 qOutsourcing.work_end_date,
-                                qOutsourcing.area
+                                qOutsourcing.area,
+                                qOutsourcing.createdAt,
+                                qOutsourcing.updatedAt
                         )
                 )
                 .distinct()

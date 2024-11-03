@@ -50,7 +50,7 @@ public class DiscordMessageService {
                         .setTitle("에러 사유 : " + errorMsg)
                         .setDescription("에러 코드 : " + code)
                         .setColor(Color.RED)
-                        .setFooter("report","https://w7.pngwing.com/pngs/285/84/png-transparent-computer-icons-error-super-8-film-angle-triangle-computer-icons-thumbnail.png")
+                        .setFooter("error","https://w7.pngwing.com/pngs/285/84/png-transparent-computer-icons-error-super-8-film-angle-triangle-computer-icons-thumbnail.png")
                         .addField("요청된 클라이언트 ID", clientIp, false)
                         .addField("문제 발생 클래스",className, true)
                         .addField("문제 발생 메서드", methodName, true)
