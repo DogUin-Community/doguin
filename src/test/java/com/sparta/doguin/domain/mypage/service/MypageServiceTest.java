@@ -75,17 +75,15 @@ class MypageServiceTest {
         given(inquiryService.findByUserId(user.getId())).willReturn(DataUtil.inquiryBoardPage());
 
         // when
-        ApiResponse<MypageResponse.Mypage> actual = mypageService.getMypage(authUser);
+        MypageResponse.Mypage actual = mypageService.getMypage(authUser);
 
         // then
-        MypageResponse.Mypage actualData = actual.getData();
-        assertEquals(ApiResponseMypageEnum.MYPAGE_GET_SUCCESS.getMessage(), actual.getMessage());
-        assertEquals("test@naver.com", actualData.email());
-        assertEquals("testNickname", actualData.nickname());
-        assertEquals(5L, actualData.followedCount());
-        assertEquals(3L, actualData.followerCount());
-        assertEquals(List.of("Bulletin Title 1", "Bulletin Title 2"), actualData.boards());
-        assertEquals(List.of("test title", "test title1"), actualData.questions());
-        assertEquals(List.of("Inquiry Title 1", "Inquiry Title 2"), actualData.inquiries());
+        assertEquals("test@naver.com", actual.email());
+        assertEquals("testNickname", actual.nickname());
+        assertEquals(5L, actual.followedCount());
+        assertEquals(3L, actual.followerCount());
+        assertEquals(List.of("Bulletin Title 1", "Bulletin Title 2"), actual.boards());
+        assertEquals(List.of("test title", "test title1"), actual.questions());
+        assertEquals(List.of("Inquiry Title 1", "Inquiry Title 2"), actual.inquiries());
     }
 }
