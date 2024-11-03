@@ -11,6 +11,7 @@ public enum ApiResponseQuestionEnum implements ApiResponseEnum {
     QUESTION_UPDATE_SUCCESS(HttpStatus.OK, "질문 수정에 성공하셨습니다."),
     QUESTION_DELETE_SUCCESS(HttpStatus.OK, "질문 삭제에 성공하였습니다."),
     QUESTION_FIND_ALL_SUCCESS(HttpStatus.OK, "질문 조회(전체)에 성공하였습니다."),
+    QUESTION_RANK_FIND_ALL_SUCCESS(HttpStatus.OK, "질문 인기 게시글 조회에 성공하였습니다."),
     QUESTION_FIND_ONE_SUCCESS(HttpStatus.OK, "질문 조회(단건)에 성공하였습니다."),
     QUESTION_SEARCH_SUCCESS(HttpStatus.OK, "질문 검색에 성공하였습니다."),
 
