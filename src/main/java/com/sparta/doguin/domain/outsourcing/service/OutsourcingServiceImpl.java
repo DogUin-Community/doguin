@@ -16,6 +16,8 @@ import com.sparta.doguin.domain.user.entity.User;
 import com.sparta.doguin.notification.slack.SlackSendPush;
 import com.sparta.doguin.security.AuthUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -48,13 +50,13 @@ public class OutsourcingServiceImpl implements OutsourcingService {
      * @since  1.0
      * @author 김경민
      */
+    @Cacheable(value = "outsourcingCache",key = "'outsourcingId'+#outsourcingId")
     @Transactional(readOnly = true)
     @Override
-    public ApiResponse<OutsourcingResponse> getOutsourcing(Long outsourcingId) {
+    public OutsourcingResponse getOutsourcing(Long outsourcingId) {
         Outsourcing outsourcing = findById(outsourcingId);
         List<String> filePaths = attachmentGetService.getAllAttachmentPath(outsourcingId, OUTSOURCING);
-        OutsourcingResponse outsourctingResponse = OutsourcingResponse.OutsourcingResponseGetFilePaths.of(outsourcing,filePaths);
-        return ApiResponse.of(OUTSOURCING_SUCCESS,outsourctingResponse);
+        return OutsourcingResponse.OutsourcingResponseGetFilePaths.of(outsourcing,filePaths);
     }
 
     /**
@@ -107,6 +109,7 @@ public class OutsourcingServiceImpl implements OutsourcingService {
      * @since 1.0
      * @author 김경민
      */
+    @CacheEvict(value = "outsourcingCache",key = "'outsourcingId'+#outsourcingId")
     @Transactional
     @Override
     public ApiResponse<Void> updateOutsourcing(Long outsourcingId, OutsourcingRequest.OutsourcingRequestUpdate reqDto, AuthUser authUser,List<MultipartFile> files) {
@@ -167,9 +170,10 @@ public class OutsourcingServiceImpl implements OutsourcingService {
      * @since 1.0
      * @author 김경민
      */
+    @Cacheable(value = "outsourcingCache",key = "'outsourcingPage'+#pageable.pageNumber")
     @Transactional(readOnly = true)
     @Override
-    public ApiResponse<Page<OutsourcingResponse>> getAllOutsourcing(Pageable pageable, AreaType area) {
+    public Page<OutsourcingResponse> getAllOutsourcing(Pageable pageable, AreaType area) {
         Page<Outsourcing> pageOutsourcing;
         if (area == null) {
             pageOutsourcing = outsourcingRepository.findAllBy(pageable);
@@ -177,11 +181,10 @@ public class OutsourcingServiceImpl implements OutsourcingService {
             pageOutsourcing = outsourcingRepository.findAllByArea(pageable,area);
         }
 
-        Page<OutsourcingResponse> bookmarks = pageOutsourcing.map(po -> {
+        return pageOutsourcing.map(po -> {
             List<String> filePaths = attachmentGetService.getAllAttachmentPath(po.getId(), OUTSOURCING);
             return OutsourcingResponse.OutsourcingResponseGetFilePaths.of(po,filePaths);
         });
-        return ApiResponse.of(OUTSOURCING_SUCCESS,bookmarks);
     }
 
     /**
@@ -195,12 +198,12 @@ public class OutsourcingServiceImpl implements OutsourcingService {
      * @since 1.0
      * @author 김경민
      */
+    @Cacheable(value = "outsourcingCache",key = "'outsourcingPage'+#pageable.pageNumber")
     @Transactional(readOnly = true)
     @Override
-    public ApiResponse<Page<OutsourcingResponse>> search(Pageable pageable, String title, String nickname, String content) {
+    public Page<OutsourcingResponse> search(Pageable pageable, String title, String nickname, String content) {
         Page<Outsourcing> search = outsourcingRepository.search(title, content, nickname, pageable);
-        Page<OutsourcingResponse> responses = search.map(OutsourcingResponse.OutsourcingResponseGet::of);
-        return ApiResponse.of(OUTSOURCING_SUCCESS,responses);
+        return search.map(OutsourcingResponse.OutsourcingResponseGet::of);
     }
 
     /**

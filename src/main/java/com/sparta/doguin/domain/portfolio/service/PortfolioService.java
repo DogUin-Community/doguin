@@ -12,10 +12,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface PortfolioService {
-    ApiResponse<PortfolioResponse> getPortfolio(Long portfolioId);
+    PortfolioResponse getPortfolio(Long portfolioId);
     ApiResponse<PortfolioResponse> createPortfolio(PortfolioRequest.PortfolioRequestCreate portfolioRequest, AuthUser authUser, List<MultipartFile> files);
     ApiResponse<Void> updatePortfolio(Long portfolioId, PortfolioRequest.PortfolioRequestUpdate portfolioRequestUpdate, AuthUser authUser, List<MultipartFile> files);
     ApiResponse<Void> deletePortfolio(Long portfolioId,AuthUser authUser);
-    ApiResponse<Page<PortfolioResponse>> getAllMyPortfolio(Pageable pageable, AreaType area,AuthUser authUser);
-    ApiResponse<Page<PortfolioResponse>> getAllOtherPortfolio(Pageable pageable, AreaType area);
+    Page<PortfolioResponse> getAllMyPortfolio(Pageable pageable, AreaType area,AuthUser authUser);
+    Page<PortfolioResponse> getAllOtherPortfolio(Pageable pageable, AreaType area);
 }
