@@ -110,7 +110,7 @@ public class BulletinService implements BoardService {
         Page<AnswerResponse.Response> responses = bulletinAnswerService.findByBoardId(boardId,PageRequest.of(0,10));
 
         if(user!=null){
-            popularService.trackUserView(boardId, user.getId()); // 한시갖 노조회수
+            popularService.trackUserView(boardId, user.getId()); // 한시간 조회수 누적
         }
 
         Long viewCount = popularService.getHourUniqueViewCount(boardId)+board.getView(); // 한시간 조회수 + 누적 조회수 로 토탈 조회수
