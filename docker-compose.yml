@@ -21,3 +21,13 @@ services:
     container_name: mongo_container
     ports:
       - "27018:27017"
+  # Jenkins 서비스
+  jenkins:
+    image: jenkins/jenkins:lts-jdk17  # Jenkins 이미지를 사용
+    container_name: jenkins
+    restart: unless-stopped # 서버가 재시작할 때 해당 컨테이너도 자동으로 재실행 됨
+    ports:
+      - "8080:8080"  # Jenkins 웹 UI에 접근하기 위한 포트 (8081로 변경 가능)
+      - "50000:50000"  # Jenkins 에이전트 연결을 위한 포트
+    volumes:
+      - jenkins_home:/var/jenkins_home  # Jenkins 데이터를 유지하는 볼륨
