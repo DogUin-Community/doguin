@@ -50,7 +50,7 @@ public class NoticeAnswerService implements AnswerService {
 
         answerRepository.save(answer);
 
-        return ApiResponse.of(ApiResponseAnswerEnum.APPLY_ANSWER_CREATE_SUCCESS, new AnswerResponse.Response(answer.getId(), answer.getContent()));
+        return ApiResponse.of(ApiResponseAnswerEnum.COMMENT_ANSWER_CREATE_SUCCESS, new AnswerResponse.Response(answer.getId(), answer.getContent()));
     }
 
     @Override

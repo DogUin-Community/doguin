@@ -83,7 +83,7 @@ public class QuestionAnswerService implements AnswerService {
         }
 
         // 대답변 일 경우 수정 불가 **parent_id가 null이 아닐 경우 예외처리
-        if (answer.getParent().getId() != null) {
+        if (answer.getParent() != null && answer.getParent().getId() != null) {
             throw new AnswerException(ApiResponseAnswerEnum.QUESTION_ANSWER_NOT_FOUND);
         }
 
@@ -172,7 +172,7 @@ public class QuestionAnswerService implements AnswerService {
         }
 
         // 대답변 일 경우 수정 불가 **parent_id가 null이 아닐 경우 예외처리
-        if (answer.getParent().getId() != null) {
+        if (answer.getParent() != null && answer.getParent().getId() != null) {
             throw new AnswerException(ApiResponseAnswerEnum.QUESTION_ANSWER_NOT_FOUND);
         }
 
