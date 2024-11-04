@@ -243,12 +243,17 @@
 ## ver 1
 ![도구인 ver1](https://github.com/user-attachments/assets/2ea49f52-3318-452a-b8db-7f1f3c81bbc6)
 
+
 ## ver 2
 ![도구인 ver 2](https://github.com/user-attachments/assets/9066ffbe-73c5-4f41-a46d-830d5355f309)
+실시간 채팅 서버와 더불어 기능별로 서버를 분리하고자 했고 다음과 같은 아키텍쳐를 설계했다.
+다만, 본 프로젝트의 스코프에 비해 아키텍쳐가 너무 과하다는 의견이 나왔고, 축소를 진행했따.
 
-## ver 3
+## ver 3 (Now)
 ![도구인 ver3](https://github.com/user-attachments/assets/2bf04107-fad5-47ba-9207-bac038d86cec)
-## NOW
+기능 스코프에 맞춰 채팅, 접속 상태, 알림등을 API 서버와 통합하여 단일 서버로 지원하기로 했다.
+사용자 경험을 위해 내장 캐시와 글로벌 캐시를 적용하였고, 데이터의 안전을 위해서 DB 이중화 구조로 변경하였다.
+
 
 # 인프라
 
