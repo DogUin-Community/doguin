@@ -4,14 +4,14 @@
 <details>
    <summary> 회원(Users) </summary>
 
-# 회원 가입
+## 회원 가입
 
 ---
-## Request
+### Request
 ```
 /api/v1/auth/signup
 ```
-## Body
+### Body
 ```
 {
     "email":"test@naver.com",
@@ -27,7 +27,7 @@
 }
 ```
 
-## Response
+### Response
 ```
 
 ```
