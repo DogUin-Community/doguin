@@ -82,7 +82,7 @@
 여기에 화면 캡쳐
 
 # 주요 기능
-
+[API 명세 바로가기](https://github.com/DogUin-Community/doguin/blob/dev/api.MD)
 ---
 
 ## 커뮤니티
