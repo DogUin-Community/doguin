@@ -51,9 +51,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/boards/*/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/boards/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/boards/*/search").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/outsourcing").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/outsourcing/*").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/portfolio/*").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/v1/outsourcings").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/v1/outsourcings/*").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/v1/portfolios/*").permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/api/v1/boards/events").hasAuthority(UserRole.Authority.ADMIN)
                         .requestMatchers(HttpMethod.POST, "/api/v1/boards/notices").hasAuthority(UserRole.Authority.ADMIN)

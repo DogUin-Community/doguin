@@ -10,7 +10,7 @@ import java.util.List;
 public sealed interface PortfolioResponse permits PortfolioResponse.PortfolioResponseGetFilePaths,PortfolioResponse.PortfolioResponseGetIds  {
     record PortfolioResponseGetFilePaths(
             Long id,
-            Long user_id,
+            Long userId,
             String title,
             String content,
             Long work_experience,
@@ -56,7 +56,7 @@ public sealed interface PortfolioResponse permits PortfolioResponse.PortfolioRes
 
     record PortfolioResponseGetIds(
             Long id,
-            Long user_id,
+            Long userId,
             String title,
             String content,
             Long work_experience,

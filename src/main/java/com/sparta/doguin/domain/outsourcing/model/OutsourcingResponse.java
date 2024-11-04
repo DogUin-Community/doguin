@@ -10,7 +10,7 @@ import java.util.List;
 public sealed interface OutsourcingResponse permits OutsourcingResponse.OutsourcingResponseGet, OutsourcingResponse.OutsourcingResponseGetIds, OutsourcingResponse.OutsourcingResponseGetFilePaths {
     record OutsourcingResponseGet(
             Long id,
-            Long user_id,
+            Long userId,
             String title,
             String content,
             String preferential,
@@ -45,7 +45,7 @@ public sealed interface OutsourcingResponse permits OutsourcingResponse.Outsourc
     }
     record OutsourcingResponseGetIds(
              Long id,
-             Long user_id,
+             Long userId,
              String title,
              String content,
              String preferential,
@@ -82,7 +82,7 @@ public sealed interface OutsourcingResponse permits OutsourcingResponse.Outsourc
     }
     record OutsourcingResponseGetFilePaths(
             Long id,
-            Long user_id,
+            Long userId,
             String title,
             String content,
             String preferential,

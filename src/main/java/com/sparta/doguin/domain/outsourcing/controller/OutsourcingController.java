@@ -28,7 +28,7 @@ import static com.sparta.doguin.domain.common.response.ApiResponseOutsourcingEnu
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/outsourcing")
+@RequestMapping("/api/v1/outsourcings")
 public class OutsourcingController {
     private final OutsourcingService outsourcingService;
 
