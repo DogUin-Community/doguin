@@ -23,8 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.sparta.doguin.domain.common.response.ApiResponseMatchingEnum.MATCHING_LOCK;
-import static com.sparta.doguin.domain.common.response.ApiResponseMatchingEnum.MATHCING_SUCCESS;
+import static com.sparta.doguin.domain.common.response.ApiResponseMatchingEnum.*;
 
 @Slf4j
 @Service
@@ -48,19 +47,24 @@ public class MatchingServiceImpl implements MatchingService {
     @Transactional
     @Override
     public ApiResponse<Void> createMatching(MatchingRequest.MatchingRequestCreate reqDto, AuthUser authUser) {
-        MatchingValidator.isIndividual(authUser);
-        User user = User.fromAuthUser(authUser);
-        Outsourcing outsourcing = outsourcingService.findById(reqDto.outsourcingId());
-        Portfolio portfolio = portfolioService.findById(reqDto.portfolioId());
-        MatchingValidator.isMe(portfolio.getUser().getId(), user.getId());
-        Matching matching = Matching.builder()
-                .user(user)
-                .portfolio(portfolio)
-                .outsourcing(outsourcing)
-                .status(MathingStatusType.READY)
-                .build();
-        matchingRepository.save(matching);
-        return ApiResponse.of(MATHCING_SUCCESS);
+        try {
+            MatchingValidator.isIndividual(authUser);
+            User user = User.fromAuthUser(authUser);
+            Outsourcing outsourcing = outsourcingService.findById(reqDto.outsourcingId());
+            Portfolio portfolio = portfolioService.findById(reqDto.portfolioId());
+            MatchingValidator.isMe(portfolio.getUser().getId(), user.getId());
+            Matching matching = Matching.builder()
+                    .user(user)
+                    .portfolio(portfolio)
+                    .outsourcing(outsourcing)
+                    .status(MathingStatusType.READY)
+                    .build();
+            matchingRepository.save(matching);
+            return ApiResponse.of(MATHCING_SUCCESS);
+        } catch (OptimisticLockingFailureException e) {
+            throw new MatchingException(MATCHING_IS_MANY);
+        }
+
     }
 
     /**
