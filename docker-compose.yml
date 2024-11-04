@@ -1,3 +1,4 @@
+name: your_project
 services:
   # Redis 서비스
   redis:
