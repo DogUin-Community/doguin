@@ -16,7 +16,6 @@ import com.sparta.doguin.notification.slack.SlackEventClass;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -99,7 +98,6 @@ public class BulletinService implements BoardService {
      * @since 1.0
      */
     @Override
-    @Cacheable(value = "PopularBoard",key = "'게시글번호'+#boardId")
     public BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId, User user) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.BULLETIN_NOT_FOUND));

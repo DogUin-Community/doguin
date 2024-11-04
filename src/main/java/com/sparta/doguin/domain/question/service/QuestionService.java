@@ -12,7 +12,6 @@ import com.sparta.doguin.domain.question.repository.QuestionRepository;
 import com.sparta.doguin.domain.user.entity.User;
 import com.sparta.doguin.security.AuthUser;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -33,8 +32,6 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
 
     private final QuestionViewService questionViewService;
-    private final static String QUESTION_CACHE = "questionBoard";
-    private final static String QUESTION_POPULAR = "questionPopular";
     private final RedisTemplate redisTemplate;
 
     /**
@@ -123,7 +120,6 @@ public class QuestionService {
      * @return 요청한 질문
      * @author 유태이
      */
-    @Cacheable(value = QUESTION_CACHE, key = "'단건조회' + #questionId")
     public QuestionResponse.GetQuestion getQuestion(User user, long questionId) {
 
         // 질문과 답변 및 대답변 조회

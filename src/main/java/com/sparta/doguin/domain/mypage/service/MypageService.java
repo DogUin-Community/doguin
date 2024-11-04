@@ -11,7 +11,6 @@ import com.sparta.doguin.domain.user.entity.User;
 import com.sparta.doguin.domain.user.service.UserService;
 import com.sparta.doguin.security.AuthUser;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,7 +34,6 @@ public class MypageService {
      * @since 1.0
      * @author 황윤서
      */
-    @Cacheable(value = MAPAGE_CACHE, key = "'마이페이지조회'+(#authUser != null ? #authUser.userId : 'anonymous')")
     public MypageResponse.Mypage getMypage(AuthUser authUser) {
         // 시작 시간 기록
         long startTime = System.currentTimeMillis();
