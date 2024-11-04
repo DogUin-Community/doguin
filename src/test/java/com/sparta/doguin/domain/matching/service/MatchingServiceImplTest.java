@@ -82,6 +82,8 @@ class MatchingServiceImplTest {
     Outsourcing outsourcing1;
     Portfolio portfolio1;
     MathingStatusType status1;
+    Outsourcing outsourcing2;
+    Portfolio portfolio2;
 
 
     @BeforeEach
@@ -101,7 +103,10 @@ class MatchingServiceImplTest {
         matching2 = DataUtil.matching2();
         outsourcing1 = DataUtil.outsourcing1();
         portfolio1 = DataUtil.portfolio1();
+        outsourcing2 = DataUtil.outsourcing2();
+        portfolio2 = DataUtil.portfolio2();
         status1 = matching1.getStatus();
+
     }
 
     @Nested
@@ -109,17 +114,17 @@ class MatchingServiceImplTest {
         @Test
         void createMatching() {
             // given
-            given(outsourcingService.findById(matchingRequestCreate1.outsourcingId())).willReturn(outsourcing1);
-            given(portfolioService.findById(matchingRequestCreate1.portfolioId())).willReturn(portfolio1);
+            given(outsourcingService.findById(matchingRequestCreate2.outsourcingId())).willReturn(outsourcing2);
+            given(portfolioService.findById(matchingRequestCreate2.portfolioId())).willReturn(portfolio2);
 
             // when
-            matchingService.createMatching(matchingRequestCreate1,authUser1);
+            matchingService.createMatching(matchingRequestCreate2,authUser2);
 
             // then - 1번 호출됐는지와, 예상 데이터 실제 데이터가 일치하는지 검증
             Mockito.verify(matchingRepository,Mockito.times(1)).save(Mockito.argThat(matching ->
-                    matching.getUser().getId().equals(authUser1.getUserId()) &&
-                            matching.getOutsourcing().getId().equals(matchingRequestCreate1.outsourcingId()) &&
-                            matching.getPortfolio().getId().equals(matchingRequestCreate1.portfolioId())
+                    matching.getUser().getId().equals(authUser2.getUserId()) &&
+                            matching.getOutsourcing().getId().equals(matchingRequestCreate2.outsourcingId()) &&
+                            matching.getPortfolio().getId().equals(matchingRequestCreate2.portfolioId())
             ));
         }
     }
