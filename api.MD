@@ -231,11 +231,15 @@ body :
 
 ### Request
 ```
-header : Authorization: BearerToken
+header : 
+    Authorization: BearerToken
 ```
 
 ### Response
 ```
+header :
+    Content-Type : application/json
+body :
 {
     “code”: 200,
     “message”: “답변 삭제가 완료되었습니다.”
@@ -265,6 +269,9 @@ header : Authorization: BearerToken
 
 ### Response
 ```
+header :
+    Content-Type : application/json
+body :
 {
   "code": 200,
   "message": "포트폴리오 작업 요청 성공",
@@ -296,7 +303,8 @@ header : Authorization: BearerToken
 
 ### Request
 ```
-header : Authorization: Bearer <JWT Token>
+header : 
+    Authorization: Bearer <JWT Token>
 body : 
 {
     “portfolioId”: 1,
@@ -313,6 +321,9 @@ body :
 
 ### Response
 ```
+header :
+    Content-Type : application/json
+body :
 {
     "code": 200,
     "message": "포트폴리오 작업 요청 성공",
@@ -345,7 +356,8 @@ body :
 
 ### Request
 ```
-header : Authorization: Bearer <JWT Token>
+header : 
+    Authorization: Bearer <JWT Token>
 body : 
 {
     “portfolioId”: 1,
@@ -362,6 +374,9 @@ body :
 
 ### Response
 ```
+header :
+    Content-Type : application/json
+body :
 {
     "code": 200,
     "message": "포트폴리오 작업 요청 성공",
@@ -378,12 +393,16 @@ body :
 
 ### Request
 ```
-header : Authorization: Bearer <JWT Token>
+header :
+    Authorization: Bearer <JWT Token>
 
 ```
 
 ### Response
 ```
+header :
+    Content-Type : application/json
+body :
 {
     "code": 200,
     "message": "포트폴리오 작업 요청 성공",
@@ -409,6 +428,9 @@ sort (null 허용, default desc)
 
 ### Response
 ```
+header :
+    Content-Type : application/json
+body :
 {
     "code": 200,
     "message": "포트폴리오 작업 요청 성공",
@@ -487,6 +509,9 @@ sort (null 허용, default desc)
 
 ### Response
 ```
+header :
+    Content-Type : application/json
+body :
 {
     "code": 200,
     "message": "포트폴리오 작업 요청 성공",
@@ -560,12 +585,15 @@ sort (null 허용, default desc)
 
 ### Request
 ```
-header : Authorization: Bearer <JWT Token>
-
+header : 
+    Authorization: Bearer <JWT Token>
 ```
 
 ### Response
 ```
+header :
+    Content-Type : application/json
+body :
 {
     "code": 200,
     "message": "북마크 작업에 성공 하였습니다",
@@ -600,7 +628,8 @@ header : Authorization: Bearer <JWT Token>
 
 ### Request
 ```
-header : Authorization: Bearer <JWT Token>
+header : 
+    Authorization: Bearer <JWT Token>
 body : 
 {
     "targetId": 1,
@@ -610,6 +639,9 @@ body :
 
 ### Response
 ```
+header :
+    Content-Type : application/json
+body :
 {
     "code": 200,
     "message": "북마크 작업에 성공 하였습니다",
@@ -627,11 +659,15 @@ body :
 
 ### Request
 ```
-header : Authorization: Bearer <JWT Token>
+header : 
+    Authorization: Bearer <JWT Token>
 ```
 
 ### Response
 ```
+header :
+    Content-Type : application/json
+body :
 {
     "code": 200,
     "message": "북마크 작업에 성공 하였습니다",
@@ -661,6 +697,9 @@ sort (null 허용, default desc)
 
 ### Response
 ```
+header :
+    Content-Type : application/json
+body :
 {
     "code": 200,
     "message": "매칭작업에 성공 하였습니다",
@@ -694,7 +733,8 @@ sort (null 허용, default desc)
 
 ### Request
 ```
-header : Authorization: Bearer <JWT Token>
+header : 
+    Authorization: Bearer <JWT Token>
 body : 
 {
   “portfolioId” : 1,
@@ -704,6 +744,9 @@ body :
 
 ### Response
 ```
+header :
+    Content-Type : application/json
+body :
 {
     "code": 200,
     "message": "매칭작업에 성공 하였습니다",
@@ -721,7 +764,8 @@ body :
 
 ### Request
 ```
-header : Authorization: Bearer <JWT Token>
+header : 
+    Authorization: Bearer <JWT Token>
 body : 
 {
   "status": "NO"
@@ -730,6 +774,9 @@ body :
 
 ### Response
 ```
+header :
+    Content-Type : application/json
+body :
 {
     "code": 200,
     "message": "매칭작업에 성공 하였습니다",
@@ -747,11 +794,15 @@ body :
 
 ### Request
 ```
-header : Authorization: Bearer <JWT Token>
+header : 
+    Authorization: Bearer <JWT Token>
 ```
 
 ### Response
 ```
+header :
+    Content-Type : application/json
+body :
 {
     "code": 200,
     "message": "매칭작업에 성공 하였습니다",
@@ -772,11 +823,15 @@ header : Authorization: Bearer <JWT Token>
 
 ### Request
 ```
-header : Authorization: Bearer <JWT Token>
+header : 
+    Authorization: Bearer <JWT Token>
 ```
 
 ### Response
 ```
+header :
+    Content-Type : application/json
+body :
 {
   "code": 200,
   "message": "외주 작업 요청에 성공 하였습니다",
@@ -816,7 +871,8 @@ header : Authorization: Bearer <JWT Token>
 
 ### Request
 ```
-header : Authorization: Bearer <JWT Token>
+header : 
+    Authorization: Bearer <JWT Token>
 body : 
 {
     "title": "Mobile App Development",
@@ -834,6 +890,9 @@ body :
 
 ### Response
 ```
+header :
+    Content-Type : application/json
+body :
 {
     "code": 200,
     "message": "외주 작업 요청에 성공 하였습니다",
@@ -873,7 +932,8 @@ body :
 
 ### Request
 ```
-header : Authorization: Bearer <JWT Token>
+header : 
+    Authorization: Bearer <JWT Token>
 body : 
 {
     "title": "Mobile App11 Development",
@@ -891,6 +951,9 @@ body :
 
 ### Response
 ```
+header :
+    Content-Type : application/json
+body :
 {
     "code": 200,
     "message": "외주 작업 요청에 성공 하였습니다",
@@ -908,11 +971,15 @@ body :
 
 ### Request
 ```
-header : Authorization: Bearer <JWT Token>
+header :
+    Authorization: Bearer <JWT Token>
 ```
 
 ### Response
 ```
+header :
+    Content-Type : application/json
+body :
 {
     "code": 200,
     "message": "외주 작업 요청에 성공 하였습니다",
@@ -938,6 +1005,9 @@ sort (null 허용, default desc)
 
 ### Response
 ```
+header :
+    Content-Type : application/json
+body :
 {
   "code": 200,
   "message": "외주 작업 요청에 성공 하였습니다",
@@ -1004,6 +1074,9 @@ content (null 허용)
 
 ### Response
 ```
+header :
+    Content-Type : application/json
+body :
 {
   "code": 200,
   "message": "외주 작업 요청에 성공 하였습니다",
@@ -1096,11 +1169,15 @@ content (null 허용)
 
 ### Request
 ```
-header : Authorization: Bearer <JWT Token>
+header : 
+    Authorization: Bearer <JWT Token>
 ```
 
 ### Response
 ```
+header :
+    Content-Type : application/json
+body :
 {
     "code": 200,
     "message": "파일 작업요청에 성공 하였습니다",
@@ -1118,11 +1195,15 @@ header : Authorization: Bearer <JWT Token>
 
 ### Request
 ```
-header : Authorization: Bearer <JWT Token>
+header : 
+    Authorization: Bearer <JWT Token>
 ```
 
 ### Response
 ```
+header :
+    Content-Type : application/json
+body :
 {
     "code": 200,
     "message": "파일 작업요청에 성공 하였습니다",
@@ -1140,11 +1221,15 @@ header : Authorization: Bearer <JWT Token>
 
 ### Request
 ```
-header : Authorization: Bearer <JWT Token>
+header : 
+    Authorization: Bearer <JWT Token>
 ```
 
 ### Response
 ```
+header :
+    Content-Type : application/json
+body :
 {
     "code": 200,
     "message": "파일 작업요청에 성공 하였습니다",
@@ -1162,11 +1247,15 @@ header : Authorization: Bearer <JWT Token>
 
 ### Request
 ```
-header : Authorization: Bearer <JWT Token>
+header : 
+    Authorization: Bearer <JWT Token>
 ```
 
 ### Response
 ```
+header :
+    Content-Type : application/json
+body :
 {
     "code": 200,
     "message": "파일 작업요청에 성공 하였습니다",
