@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.PriorityQueue;
 import java.util.Set;
 
 
@@ -26,6 +27,9 @@ public class QuestionViewService {
     public void trackUserView(Long questionId, Long userId) {
         String key = "hourView:" + questionId;
         redisTemplate.opsForSet().add(key, userId.toString());
+
+        // Sorted Set에 조회수 증가 적용 (쓰기 캐싱)
+        redisTemplate.opsForZSet().incrementScore("questionRank", questionId.toString(), 1);
     }
 
     @Scheduled(cron = "0 0 * * * ?")
@@ -86,6 +90,104 @@ public class QuestionViewService {
             }
         }
     }
+
+    @Scheduled(cron = "0 0 * * * ?")
+    @Transactional
+    public void updatePopularQuestion() {
+        PriorityQueue<Long[]> views = new PriorityQueue<>((a, b) -> Long.compare(a[1], b[1]));
+        String popularQuestion = "popularQuestion";
+
+        Set<String> popularQuestions = redisTemplate.keys(popularQuestion);
+        Set<String> keysToUpdate = redisTemplate.keys("hourView:*");
+
+        if (keysToUpdate != null && !keysToUpdate.isEmpty()) {
+            for (String val : keysToUpdate) {
+                String[] keys = val.split(":");
+                Long questionId = Long.parseLong(keys[1]);
+
+                if (popularQuestions != null && popularQuestions.contains(popularQuestion + questionId)) {
+                    continue;
+                }
+
+                Long hourView = redisTemplate.opsForSet().size(val);
+                views.offer(new Long[]{questionId, hourView});
+
+                if (views.size() > 5) {
+                    views.poll();
+                }
+            }
+        }
+
+        for (Long[] val : views) {
+            redisTemplate.opsForSet().add(popularQuestion, val[0]);
+        }
+    }
+
+    public Set viewPopularQuestionList() {
+        return redisTemplate.opsForSet().members("popularQuestion");
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//    public void popularQuestion() {
+//        String questionBoard = "questionBoard";
+//
+//        // 기존의 인기 게시글 삭제
+//        redisTemplate.delete(questionBoard);
+//
+//        // 상위 5개의 게시글 조회
+//        Set<Object> questionRankId = redisTemplate.opsForZSet().reverseRange("questionRank", 0, 4);
+//
+//        if (questionRankId != null && !questionRankId.isEmpty()) {
+//            // 상위 5개 게시글이 있을 때 실행
+//            for (Object questionId : questionRankId) {
+//                // questionId의 조회수를 가져옴
+//                Double score = redisTemplate.opsForZSet().score("questionRank", questionId);
+//
+//                // 조회수가 null이 아니면 questionBoard에 저장
+//                if (score != null) {
+//                    redisTemplate.opsForZSet().add("questionBoard", questionId, score);
+//                }
+//            }
+//        }
+//    }
+//
+//    public Set viewPopularQuestionList() {
+//        return redisTemplate.opsForZSet().reverseRange("questionBoard", 0, 4);
+//    }
 
 
 

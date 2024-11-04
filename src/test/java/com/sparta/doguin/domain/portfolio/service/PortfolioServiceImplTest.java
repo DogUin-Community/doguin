@@ -4,7 +4,6 @@ import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteSe
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentGetService;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUpdateService;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
-import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.outsourcing.constans.AreaType;
 import com.sparta.doguin.domain.portfolio.entity.Portfolio;
 import com.sparta.doguin.domain.portfolio.model.PortfolioRequest;
@@ -98,8 +97,8 @@ class PortfolioServiceImplTest {
             given(portfolioRepository.findById(portfolioId1)).willReturn(Optional.of(portfolio1));
 
             // when
-            ApiResponse<PortfolioResponse> actual = portfolioService.getPortfolio(portfolioId1);
-            PortfolioResponse.PortfolioResponseGetFilePaths actualData = (PortfolioResponse.PortfolioResponseGetFilePaths) actual.getData();
+            PortfolioResponse actual = portfolioService.getPortfolio(portfolioId1);
+            PortfolioResponse.PortfolioResponseGetFilePaths actualData = (PortfolioResponse.PortfolioResponseGetFilePaths) actual;
 
             // then - 예상한 데이터와 실제 데이터가 동일한지 확인
             assertEquals(portfolio1.getUser().getId(),actualData.user_id());
@@ -175,8 +174,8 @@ class PortfolioServiceImplTest {
             given(portfolioRepository.findAllByUserAndArea(any(),any(),any())).willReturn(portfolioPages);
 
             // when
-            ApiResponse<Page<PortfolioResponse>> actual = portfolioService.getAllMyPortfolio(pageable,area,authUser1);
-            List<PortfolioResponse> actualDatas = actual.getData().getContent();
+            Page<PortfolioResponse> actual = portfolioService.getAllMyPortfolio(pageable,area,authUser1);
+            List<PortfolioResponse> actualDatas = actual.getContent();
             List<PortfolioResponse.PortfolioResponseGetFilePaths> actualDataConvert = actualDatas.stream()
                     .map(actualData -> (PortfolioResponse.PortfolioResponseGetFilePaths) actualData)
                     .toList();
@@ -201,8 +200,8 @@ class PortfolioServiceImplTest {
             given(portfolioRepository.findAllByUser(any(),any())).willReturn(portfolioPages);
 
             // when
-            ApiResponse<Page<PortfolioResponse>> actual = portfolioService.getAllMyPortfolio(pageable,null,authUser1);
-            List<PortfolioResponse> actualDatas = actual.getData().getContent();
+            Page<PortfolioResponse> actual = portfolioService.getAllMyPortfolio(pageable,null,authUser1);
+            List<PortfolioResponse> actualDatas = actual.getContent();
             List<PortfolioResponse.PortfolioResponseGetFilePaths> actualDataConvert = actualDatas.stream()
                     .map(actualData -> (PortfolioResponse.PortfolioResponseGetFilePaths) actualData)
                     .toList();
@@ -231,8 +230,8 @@ class PortfolioServiceImplTest {
             given(attachmentGetService.getAllAttachmentPath(portfolio1.getId(),PORTFOLIO)).willReturn(List.of("1"));
 
             // when
-            ApiResponse<Page<PortfolioResponse>> actual = portfolioService.getAllOtherPortfolio(pageable,area);
-            List<PortfolioResponse> actualDatas = actual.getData().getContent();
+            Page<PortfolioResponse> actual = portfolioService.getAllOtherPortfolio(pageable,area);
+            List<PortfolioResponse> actualDatas = actual.getContent();
             List<PortfolioResponse.PortfolioResponseGetFilePaths> actualDataConvert = actualDatas.stream()
                     .map(actualData -> (PortfolioResponse.PortfolioResponseGetFilePaths) actualData)
                     .toList();
@@ -257,8 +256,8 @@ class PortfolioServiceImplTest {
             given(portfolioRepository.findAllByArea(any(),any())).willReturn(portfolioPages);
 
             // when
-            ApiResponse<Page<PortfolioResponse>> actual = portfolioService.getAllOtherPortfolio(pageable,area);
-            List<PortfolioResponse> actualDatas = actual.getData().getContent();
+            Page<PortfolioResponse> actual = portfolioService.getAllOtherPortfolio(pageable,area);
+            List<PortfolioResponse> actualDatas = actual.getContent();
             List<PortfolioResponse.PortfolioResponseGetFilePaths> actualDataConvert = actualDatas.stream()
                     .map(actualData -> (PortfolioResponse.PortfolioResponseGetFilePaths) actualData)
                     .toList();

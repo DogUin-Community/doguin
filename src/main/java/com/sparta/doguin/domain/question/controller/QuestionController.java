@@ -116,4 +116,13 @@ public class QuestionController {
         Pageable pageable = PageRequest.of(page, size);
         return ApiResponse.of(questionService.search(pageable, title, content));
     }
+
+    @GetMapping("/rank")
+    public ResponseEntity<ApiResponse<Page<Long>>> viewPopular(@RequestParam(defaultValue = "0", required = false) int page,
+                                                               @RequestParam(defaultValue = "5", required = false) int size) {
+        Page<Long> response = questionService.viewPopular(page, size);
+        return ApiResponse.of(ApiResponse.of(ApiResponseQuestionEnum.QUESTION_RANK_FIND_ALL_SUCCESS, response));
+    }
+
+
 }

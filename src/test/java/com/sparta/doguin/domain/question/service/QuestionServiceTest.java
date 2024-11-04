@@ -100,25 +100,6 @@ public class QuestionServiceTest {
         assertNotNull(response.getData());
     }
 
-    // TODO: 여기 다시 바꿔야함
-//    @Test
-//    void 질문_단건_조회() {
-//        // given
-//        long questionId = DataUtil.one();
-//        Question question = DataUtil.question1();
-//        Page<Answer> answers = new PageImpl<>(List.of(new Answer(/* 필요한 데이터 초기화 */)));
-//        Pageable pageable = PageRequest.of(0, 10);
-//
-//        // when
-//        given(questionRepository.findById(questionId)).willReturn(Optional.of(question));
-//        given(answerRepository.findByQuestionId(questionId, pageable)).willReturn(answers);
-//        ApiResponse<QuestionResponse.GetQuestion> response = questionService.getQuestion(questionId);
-//
-//        // then
-//        assertEquals("질문 조회(단건)에 성공하였습니다.", response.getMessage());
-//        assertNotNull(response.getData());
-//    }
-
     @Test
     void 질문_삭제_성공() {
         // given

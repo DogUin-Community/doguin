@@ -4,7 +4,6 @@ import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteSe
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentGetService;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUpdateService;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
-import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.outsourcing.constans.AreaType;
 import com.sparta.doguin.domain.outsourcing.entity.Outsourcing;
 import com.sparta.doguin.domain.outsourcing.model.OutsourcingRequest;
@@ -96,8 +95,8 @@ class OutsourcingServiceTest {
             given(attachmentGetService.getAllAttachmentPath(outsourcingId1,OUTSOURCING)).willReturn(List.of("1"));
 
             // when
-            ApiResponse<OutsourcingResponse> actual = outsourcingService.getOutsourcing(outsourcingId1);
-            OutsourcingResponse.OutsourcingResponseGetFilePaths actualData = (OutsourcingResponse.OutsourcingResponseGetFilePaths) actual.getData();
+            OutsourcingResponse actual = outsourcingService.getOutsourcing(outsourcingId1);
+            OutsourcingResponse.OutsourcingResponseGetFilePaths actualData = (OutsourcingResponse.OutsourcingResponseGetFilePaths) actual;
 
 
             // then - 외주 아이디에 대한 데이터로, 각각의 값이 일치하는지 확인
@@ -180,8 +179,8 @@ class OutsourcingServiceTest {
             given(outsourcingRepository.findAllByArea(pageable,area)).willReturn(pageOutsourcing);
 
             // when
-            ApiResponse<Page<OutsourcingResponse>> actual = outsourcingService.getAllOutsourcing(pageable,area);
-            List<OutsourcingResponse.OutsourcingResponseGetFilePaths> actualData = actual.getData().getContent().stream()
+            Page<OutsourcingResponse> actual = outsourcingService.getAllOutsourcing(pageable,area);
+            List<OutsourcingResponse.OutsourcingResponseGetFilePaths> actualData = actual.getContent().stream()
                     .map(outsourcing -> (OutsourcingResponse.OutsourcingResponseGetFilePaths) outsourcing)
                     .toList();
 
@@ -207,8 +206,8 @@ class OutsourcingServiceTest {
             given(outsourcingRepository.findAllBy(pageable)).willReturn(pageOutsourcing);
 
             // when
-            ApiResponse<Page<OutsourcingResponse>> actual = outsourcingService.getAllOutsourcing(pageable,area);
-            List<OutsourcingResponse.OutsourcingResponseGetFilePaths> actualData = actual.getData().getContent().stream()
+            Page<OutsourcingResponse> actual = outsourcingService.getAllOutsourcing(pageable,area);
+            List<OutsourcingResponse.OutsourcingResponseGetFilePaths> actualData = actual.getContent().stream()
                     .map(outsourcing -> (OutsourcingResponse.OutsourcingResponseGetFilePaths) outsourcing)
                     .toList();
 
