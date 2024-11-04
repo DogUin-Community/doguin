@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "북마크 API",description = "북마크 관련된 API를 확인 할 수 있습니다")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/bookmark")
+@RequestMapping("/api/v1/bookmarks")
 public class BookmarkController {
     private final BookmarkService bookmarkService;
 

@@ -67,8 +67,6 @@ public class DataUtil {
         );
     }
 
-
-
     public static Long one(){
         return 1L;
     }
