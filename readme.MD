@@ -241,11 +241,13 @@
 ---
 
 ## ver 1
+![도구인 ver1](https://github.com/user-attachments/assets/2ea49f52-3318-452a-b8db-7f1f3c81bbc6)
 
 ## ver 2
+![도구인 ver 2](https://github.com/user-attachments/assets/9066ffbe-73c5-4f41-a46d-830d5355f309)
 
 ## ver 3
-
+![도구인 ver3](https://github.com/user-attachments/assets/2bf04107-fad5-47ba-9207-bac038d86cec)
 ## NOW
 
 # 인프라
@@ -256,10 +258,3 @@
 
 ---
 
-
-
-<!--
-그 mysql, mongo, Redis, STOMP등등 그런거 어디에 넣지
-
-
--->
