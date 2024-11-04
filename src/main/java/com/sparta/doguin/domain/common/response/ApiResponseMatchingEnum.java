@@ -8,6 +8,9 @@ public enum ApiResponseMatchingEnum implements ApiResponseEnum {
     // 200
     MATHCING_SUCCESS(HttpStatus.OK,"매칭작업에 성공 하였습니다"),
 
+    // 400
+    MATCHING_IS_MANY(HttpStatus.BAD_REQUEST,"매칭 작업 요청이 너무 많습니다, 이후에 다시 시도해주세요"),
+
     // 403
     IS_NOT_ME(HttpStatus.FORBIDDEN, "자신이 작성하지않은 데이터가 포함되어 있습니다"),
     IS_NOT_COMPANY(HttpStatus.FORBIDDEN, "회사권한이 아닙니다"),
