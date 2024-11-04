@@ -261,7 +261,6 @@ MSA 구조를 통해 시스템의 확장성과 안정성을 확보하고자 한 
 
 ---
 
-![인프라 ver1](https://github.com/user-attachments/assets/4dc4d4f5-c8da-4385-908e-d5e26a656f3)
 
 # 개발 과정
 
