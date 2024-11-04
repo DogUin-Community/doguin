@@ -9,8 +9,9 @@ public enum ApiResponseMatchingEnum implements ApiResponseEnum {
     MATHCING_SUCCESS(HttpStatus.OK,"매칭작업에 성공 하였습니다"),
 
     // 403
-    MATHCING_IS_NOT_ME(HttpStatus.FORBIDDEN, "자신이 신청한 매칭이 아니기에, 권한이 존재하지 않습니다"),
-    MATHCING_IS_NOT_COMPANY(HttpStatus.FORBIDDEN, "회사권한이 아니면, 수락 및 취소 할 수 없습니다"),
+    IS_NOT_ME(HttpStatus.FORBIDDEN, "자신이 작성하지않은 데이터가 포함되어 있습니다"),
+    IS_NOT_COMPANY(HttpStatus.FORBIDDEN, "회사권한이 아닙니다"),
+    IS_NOT_INDIVIDUAL(HttpStatus.FORBIDDEN, "개인권한이 아닙니다"),
 
     // 404
     MATCHING_NOT_FOUND(HttpStatus.NOT_FOUND,"매칭 대상이 존재하지 않습니다"),

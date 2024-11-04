@@ -12,10 +12,10 @@
         <key-type>java.lang.String</key-type>
         <value-type>java.lang.Object</value-type>
         <expiry>
-            <ttl unit="minutes">5</ttl>
+            <ttl unit="minutes">1</ttl>
         </expiry>
         <resources>
-            <heap unit="entries">100</heap>
+            <heap unit="entries">5</heap>
             <offheap unit="MB">500</offheap>
         </resources>
     </cache>
@@ -43,8 +43,32 @@
             <offheap unit="MB">500</offheap>
         </resources>
     </cache>
+  
+    <cache alias="mypageCache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.lang.Object</value-type>
+        <expiry>
+            <ttl unit="minutes">7</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">50</heap>
+            <offheap unit="MB">100</offheap>
+        </resources>
+    </cache>
 
-    <cache alias="questionPopular">
+    <cache alias="outsourcingCache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.lang.Object</value-type>
+        <expiry>
+            <ttl unit="minutes">5</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">100</heap>
+            <offheap unit="MB">500</offheap>
+        </resources>
+    </cache>
+
+    <cache alias="portfolioCache">
         <key-type>java.lang.String</key-type>
         <value-type>java.lang.Object</value-type>
         <expiry>

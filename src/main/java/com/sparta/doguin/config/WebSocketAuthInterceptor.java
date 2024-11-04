@@ -55,3 +55,4 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
         return message;
     }
 }
+

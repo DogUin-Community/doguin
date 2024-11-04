@@ -1,6 +1,5 @@
 package com.sparta.doguin.domain.portfolio.service;
 
-import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.attachment.constans.AttachmentTargetType;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteService;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentGetService;
@@ -15,7 +14,10 @@ import com.sparta.doguin.domain.portfolio.model.PortfolioResponse;
 import com.sparta.doguin.domain.portfolio.repository.PortfolioRepository;
 import com.sparta.doguin.domain.portfolio.validate.PortfolioValidator;
 import com.sparta.doguin.domain.user.entity.User;
+import com.sparta.doguin.security.AuthUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -45,13 +47,13 @@ public class PortfolioServiceImpl implements PortfolioService {
      * @since 1.0
      * @author 김경민
      */
+    @Cacheable(value = "portfolioCache",key = "'portfolioId'+#portfolioId")
     @Transactional(readOnly = true)
     @Override
-    public ApiResponse<PortfolioResponse> getPortfolio(Long portfolioId) {
+    public PortfolioResponse getPortfolio(Long portfolioId) {
         Portfolio portfolio = findById(portfolioId);
         List<String> filePaths = attachmentGetService.getAllAttachmentPath(portfolio.getUser().getId(), portfolio.getId(), AttachmentTargetType.PORTFOLIO);
-        PortfolioResponse portfolioResponse = PortfolioResponse.PortfolioResponseGetFilePaths.of(portfolio,filePaths);
-        return ApiResponse.of(PORTFOLIO_OK,portfolioResponse);
+        return PortfolioResponse.PortfolioResponseGetFilePaths.of(portfolio,filePaths);
     }
 
     /**
@@ -97,6 +99,7 @@ public class PortfolioServiceImpl implements PortfolioService {
      * @since 1.0
      * @author 김경민
      */
+    @CacheEvict(value = "portfolioCache",key = "'portfolioId'+#portfolioId")
     @Transactional
     @Override
     public ApiResponse<Void> updatePortfolio(Long portfolioId, PortfolioRequest.PortfolioRequestUpdate portfolioRequestUpdate, AuthUser authUser, List<MultipartFile> updateFiles) {
@@ -142,9 +145,10 @@ public class PortfolioServiceImpl implements PortfolioService {
         return ApiResponse.of(PORTFOLIO_OK);
     }
 
+    @Cacheable(value = "portfolioCache",key = "'portfolioPage'+#pageable.pageNumber")
     @Transactional(readOnly = true)
     @Override
-    public ApiResponse<Page<PortfolioResponse>> getAllMyPortfolio(Pageable pageable, AreaType area,AuthUser authUser) {
+    public Page<PortfolioResponse> getAllMyPortfolio(Pageable pageable, AreaType area,AuthUser authUser) {
         User user = User.fromAuthUser(authUser);
         Page<Portfolio> pageablePortfolio;
         if (area == null) {
@@ -153,18 +157,17 @@ public class PortfolioServiceImpl implements PortfolioService {
             pageablePortfolio = portfolioRepository.findAllByUserAndArea(user,pageable,area);
         }
 
-        Page<PortfolioResponse> portfolios = pageablePortfolio.map(portfolio -> {
+        return pageablePortfolio.map(portfolio -> {
             // 각 포트폴리오에 대해 file_paths를 가져옴
             List<String> filePaths = attachmentGetService.getAllAttachmentPath(authUser.getUserId(), portfolio.getId(), AttachmentTargetType.PORTFOLIO);
             return PortfolioResponse.PortfolioResponseGetFilePaths.of(portfolio, filePaths); // filePaths를 포함하여 변환
         });
-
-        return ApiResponse.of(PORTFOLIO_OK,portfolios);
     }
 
+    @Cacheable(value = "portfolioCache",key = "'portfolioPage'+#pageable.pageNumber")
     @Transactional(readOnly = true)
     @Override
-    public ApiResponse<Page<PortfolioResponse>> getAllOtherPortfolio(Pageable pageable, AreaType area) {
+    public Page<PortfolioResponse> getAllOtherPortfolio(Pageable pageable, AreaType area) {
         Page<Portfolio> pageablePortfolio;
         if (area == null) {
             pageablePortfolio = portfolioRepository.findAllBy(pageable);
@@ -172,13 +175,11 @@ public class PortfolioServiceImpl implements PortfolioService {
             pageablePortfolio = portfolioRepository.findAllByArea(pageable,area);
         }
 
-        Page<PortfolioResponse> portfolios = pageablePortfolio.map(portfolio -> {
+        return pageablePortfolio.map(portfolio -> {
             // 각 포트폴리오에 대해 file_paths를 가져옴
             List<String> filePaths = attachmentGetService.getAllAttachmentPath(portfolio.getId(), AttachmentTargetType.PORTFOLIO);
             return PortfolioResponse.PortfolioResponseGetFilePaths.of(portfolio, filePaths); // filePaths를 포함하여 변환
         });
-
-        return ApiResponse.of(PORTFOLIO_OK,portfolios);
     }
 
     /**

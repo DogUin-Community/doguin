@@ -45,9 +45,6 @@ public class SlackEventListener {
             slackSendPush.sendPush(slackId, nickName, message);
         }
 
-
-
-
     }
 
 

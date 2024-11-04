@@ -23,8 +23,12 @@ spring:
       port: ${REDIS_PORT}
       host: ${REDIS_HOST}
       password: ${REDIS_PASSWORD}
+  date:
+    mongodb:
+      host: ${MONGO_HOST}
+      port: ${MONGO_PORT}
+      database: ${MONGO_DB_NAME}
 
-# JWT config
   cache:
     jcache:
       config: classpath:ehcache.xml
@@ -44,7 +48,12 @@ cloud:
       secretKey: ${SECRET_KEY}
 slack:
   bot-token: ${SLACK_BOT_TOKEN}
-  postMessageUrl : "https://slack.com/api/chat.postMessage"
+  postMessageUrl: "https://slack.com/api/chat.postMessage"
+
+discord:
+  report_url: ${DISCORD_URL_REPORT}
+  error_url: ${DISCORD_URL_ERROR}
+
 
 logging:
   level:
@@ -75,3 +84,22 @@ social:
     client-secret: ${GITHUB_CLIENT_SECRET}
     redirect-uri: http://localhost:8080/api/v1/auth/oauth2/authorize/github
     scope: "user:email"
+
+springdoc:
+  swagger-ui:
+    groups-order: DESC
+    tags-sorter: alpha
+    operations-sorter: method
+    disable-swagger-default-url: true
+    display-request-duration: true
+    defaultModelsExpandDepth: 2
+    defaultModelExpandDepth: 2
+  api-docs:
+    path: /api-docs
+  show-actuator: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  writer-with-default-pretty-printer: true
+  model-and-view-allowed: true
+  paths-to-match:
+    - /api/**

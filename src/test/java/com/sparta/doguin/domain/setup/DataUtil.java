@@ -38,22 +38,32 @@ public class DataUtil {
     public static User user1() {
         return new User(
                  one(),
-                "test@naver.com",
+                "test1@naver.com",
                 "!@Skdud340",
-                "testNickname",
-                UserType.INDIVIDUAL,
-                UserRole.ROLE_USER,"","","","",""
+                "testNickname1",
+                UserType.COMPANY,
+                UserRole.ROLE_USER,
+                "",
+                "testIntroduce1",
+                "testHomdAdress1",
+                "testGitAdress1",
+                "testBlogAdress1"
         );
     }
 
     public static User user2() {
         return new User(
                  two(),
-                "test1@naver.com",
+                "test2@naver.com",
                 "!@Skdud340",
-                "testNickname1",
+                "testNickname2",
                 UserType.INDIVIDUAL,
-                UserRole.ROLE_USER,"","","","",""
+                UserRole.ROLE_USER,
+                "",
+                "testIntroduce2",
+                "testHomdAdress2",
+                "testGitAdress2",
+                "testBlogAdress2"
         );
     }
 
