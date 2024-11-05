@@ -16,7 +16,6 @@
         </expiry>
         <resources>
             <heap unit="entries">5</heap>
-            <offheap unit="MB">50</offheap>
         </resources>
     </cache>
 
@@ -28,7 +27,6 @@
         </expiry>
         <resources>
             <heap unit="entries">100</heap>
-            <offheap unit="MB">50</offheap>
         </resources>
     </cache>
 
@@ -40,7 +38,6 @@
         </expiry>
         <resources>
             <heap unit="entries">100</heap>
-            <offheap unit="MB">50</offheap>
         </resources>
     </cache>
 
@@ -52,7 +49,6 @@
         </expiry>
         <resources>
             <heap unit="entries">50</heap>
-            <offheap unit="MB">50</offheap>
         </resources>
     </cache>
 
@@ -64,7 +60,6 @@
         </expiry>
         <resources>
             <heap unit="entries">100</heap>
-            <offheap unit="MB">50</offheap>
         </resources>
     </cache>
 
@@ -76,7 +71,6 @@
         </expiry>
         <resources>
             <heap unit="entries">100</heap>
-            <offheap unit="MB">50</offheap>
         </resources>
     </cache>
 </config>
