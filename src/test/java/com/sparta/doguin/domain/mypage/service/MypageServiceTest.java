@@ -78,8 +78,8 @@ class MypageServiceTest {
         MypageResponse.Mypage actual = mypageService.getMypage(authUser);
 
         // then
-        assertEquals("test@naver.com", actual.email());
-        assertEquals("testNickname", actual.nickname());
+        assertEquals("test1@naver.com", actual.email());
+        assertEquals("testNickname1", actual.nickname());
         assertEquals(5L, actual.followedCount());
         assertEquals(3L, actual.followerCount());
         assertEquals(List.of("Bulletin Title 1", "Bulletin Title 2"), actual.boards());
