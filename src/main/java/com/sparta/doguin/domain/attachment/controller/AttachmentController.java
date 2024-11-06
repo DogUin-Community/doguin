@@ -13,15 +13,17 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@Controller
 @Tag(name = "파일 API",description = "파일 관련된 API를 확인 할 수 있습니다")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/attachments")
+@RequestMapping("/attachments")
 public class AttachmentController {
     private final AttachmentUploadService attachmentUploadService;
     private final AttachmentDownloadService attachmentDownloadService;

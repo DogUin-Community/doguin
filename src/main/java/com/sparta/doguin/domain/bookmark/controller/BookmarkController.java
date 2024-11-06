@@ -15,12 +15,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+@Controller
 @Tag(name = "북마크 API",description = "북마크 관련된 API를 확인 할 수 있습니다")
-@RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/bookmarks")
+@RequestMapping("/bookmarks")
 public class BookmarkController {
     private final BookmarkService bookmarkService;
 
