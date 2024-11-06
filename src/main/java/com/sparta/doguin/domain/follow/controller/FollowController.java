@@ -1,19 +1,20 @@
 package com.sparta.doguin.domain.follow.controller;
 
-import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.follow.dto.FollowResponse;
 import com.sparta.doguin.domain.follow.service.FollowService;
 import com.sparta.doguin.domain.user.entity.User;
+import com.sparta.doguin.security.AuthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/api/v1/follows")
+@Controller
+@RequestMapping("/follows")
 @RequiredArgsConstructor
 public class FollowController {
     private final FollowService followService;

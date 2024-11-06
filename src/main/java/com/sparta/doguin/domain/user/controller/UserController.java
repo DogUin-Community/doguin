@@ -1,18 +1,19 @@
 package com.sparta.doguin.domain.user.controller;
 
-import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.user.dto.UserRequest;
 import com.sparta.doguin.domain.user.dto.UserResponse;
 import com.sparta.doguin.domain.user.service.UserService;
+import com.sparta.doguin.security.AuthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/users")
+@RequestMapping("/users")
 public class UserController {
     private final UserService userService;
 
