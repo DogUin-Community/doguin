@@ -42,28 +42,29 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/signup", "/api/v1/auth/signin").permitAll()
-                        .requestMatchers("/api/v1/auth/oauth2/authorize/**").permitAll()
+                        .requestMatchers("/auth/signup", "/auth/signin").permitAll()
+                        .requestMatchers("/auth/oauth2/authorize/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/api-docs/**").permitAll()
-                        .requestMatchers("/api/test/**").permitAll()
+                        .requestMatchers("/test/**").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/api/v1/boards/*/*").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/boards/*").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/boards/*/search").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/outsourcings").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/outsourcings/*").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/portfolios/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/boards/*/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/boards/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/boards/*/search").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/outsourcings").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/outsourcings/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/portfolios/*").permitAll()
 
-                        .requestMatchers(HttpMethod.POST, "/api/v1/boards/events").hasAuthority(UserRole.Authority.ADMIN)
-                        .requestMatchers(HttpMethod.POST, "/api/v1/boards/notices").hasAuthority(UserRole.Authority.ADMIN)
-                        .requestMatchers(HttpMethod.POST, "/api/v1/boards/inquiries").hasAuthority(UserRole.Authority.USER)
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/reports/*/accept").hasAuthority(UserRole.Authority.ADMIN)
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/reports/*/inject").hasAuthority(UserRole.Authority.ADMIN)
-                        .requestMatchers(HttpMethod.GET, "/api/v1/reports/total/*").hasAuthority(UserRole.Authority.ADMIN)
+                        .requestMatchers(HttpMethod.POST, "/boards/events").hasAuthority(UserRole.Authority.ADMIN)
+                        .requestMatchers(HttpMethod.POST, "/boards/notices").hasAuthority(UserRole.Authority.ADMIN)
+                        .requestMatchers(HttpMethod.POST, "/boards/inquiries").hasAuthority(UserRole.Authority.USER)
+                        .requestMatchers(HttpMethod.PUT, "/reports/*/accept").hasAuthority(UserRole.Authority.ADMIN)
+                        .requestMatchers(HttpMethod.PUT, "/reports/*/inject").hasAuthority(UserRole.Authority.ADMIN)
+                        .requestMatchers(HttpMethod.GET, "/reports/total/*").hasAuthority(UserRole.Authority.ADMIN)
 
                         .anyRequest().authenticated()
                 )
                 .build();
     }
+
 }
