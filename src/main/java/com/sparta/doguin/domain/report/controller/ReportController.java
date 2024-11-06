@@ -10,10 +10,11 @@ import com.sparta.doguin.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequestMapping("/api/v1/reports")
+@Controller
+@RequestMapping("/reports")
 public class ReportController {
 
     private final ReportService reportService;
