@@ -17,18 +17,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-import static com.sparta.doguin.domain.common.response.ApiResponseOutsourcingEnum.OUTSOURCING_SUCCESS;
+import static com.sparta.doguin.domain.common.response.ApiResponseOutsourcingEnum.*;
+
 
 @Tag(name = "외주 API",description = "외주 관련된 API를 확인 할 수 있습니다")
 @Slf4j
-@RestController
+@Controller
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/outsourcings")
+@RequestMapping("/outsourcings")
 public class OutsourcingController {
     private final OutsourcingService outsourcingService;
 

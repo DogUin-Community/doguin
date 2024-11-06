@@ -1,11 +1,11 @@
 package com.sparta.doguin.domain.matching.controller;
 
-import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.matching.constans.MathingStatusType;
 import com.sparta.doguin.domain.matching.model.MatchingRequest;
 import com.sparta.doguin.domain.matching.model.MatchingResponse;
 import com.sparta.doguin.domain.matching.service.MatchingService;
+import com.sparta.doguin.security.AuthUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +15,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+@Controller
 @Tag(name = "매칭 API",description = "매칭 관련된 API를 확인 할 수 있습니다")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/matchings")
+@RequestMapping("/matchings")
 public class MathchingController {
     private final MatchingService matchingService;
     /**
