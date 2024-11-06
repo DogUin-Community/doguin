@@ -9,14 +9,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/auth/")
+@RequestMapping("/auth")
 public class AuthController {
     private final AuthService authService;
     private final SocialLoginService socialLoginService;
@@ -30,7 +31,7 @@ public class AuthController {
      * @since 1.2
      * @author 황윤서
      */
-    @PostMapping("signup")
+    @PostMapping("/signup")
     public ResponseEntity<ApiResponse<String>> signup(
             @RequestPart(name = "signupRequest") @Valid UserRequest.Signup signupRequest,
             @RequestPart(name = "files", required = false) List<MultipartFile> files
@@ -47,7 +48,7 @@ public class AuthController {
      * @author 황윤서
      * @since 1.1
      */
-    @PostMapping("signin")
+    @PostMapping("/signin")
     public ResponseEntity<ApiResponse<String>> signin(@RequestBody UserRequest.Signin signinRequest, HttpServletResponse response) {
         ApiResponse<String> apiResponse = authService.signin(signinRequest, response);
         return ApiResponse.of(apiResponse);
