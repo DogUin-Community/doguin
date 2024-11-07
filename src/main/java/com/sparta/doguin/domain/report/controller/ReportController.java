@@ -68,10 +68,10 @@ public class ReportController {
     // 특정인 결과 확인 (현 서비스 이용자 기준)
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<ReportResponse.ReportView>> reportSearch(@AuthenticationPrincipal AuthUser authUser,
-                                                                               @RequestParam Long userid
+                                                                               @RequestParam String reporteeNickname
                                                                                ) {
         User user = User.fromAuthUser(authUser);
-        ReportResponse.ReportView responses = reportService.reportSearch(user,userid);
+        ReportResponse.ReportView responses = reportService.reportSearch(user,reporteeNickname);
         return ApiResponse.of(ApiResponse.of(ApiResponseReportEnum.REPORT_VIEW_SUCCESS, responses));
     }
 

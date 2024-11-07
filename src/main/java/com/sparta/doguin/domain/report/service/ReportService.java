@@ -39,9 +39,9 @@ public class ReportService {
      */
     @Transactional
     public void report(User user, ReportRequest.Report reportRequest) {
-        User reportee = userService.findById(reportRequest.reporteeId());
+        User reportee = userService.findByNickname(reportRequest.reporteeNickname());
 
-        if(reportRepository.findByReporterIdAndReporteeId(user.getId(),reportRequest.reporteeId()).isPresent()){
+        if(reportRepository.findByReporterIdAndReporteeNickname(user.getId(),reportRequest.reporteeNickname()).isPresent()){
             throw new InvalidRequestException(ApiResponseReportEnum.REPORT_ALREADY_EXIST);
         }
         Report report = new Report(reportRequest.title(), reportRequest.content(), user, reportee, REPORT_NOT_CONFIRMED);
@@ -106,6 +106,7 @@ public class ReportService {
     public Page<ReportResponse.ReportView> reportViewAllAdmin(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<ReportResponse.ReportView> reports = reportRepository.findAll(pageable);
+        return reports;
     }
 
     /**
@@ -117,8 +118,8 @@ public class ReportService {
      * @throws HandleNotFound 해당 신고가 존재하지 않을 경우 발생
      * @author 김창민
      */
-    public ReportResponse.ReportView reportSearch(User user, Long reporteeId) {
-        Report report = reportRepository.findByReporterIdAndReporteeId(user.getId(),reporteeId).orElseThrow(
+    public ReportResponse.ReportView reportSearch(User user, String reporteeId) {
+        Report report = reportRepository.findByReporterIdAndReporteeNickname(user.getId(),reporteeId).orElseThrow(
                 () -> new HandleNotFound(ApiResponseReportEnum.REPORT_NOT_FOUND)
         );
 

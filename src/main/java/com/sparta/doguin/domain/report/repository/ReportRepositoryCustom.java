@@ -18,5 +18,5 @@ public interface ReportRepositoryCustom  {
 
     Optional<ReportResponse.ReportTotalView> findCountByReporteeId(Long reporteeId);
 
-    Optional<Report> findByReporterIdAndReporteeId(Long id, Long aLong);
+    Optional<Report> findByReporterIdAndReporteeNickname(Long id, String nickName);
 }

@@ -107,11 +107,11 @@ public class ReportRepositoryCustomImpl implements ReportRepositoryCustom {
     }
 
     @Override
-    public Optional<Report> findByReporterIdAndReporteeId(Long reporterId, Long reporteeId) {
+    public Optional<Report> findByReporterIdAndReporteeNickname(Long reporterId, String reporteeNickname) {
         return Optional.ofNullable(jpaQueryFactory
                 .selectFrom(report)
                 .innerJoin(report.reportee, user).fetchJoin()
-                .where(eqReporterId(reporterId), eqReporteeId(reporteeId))
+                .where(eqReporterId(reporterId), eqReporteeNickname(reporteeNickname))
                 .fetchFirst()); // fetchFirst()로 변경하여 안전성 증가
     }
 
@@ -122,6 +122,10 @@ public class ReportRepositoryCustomImpl implements ReportRepositoryCustom {
 
     private BooleanExpression eqReporteeId(Long userId) {
         return report.reportee.id.eq(userId);
+    }
+
+    private BooleanExpression eqReporteeNickname(String reporteeNickname) {
+        return report.reportee.nickname.eq(reporteeNickname);
     }
 
 

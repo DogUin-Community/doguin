@@ -33,7 +33,7 @@ public class AspectModule {
     public void before(JoinPoint jp) {
         ReportRequest.Report reqReport = (ReportRequest.Report) getArg(jp,1);
         User reportUser = (User) getArg(jp,0);
-        dms.sendMsgReportChannel(reportUser.getId(),reqReport.reporteeId(), reqReport.title(),reqReport.content());
+        dms.sendMsgReportChannel(reportUser.getId(),reqReport.reporteeNickname(), reqReport.title(),reqReport.content());
     }
 
     /**
