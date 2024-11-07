@@ -51,11 +51,11 @@ public class BulletinService implements BoardService {
      */
     @Override
     @Transactional
-    public Board create(User user, BoardCommonRequest boardRequest) {
+    public void create(User user, BoardCommonRequest boardRequest) {
         Board board = new Board(boardRequest.title(), boardRequest.content(), boardType, user);
         Board savedBoard = boardRepository.save(board);
         publisher.publishEvent(new SlackEventClass(user.getId(), user.getNickname(), "(이)가 새 게시물을 등록했습니다."));
-        return boardRepository.save(savedBoard);
+        boardRepository.save(savedBoard);
     }
 
     /**
@@ -73,7 +73,7 @@ public class BulletinService implements BoardService {
      */
     @Override
     @Transactional
-    public Board update(User user,Long boardId, BoardCommonRequest boardRequest) {
+    public void update(User user,Long boardId, BoardCommonRequest boardRequest) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.BULLETIN_NOT_FOUND));
 
@@ -84,7 +84,7 @@ public class BulletinService implements BoardService {
             throw new InvalidRequestException(ApiResponseBoardEnum.BULLETIN_WRONG);
         }
         board.update(boardRequest.title(), boardRequest.content()); // 업데이트 정보 null 처리
-        return board;
+
     }
 
     /**

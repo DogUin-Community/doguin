@@ -39,9 +39,9 @@ public class EventService implements BoardService{
      */
     @Override
     @Transactional
-    public Board create(User user, BoardCommonRequest boardRequest) {
+    public void create(User user, BoardCommonRequest boardRequest) {
         Board board = new Board(boardRequest.title(), boardRequest.content(), boardType,user);
-        return boardRepository.save(board);
+        boardRepository.save(board);
     }
 
     /**
@@ -59,7 +59,7 @@ public class EventService implements BoardService{
      */
     @Override
     @Transactional
-    public Board update(User user,Long boardId, BoardCommonRequest boardRequest) {
+    public void update(User user,Long boardId, BoardCommonRequest boardRequest) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.EVENT_NOT_FOUND));
         if(!board.getUser().getId().equals(user.getId())){
@@ -69,7 +69,7 @@ public class EventService implements BoardService{
             throw new InvalidRequestException(ApiResponseBoardEnum.EVENT_WRONG);
         }
         board.update(boardRequest.title(),boardRequest.content());
-        return board;
+
     }
 
     /**

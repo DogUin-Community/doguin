@@ -41,9 +41,9 @@ public class NoticeService implements BoardService{
      */
     @Override
     @Transactional
-    public Board create(User user, BoardCommonRequest boardRequest) {
+    public void create(User user, BoardCommonRequest boardRequest) {
         Board board = new Board(boardRequest.title(), boardRequest.content(), boardType,user);
-        return boardRepository.save(board);
+        boardRepository.save(board);
     }
 
     /**
@@ -61,7 +61,7 @@ public class NoticeService implements BoardService{
      */
     @Override
     @Transactional
-    public Board update(User user,Long boardId, BoardCommonRequest boardRequest) {
+    public void update(User user,Long boardId, BoardCommonRequest boardRequest) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.NOTICE_NOT_FOUND));
         if(!board.getUser().getId().equals(user.getId())){
@@ -71,7 +71,6 @@ public class NoticeService implements BoardService{
             throw new InvalidRequestException(ApiResponseBoardEnum.NOTICE_WRONG);
         }
         board.update(boardRequest.title(),boardRequest.content());
-        return board;
     }
 
     /**
