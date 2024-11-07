@@ -96,7 +96,7 @@ class OutsourcingServiceTest {
 
             // when
             OutsourcingResponse actual = outsourcingService.getOutsourcing(outsourcingId1);
-            OutsourcingResponse.OutsourcingResponseGetFilePaths actualData = (OutsourcingResponse.OutsourcingResponseGetFilePaths) actual;
+            OutsourcingResponse.OutsourcingResponseGetFilePathAndIds actualData = (OutsourcingResponse.OutsourcingResponseGetFilePathAndIds) actual;
 
 
             // then - 외주 아이디에 대한 데이터로, 각각의 값이 일치하는지 확인
@@ -180,8 +180,8 @@ class OutsourcingServiceTest {
 
             // when
             Page<OutsourcingResponse> actual = outsourcingService.getAllOutsourcing(pageable,area);
-            List<OutsourcingResponse.OutsourcingResponseGetFilePaths> actualData = actual.getContent().stream()
-                    .map(outsourcing -> (OutsourcingResponse.OutsourcingResponseGetFilePaths) outsourcing)
+            List<OutsourcingResponse.OutsourcingResponseGetFilePathAndIds> actualData = actual.getContent().stream()
+                    .map(outsourcing -> (OutsourcingResponse.OutsourcingResponseGetFilePathAndIds) outsourcing)
                     .toList();
 
             // then - 예상한 데이터와, 실제 데이터가 일치하는지 검증
@@ -207,8 +207,8 @@ class OutsourcingServiceTest {
 
             // when
             Page<OutsourcingResponse> actual = outsourcingService.getAllOutsourcing(pageable,area);
-            List<OutsourcingResponse.OutsourcingResponseGetFilePaths> actualData = actual.getContent().stream()
-                    .map(outsourcing -> (OutsourcingResponse.OutsourcingResponseGetFilePaths) outsourcing)
+            List<OutsourcingResponse.OutsourcingResponseGetFilePathAndIds> actualData = actual.getContent().stream()
+                    .map(outsourcing -> (OutsourcingResponse.OutsourcingResponseGetFilePathAndIds) outsourcing)
                     .toList();
 
             // then - 예상한 데이터와, 실제 데이터가 일치하는지 검증

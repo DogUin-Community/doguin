@@ -5,7 +5,6 @@ import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentGetServi
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUpdateService;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
 import com.sparta.doguin.domain.common.exception.OutsourcingException;
-import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.outsourcing.constans.AreaType;
 import com.sparta.doguin.domain.outsourcing.entity.Outsourcing;
 import com.sparta.doguin.domain.outsourcing.model.OutsourcingRequest;
@@ -13,7 +12,6 @@ import com.sparta.doguin.domain.outsourcing.model.OutsourcingResponse;
 import com.sparta.doguin.domain.outsourcing.repository.OutsourcingRepository;
 import com.sparta.doguin.domain.outsourcing.validate.OutsourcingValidator;
 import com.sparta.doguin.domain.user.entity.User;
-import com.sparta.doguin.notification.slack.SlackSendPush;
 import com.sparta.doguin.security.AuthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -24,11 +22,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.sparta.doguin.domain.attachment.constans.AttachmentTargetType.OUTSOURCING;
 import static com.sparta.doguin.domain.common.response.ApiResponseOutsourcingEnum.OUTSOURCING_NOT_FOUND;
-import static com.sparta.doguin.domain.common.response.ApiResponseOutsourcingEnum.OUTSOURCING_SUCCESS;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +36,9 @@ public class OutsourcingServiceImpl implements OutsourcingService {
     private final AttachmentUpdateService attachmentUpdateService;
     private final AttachmentGetService attachmentGetService;
     private final AttachmentDeleteService attachmentDeleteService;
-    private final SlackSendPush slackSendPush;
+
+    private final static List<String> stringEmptyList = new ArrayList<>();
+    private final static List<Long> longEmptyList = new ArrayList<>();
 
 
     /**
@@ -56,7 +56,8 @@ public class OutsourcingServiceImpl implements OutsourcingService {
     public OutsourcingResponse getOutsourcing(Long outsourcingId) {
         Outsourcing outsourcing = findById(outsourcingId);
         List<String> filePaths = attachmentGetService.getAllAttachmentPath(outsourcingId, OUTSOURCING);
-        return OutsourcingResponse.OutsourcingResponseGetFilePaths.of(outsourcing,filePaths);
+        List<Long> fileIds = attachmentGetService.getFileIds(outsourcing.getUser().getId(),outsourcing.getId(),OUTSOURCING);
+        return OutsourcingResponse.OutsourcingResponseGet.of(outsourcing,filePaths,fileIds);
     }
 
     /**
@@ -71,9 +72,10 @@ public class OutsourcingServiceImpl implements OutsourcingService {
      */
     @Transactional
     @Override
-    public ApiResponse<OutsourcingResponse> createOutsourcing(OutsourcingRequest.OutsourcingRequestCreate reqDto, AuthUser authUser, List<MultipartFile> files) {
+    public OutsourcingResponse createOutsourcing(OutsourcingRequest.OutsourcingRequestCreate reqDto, AuthUser authUser, List<MultipartFile> files) {
         OutsourcingValidator.isNotCompany(authUser);
         User user = User.fromAuthUser(authUser);
+
         Outsourcing outsourcing = Outsourcing.builder()
                 .user(user)
                 .title(reqDto.title())
@@ -91,11 +93,9 @@ public class OutsourcingServiceImpl implements OutsourcingService {
         if (files != null) {
             attachmentUploadService.upload(files,authUser,saveOutsourcing.getId(), OUTSOURCING);
             List<Long> fileIds = attachmentGetService.getFileIds(authUser.getUserId(),saveOutsourcing.getId(), OUTSOURCING);
-            OutsourcingResponse.OutsourcingResponseGetIds data = OutsourcingResponse.OutsourcingResponseGetIds.of(outsourcing,fileIds);
-            return ApiResponse.of(OUTSOURCING_SUCCESS,data);
+            return OutsourcingResponse.OutsourcingResponseGet.of(outsourcing, stringEmptyList,fileIds);
         }
-        OutsourcingResponse.OutsourcingResponseGet data = OutsourcingResponse.OutsourcingResponseGet.of(outsourcing);
-        return ApiResponse.of(OUTSOURCING_SUCCESS,data);
+        return OutsourcingResponse.OutsourcingResponseGet.of(outsourcing, stringEmptyList, longEmptyList);
     }
 
     /**
@@ -112,7 +112,7 @@ public class OutsourcingServiceImpl implements OutsourcingService {
     @CacheEvict(value = "outsourcingCache",key = "'outsourcingId'+#outsourcingId")
     @Transactional
     @Override
-    public ApiResponse<Void> updateOutsourcing(Long outsourcingId, OutsourcingRequest.OutsourcingRequestUpdate reqDto, AuthUser authUser,List<MultipartFile> files) {
+    public void updateOutsourcing(Long outsourcingId, OutsourcingRequest.OutsourcingRequestUpdate reqDto, AuthUser authUser,List<MultipartFile> files) {
         OutsourcingValidator.isNotCompany(authUser);
         User user = User.fromAuthUser(authUser);
         Outsourcing findOutsourcing = findById(outsourcingId);
@@ -135,8 +135,6 @@ public class OutsourcingServiceImpl implements OutsourcingService {
         if (files != null){
             attachmentUpdateService.update(files,reqDto.fileIds(),authUser);
         }
-
-        return ApiResponse.of(OUTSOURCING_SUCCESS);
     }
 
     /**
@@ -151,7 +149,7 @@ public class OutsourcingServiceImpl implements OutsourcingService {
      */
     @Transactional
     @Override
-    public ApiResponse<Void> deleteOutsourcing(Long outsourcingId, AuthUser authUser) {
+    public void deleteOutsourcing(Long outsourcingId, AuthUser authUser) {
         OutsourcingValidator.isNotCompany(authUser);
         User user = User.fromAuthUser(authUser);
         Outsourcing outsourcing = findById(outsourcingId);
@@ -159,7 +157,6 @@ public class OutsourcingServiceImpl implements OutsourcingService {
         List<Long> fileIds = attachmentGetService.getFileIds(authUser.getUserId(),outsourcing.getId(), OUTSOURCING);
         attachmentDeleteService.delete(authUser,fileIds);
         outsourcingRepository.delete(outsourcing);
-        return ApiResponse.of(OUTSOURCING_SUCCESS);
     }
 
     /**
@@ -170,7 +167,6 @@ public class OutsourcingServiceImpl implements OutsourcingService {
      * @since 1.0
      * @author 김경민
      */
-    @Cacheable(value = "outsourcingCache",key = "'outsourcingPage'+#pageable.pageNumber")
     @Transactional(readOnly = true)
     @Override
     public Page<OutsourcingResponse> getAllOutsourcing(Pageable pageable, AreaType area) {
@@ -183,7 +179,8 @@ public class OutsourcingServiceImpl implements OutsourcingService {
 
         return pageOutsourcing.map(po -> {
             List<String> filePaths = attachmentGetService.getAllAttachmentPath(po.getId(), OUTSOURCING);
-            return OutsourcingResponse.OutsourcingResponseGetFilePaths.of(po,filePaths);
+            List<Long> fileIds = attachmentGetService.getFileIds(po.getUser().getId(),po.getId(), OUTSOURCING);
+            return OutsourcingResponse.OutsourcingResponseGet.of(po,filePaths,fileIds);
         });
     }
 
@@ -198,12 +195,15 @@ public class OutsourcingServiceImpl implements OutsourcingService {
      * @since 1.0
      * @author 김경민
      */
-    @Cacheable(value = "outsourcingCache",key = "'outsourcingPage'+#pageable.pageNumber")
     @Transactional(readOnly = true)
     @Override
     public Page<OutsourcingResponse> search(Pageable pageable, String title, String nickname, String content) {
         Page<Outsourcing> search = outsourcingRepository.search(title, content, nickname, pageable);
-        return search.map(OutsourcingResponse.OutsourcingResponseGet::of);
+        return search.map(po -> {
+            List<String> filePaths = attachmentGetService.getAllAttachmentPath(po.getId(), OUTSOURCING);
+            List<Long> fileIds = attachmentGetService.getFileIds(po.getUser().getId(),po.getId(), OUTSOURCING);
+            return OutsourcingResponse.OutsourcingResponseGet.of(po,filePaths,fileIds);
+        });
     }
 
     /**

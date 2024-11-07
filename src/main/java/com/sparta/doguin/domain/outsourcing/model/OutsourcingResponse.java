@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public sealed interface OutsourcingResponse permits OutsourcingResponse.OutsourcingResponseGet, OutsourcingResponse.OutsourcingResponseGetIds, OutsourcingResponse.OutsourcingResponseGetFilePaths {
+public sealed interface OutsourcingResponse permits OutsourcingResponse.OutsourcingResponseGet, OutsourcingResponse.OutsourcingResponseGetIds, OutsourcingResponse.OutsourcingResponseGetFilePathAndIds {
     record OutsourcingResponseGet(
             Long id,
             Long userId,
@@ -22,9 +22,12 @@ public sealed interface OutsourcingResponse permits OutsourcingResponse.Outsourc
             LocalDateTime work_end_date,
             AreaType area,
             LocalDateTime createdAt,
-            LocalDateTime updatedAt
+            LocalDateTime updatedAt,
+            List<String> filePaths,
+            List<Long> fileIds,
+            String nickname
     ) implements OutsourcingResponse, Serializable {
-        public static OutsourcingResponseGet of(Outsourcing outsourcing) {
+        public static OutsourcingResponseGet of(Outsourcing outsourcing, List<String> filePaths, List<Long> fileIds) {
             return new OutsourcingResponseGet(
                     outsourcing.getId(),
                     outsourcing.getUser().getId(),
@@ -39,7 +42,11 @@ public sealed interface OutsourcingResponse permits OutsourcingResponse.Outsourc
                     outsourcing.getWork_end_date(),
                     outsourcing.getArea(),
                     outsourcing.getCreatedAt(),
-                    outsourcing.getUpdatedAt()
+                    outsourcing.getUpdatedAt(),
+                    filePaths,
+                    fileIds,
+                    outsourcing.getUser().getNickname()
+
             );
         }
     }
@@ -80,7 +87,7 @@ public sealed interface OutsourcingResponse permits OutsourcingResponse.Outsourc
             );
         }
     }
-    record OutsourcingResponseGetFilePaths(
+    record OutsourcingResponseGetFilePathAndIds(
             Long id,
             Long userId,
             String title,
@@ -95,10 +102,11 @@ public sealed interface OutsourcingResponse permits OutsourcingResponse.Outsourc
             AreaType area,
             LocalDateTime createdAt,
             LocalDateTime updatedAt,
-            List<String> filePaths
+            List<String> filePaths,
+            List<Long> fileIds
     ) implements OutsourcingResponse,Serializable {
-        public static OutsourcingResponseGetFilePaths of(Outsourcing outsourcing, List<String> filePaths) {
-            return new OutsourcingResponseGetFilePaths(
+        public static OutsourcingResponseGetFilePathAndIds of(Outsourcing outsourcing, List<String> filePaths, List<Long> fileIds) {
+            return new OutsourcingResponseGetFilePathAndIds(
                     outsourcing.getId(),
                     outsourcing.getUser().getId(),
                     outsourcing.getTitle(),
@@ -113,7 +121,8 @@ public sealed interface OutsourcingResponse permits OutsourcingResponse.Outsourc
                     outsourcing.getArea(),
                     outsourcing.getCreatedAt(),
                     outsourcing.getUpdatedAt(),
-                    filePaths
+                    filePaths,
+                    fileIds
             );
         }
     }

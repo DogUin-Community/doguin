@@ -9,6 +9,7 @@ import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUpdateSe
 import com.sparta.doguin.domain.attachment.service.s3.S3Service;
 import com.sparta.doguin.domain.attachment.validate.AttachmentValidator;
 import com.sparta.doguin.domain.common.exception.FileException;
+import com.sparta.doguin.domain.user.entity.User;
 import com.sparta.doguin.security.AuthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -48,6 +49,16 @@ public class AttachmentUpdateServiceImpl implements AttachmentUpdateService {
         updateAttachmentsWithNewFiles(prvAattachments,updateFiles,authUser);
     }
 
+    @Transactional
+    @Override
+    public void update(List<MultipartFile> updateFiles, List<Long> fileIds, User user) {
+        List<Attachment> prvAattachments = attachmentGetService.getFiles(fileIds);
+        AttachmentValidator.isCountEqual(fileIds.size(), prvAattachments.size());
+        updateAttachmentsWithNewFiles(prvAattachments,updateFiles,user);
+    }
+
+
+
     /**
      * @title 새로운 파일을 S3에 저장시키고, 기존 파일은 S3에서 삭제, DB에서 삭제 시키는 메서드
      *
@@ -68,6 +79,40 @@ public class AttachmentUpdateServiceImpl implements AttachmentUpdateService {
             AttachmentValidator.isMe(authUser.getUserId(), originAttachment.getUser().getId());
             AttachmentValidator.isSizeBig(updateFile);
             String path = pathService.mkPath(updateFile, authUser, originAttachment.getTargetId(), originAttachment.getTarget());
+            String fullPath = pathService.mkfullPath(path);
+            Attachment attachment = new Attachment(
+                    originAttachment.getId(),
+                    originAttachment.getUser(),
+                    originAttachment.getTargetId(),
+                    fullPath,
+                    path,
+                    updateFile.getOriginalFilename(),
+                    updateFile.getSize(),
+                    originAttachment.getTarget()
+            );
+            paths.add(path);
+            try {
+                fileBytesList.add(updateFile.getBytes());
+            } catch (Exception e){
+                throw new FileException(FILE_IO_ERROR);
+            }
+            attachmentRepository.save(attachment);
+        }
+        s3Service.uploadAllAsync(paths,fileBytesList);
+        s3Service.deleteAllAsync(prvAattachments);
+    }
+
+    @Transactional
+    protected void updateAttachmentsWithNewFiles(List<Attachment> prvAattachments,List<MultipartFile> updateAttachments,User user) {
+        List<byte[]> fileBytesList = new ArrayList<>();
+        List<String> paths = new ArrayList<>();
+        for (int i = 0; i < prvAattachments.size(); i++) {
+            Attachment originAttachment = prvAattachments.get(i);
+            MultipartFile updateFile = updateAttachments.get(i);
+            AttachmentValidator.isInExtension(updateFile);
+            AttachmentValidator.isMe(user.getId(), originAttachment.getUser().getId());
+            AttachmentValidator.isSizeBig(updateFile);
+            String path = pathService.mkPath(updateFile, user, originAttachment.getTargetId(), originAttachment.getTarget());
             String fullPath = pathService.mkfullPath(path);
             Attachment attachment = new Attachment(
                     originAttachment.getId(),
