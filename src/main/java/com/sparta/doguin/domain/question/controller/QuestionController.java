@@ -52,6 +52,12 @@ public class QuestionController {
         return ApiResponse.of(questionService.updatedQuestion(authUser, questionId, request));
     }
 
+    @PutMapping("/{questionId}/accept")
+    public ResponseEntity<ApiResponse<Void>> acceptQuestion(@AuthenticationPrincipal AuthUser authUser,
+                                                            @PathVariable Long questionId) {
+        return ApiResponse.of(questionService.acceptQuestion(authUser, questionId));
+    }
+
     /**
      * 질문 전체 조회
      *
