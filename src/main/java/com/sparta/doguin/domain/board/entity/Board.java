@@ -29,6 +29,7 @@ public class Board extends Timestamped {
 
     private Long view;
 
+
     public Board(Long id, String title, String content) {
         this.id = id;
         this.title = title;

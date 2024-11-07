@@ -2,6 +2,10 @@ package com.sparta.doguin.domain.board.service;
 
 import com.sparta.doguin.domain.answer.dto.AnswerResponse;
 import com.sparta.doguin.domain.answer.service.BulletinAnswerService;
+import com.sparta.doguin.domain.attachment.constans.AttachmentTargetType;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentGetService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUpdateService;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
 import com.sparta.doguin.domain.board.BoardType;
 import com.sparta.doguin.domain.board.dto.BoardRequest.BoardCommonRequest;
@@ -42,8 +46,13 @@ public class BulletinService implements BoardService {
     private final BoardRepository boardRepository;
     private final BulletinAnswerService bulletinAnswerService;
     private final PopularService popularService;
+
     private final ApplicationEventPublisher publisher;
+
     private final AttachmentUploadService attachmentUploadService;
+    private final AttachmentGetService attachmentGetService;
+    private final AttachmentUpdateService attachmentUpdateService;
+    private final AttachmentDeleteService attachmentDeleteService;
 
     private final BoardType boardType = BoardType.BOARD_BULLETIN;
 
@@ -57,15 +66,14 @@ public class BulletinService implements BoardService {
      */
     @Override
     @Transactional
-    public Board create(User user, BoardCommonRequest boardRequest, List<MultipartFile> files) {
+    public void create(User user, BoardCommonRequest boardRequest, List<MultipartFile> files) {
         Board board = new Board(boardRequest.title(), boardRequest.content(), boardType, user);
         Board savedBoard = boardRepository.save(board);
         if(files != null){
-            attachmentUploadService.upload(files,authUser,savedBoard.getId(), BULLETIN);
-            List<Long> fileIds = attachmentGetService.getFileIds(authUser.getUserId(),savedBoard.getId(), BULLETIN);
+            attachmentUploadService.upload(files,user,savedBoard.getId(), BULLETIN); // 이미지 저장
         }
         publisher.publishEvent(new SlackEventClass(user.getId(), user.getNickname(), "(이)가 새 게시물을 등록했습니다."));
-        return boardRepository.save(savedBoard);
+
     }
 
     /**
@@ -83,7 +91,7 @@ public class BulletinService implements BoardService {
      */
     @Override
     @Transactional
-    public Board update(User user,Long boardId, BoardCommonRequest boardRequest, List<MultipartFile> files) {
+    public void update(User user,Long boardId, BoardCommonRequest boardRequest, List<MultipartFile> files) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.BULLETIN_NOT_FOUND));
 
@@ -93,8 +101,10 @@ public class BulletinService implements BoardService {
         if (board.getBoardType() != boardType) {
             throw new InvalidRequestException(ApiResponseBoardEnum.BULLETIN_WRONG);
         }
+//        if (files != null) {
+//            attachmentUpdateService.update();
+//        }
         board.update(boardRequest.title(), boardRequest.content()); // 업데이트 정보 null 처리
-        return board;
     }
 
     /**
@@ -117,6 +127,8 @@ public class BulletinService implements BoardService {
             throw new InvalidRequestException(ApiResponseBoardEnum.BULLETIN_WRONG);
         }
 
+        List<String> filePaths = attachmentGetService.getAllAttachmentPath(board.getUser().getId(), board.getId(), BULLETIN);
+
         Page<AnswerResponse.Response> responses = bulletinAnswerService.findByBoardId(boardId,PageRequest.of(0,10));
 
         if(user!=null){
@@ -125,7 +137,7 @@ public class BulletinService implements BoardService {
 
         Long viewCount = popularService.getHourUniqueViewCount(boardId)+board.getView(); // 한시간 조회수 + 누적 조회수 로 토탈 조회수
 
-        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(),viewCount, responses);
+        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(),viewCount, filePaths,responses);
     }
 
     /**
@@ -193,6 +205,9 @@ public class BulletinService implements BoardService {
         if (board.getBoardType() != boardType) {
             throw new InvalidRequestException(ApiResponseBoardEnum.BULLETIN_WRONG);
         }
+
+        List<Long> fileIds = attachmentGetService.getFileIds(board.getUser().getId(), board.getId(), BULLETIN);
+        attachmentDeleteService.delete(user,fileIds);
 
         boardRepository.delete(board);
     }

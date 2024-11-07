@@ -2,6 +2,10 @@ package com.sparta.doguin.domain.board.service;
 
 import com.sparta.doguin.domain.answer.dto.AnswerResponse;
 import com.sparta.doguin.domain.answer.service.NoticeAnswerService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentGetService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUpdateService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
 import com.sparta.doguin.domain.board.BoardType;
 import com.sparta.doguin.domain.board.dto.BoardRequest.BoardCommonRequest;
 import com.sparta.doguin.domain.board.dto.BoardResponse;
@@ -22,6 +26,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import static com.sparta.doguin.domain.attachment.constans.AttachmentTargetType.BULLETIN;
+import static com.sparta.doguin.domain.attachment.constans.AttachmentTargetType.EVENT;
+
 @Service
 @RequiredArgsConstructor
 public class EventService implements BoardService{
@@ -29,6 +36,11 @@ public class EventService implements BoardService{
     private final BoardRepository boardRepository;
     private final NoticeAnswerService noticeAnswerService;
     private final PopularService popularService;
+
+    private final AttachmentUploadService attachmentUploadService;
+    private final AttachmentGetService attachmentGetService;
+    private final AttachmentUpdateService attachmentUpdateService;
+    private final AttachmentDeleteService attachmentDeleteService;
 
     private final BoardType boardType = BoardType.BOARD_EVENT;
 
@@ -42,9 +54,13 @@ public class EventService implements BoardService{
      */
     @Override
     @Transactional
-    public Board create(User user, BoardCommonRequest boardRequest, List<MultipartFile> files) {
+    public void create(User user, BoardCommonRequest boardRequest, List<MultipartFile> files) {
         Board board = new Board(boardRequest.title(), boardRequest.content(), boardType,user);
-        return boardRepository.save(board);
+        Board savedBoard = boardRepository.save(board);
+
+        if(files != null){
+            attachmentUploadService.upload(files,user,savedBoard.getId(),EVENT); // 이미지 저장
+        }
     }
 
     /**
@@ -62,7 +78,7 @@ public class EventService implements BoardService{
      */
     @Override
     @Transactional
-    public Board update(User user,Long boardId, BoardCommonRequest boardRequest, List<MultipartFile> files) {
+    public void update(User user,Long boardId, BoardCommonRequest boardRequest, List<MultipartFile> files) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.EVENT_NOT_FOUND));
         if(!board.getUser().getId().equals(user.getId())){
@@ -72,7 +88,7 @@ public class EventService implements BoardService{
             throw new InvalidRequestException(ApiResponseBoardEnum.EVENT_WRONG);
         }
         board.update(boardRequest.title(),boardRequest.content());
-        return board;
+
     }
 
     /**
@@ -86,8 +102,6 @@ public class EventService implements BoardService{
      * @author 김창민
      * @since 1.0
      */
-
-
     @Override
     public BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId, User user) {
         Board board = boardRepository.findById(boardId)
@@ -96,6 +110,8 @@ public class EventService implements BoardService{
             throw new InvalidRequestException(ApiResponseBoardEnum.EVENT_WRONG);
         }
 
+        List<String> filePaths = attachmentGetService.getAllAttachmentPath(board.getUser().getId(), board.getId(), EVENT);
+
         Page<AnswerResponse.Response> responses = noticeAnswerService.findByBoardId(boardId,PageRequest.of(0,10));
 
         if(user!=null){
@@ -103,7 +119,7 @@ public class EventService implements BoardService{
         }
 
         Long viewCount = popularService.getHourUniqueViewCount(boardId)+board.getView();
-        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(),viewCount, responses);
+        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(),viewCount, filePaths, responses);
     }
 
     /**
@@ -172,6 +188,10 @@ public class EventService implements BoardService{
         if(board.getBoardType()!=boardType){
             throw new InvalidRequestException(ApiResponseBoardEnum.EVENT_WRONG);
         }
+
+        List<Long> fileIds = attachmentGetService.getFileIds(board.getUser().getId(), board.getId(), BULLETIN);
+        attachmentDeleteService.delete(user,fileIds);
+
         boardRepository.delete(board);
     }
 

@@ -29,19 +29,18 @@ public class EventController{
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<BoardCommonResponse>> create(@AuthenticationPrincipal AuthUser authUser, @RequestBody BoardCommonRequest boardRequest,@RequestPart(required = false) List<MultipartFile> files){
+    public ResponseEntity<ApiResponse<Void>> create(@AuthenticationPrincipal AuthUser authUser, @RequestBody BoardCommonRequest boardRequest,@RequestPart(required = false) List<MultipartFile> files){
         User user = User.fromAuthUser(authUser);
-        Board board = boardService.create(user, boardRequest,files);
-        BoardCommonResponse response = new BoardCommonResponse(board.getId(),board.getTitle());
-        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.EVENT_CREATE_SUCCESS, response));
+        boardService.create(user, boardRequest,files);
+
+        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.EVENT_CREATE_SUCCESS));
     }
 
     @PutMapping("{boardId}")
-    public ResponseEntity<ApiResponse<BoardCommonResponse>> update(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long boardId,@RequestBody BoardCommonRequest boardRequest,@RequestPart(required = false) List<MultipartFile> files) {
+    public ResponseEntity<ApiResponse<Void>> update(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long boardId,@RequestBody BoardCommonRequest boardRequest,@RequestPart(required = false) List<MultipartFile> files) {
         User user = User.fromAuthUser(authUser);
-        Board board = boardService.update(user, boardId, boardRequest,files);
-        BoardCommonResponse response = new BoardCommonResponse(board.getId(),board.getTitle());
-        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.EVENT_UPDATE_SUCCESS, response));
+        boardService.update(user, boardId, boardRequest,files);
+        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.EVENT_UPDATE_SUCCESS));
     }
 
     @GetMapping("{boardId}")

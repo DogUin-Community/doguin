@@ -13,10 +13,10 @@ import java.util.List;
 public interface BoardService {
 
     // 게시글 생성
-    Board create(User user, BoardCommonRequest boardRequest, List<MultipartFile> files);
+    void create(User user, BoardCommonRequest boardRequest, List<MultipartFile> files);
 
     // 게시글 수정
-    Board update(User user, Long boardId, BoardCommonRequest boardRequest, List<MultipartFile> files);
+    void update(User user, Long boardId, BoardCommonRequest boardRequest, List<MultipartFile> files);
 
     // 게시글 단일 조회
     BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId,User user);
