@@ -8,13 +8,12 @@ import com.sparta.doguin.security.AuthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
-@RequestMapping("/follows")
+@RestController
+@RequestMapping("/api/v1/follows")
 @RequiredArgsConstructor
 public class FollowController {
     private final FollowService followService;

@@ -1,12 +1,12 @@
 package com.sparta.doguin.domain.portfolio.controller;
 
-import com.sparta.doguin.domain.common.response.ApiResponsePortfolioEnum;
-import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.common.response.ApiResponse;
+import com.sparta.doguin.domain.common.response.ApiResponsePortfolioEnum;
 import com.sparta.doguin.domain.outsourcing.constans.AreaType;
 import com.sparta.doguin.domain.portfolio.model.PortfolioRequest;
 import com.sparta.doguin.domain.portfolio.model.PortfolioResponse;
 import com.sparta.doguin.domain.portfolio.service.PortfolioService;
+import com.sparta.doguin.security.AuthUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -17,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,9 +24,8 @@ import java.util.List;
 
 @Tag(name = "포트폴리오 API",description = "포트폴리오 관련된 API를 확인 할 수 있습니다")
 @RestController
-@Controller
 @RequiredArgsConstructor
-@RequestMapping("/portfolios")
+@RequestMapping("/api/v1/portfolios")
 public class PortfolioController {
     private final PortfolioService portfolioService;
 
