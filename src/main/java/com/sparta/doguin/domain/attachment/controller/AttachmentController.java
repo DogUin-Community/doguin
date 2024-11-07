@@ -1,6 +1,5 @@
 package com.sparta.doguin.domain.attachment.controller;
 
-import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.attachment.constans.AttachmentTargetType;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteService;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDownloadService;
@@ -8,22 +7,21 @@ import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUpdateSe
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseFileEnum;
+import com.sparta.doguin.security.AuthUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@Controller
 @Tag(name = "파일 API",description = "파일 관련된 API를 확인 할 수 있습니다")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/attachments")
+@RequestMapping("/api/v1/attachments")
 public class AttachmentController {
     private final AttachmentUploadService attachmentUploadService;
     private final AttachmentDownloadService attachmentDownloadService;
