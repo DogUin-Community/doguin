@@ -109,7 +109,7 @@ public class ReportService {
                 () -> new HandleNotFound(ApiResponseReportEnum.REPORT_NOT_FOUND)
         );
 
-        return new ReportResponse.ReportView(report.getId(),report.getTitle(),report.getReportee().getNickname(),report.getReportType());
+        return new ReportResponse.ReportView(user.getId(),report.getId(),report.getTitle(),report.getReportee().getNickname(),report.getReportType());
     }
 
     /**

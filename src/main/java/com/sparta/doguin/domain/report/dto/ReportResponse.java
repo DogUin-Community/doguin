@@ -4,7 +4,8 @@ import com.sparta.doguin.domain.report.ReportType;
 
 public sealed interface ReportResponse permits ReportResponse.ReportView,ReportResponse.ReportTotalView{
     record ReportView(
-            Long id,
+            Long reporterId,
+            Long reporteeId,
             String title,
             String nickName,
             ReportType reportType

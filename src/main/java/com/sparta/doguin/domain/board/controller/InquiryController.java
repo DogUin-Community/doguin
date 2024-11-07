@@ -14,6 +14,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 
@@ -27,17 +30,17 @@ public class InquiryController{
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<BoardCommonResponse>> create(@AuthenticationPrincipal AuthUser authUser,@RequestBody BoardCommonRequest boardRequest){
+    public ResponseEntity<ApiResponse<BoardCommonResponse>> create(@AuthenticationPrincipal AuthUser authUser,@RequestBody BoardCommonRequest boardRequest,@RequestPart(required = false) List<MultipartFile> files){
         User user = User.fromAuthUser(authUser);
-        Board board = boardService.create(user,boardRequest);
+        Board board = boardService.create(user,boardRequest,files);
         BoardCommonResponse response = new BoardCommonResponse(board.getId(),board.getTitle());
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.INQUIRY_CREATE_SUCCESS, response));
     }
 
     @PutMapping("{boardId}")
-    public ResponseEntity<ApiResponse<BoardCommonResponse>> update(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long boardId,@RequestBody BoardCommonRequest boardRequest) {
+    public ResponseEntity<ApiResponse<BoardCommonResponse>> update(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long boardId,@RequestBody BoardCommonRequest boardRequest,@RequestPart(required = false) List<MultipartFile> files) {
         User user = User.fromAuthUser(authUser);
-        Board board = boardService.update(user, boardId, boardRequest);
+        Board board = boardService.update(user, boardId, boardRequest,files);
         BoardCommonResponse response = new BoardCommonResponse(board.getId(),board.getTitle());
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.INQUIRY_UPDATE_SUCCESS, response));
     }

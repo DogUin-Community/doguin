@@ -23,13 +23,21 @@ public class ReportController {
         this.reportService = reportService;
     }
 
-    // 신고하기
+//     신고하기
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> report(@AuthenticationPrincipal AuthUser authUser, @RequestBody ReportRequest.Report reportRequest) {
         User user = User.fromAuthUser(authUser);
         reportService.report(user, reportRequest);
         return ApiResponse.of(ApiResponse.of(ApiResponseReportEnum.REPORT_RECEIVED_SUCCESS));
     }
+
+//    @PostMapping
+//    public String report(@AuthenticationPrincipal AuthUser authUser, @RequestBody ReportRequest.Report reportRequest) {
+//        User user = User.fromAuthUser(authUser);
+//        reportService.report(user, reportRequest);
+//        return "report/report_user_home";
+//    }
+
 
     // 신고 승인 (admin only)
     @PutMapping("/{reportId}/accept")

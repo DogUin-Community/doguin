@@ -6,14 +6,17 @@ import com.sparta.doguin.domain.board.dto.BoardResponse.BoardCommonResponse;
 import com.sparta.doguin.domain.board.entity.Board;
 import com.sparta.doguin.domain.user.entity.User;
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 public interface BoardService {
 
     // 게시글 생성
-    Board create(User user, BoardCommonRequest boardRequest);
+    Board create(User user, BoardCommonRequest boardRequest, List<MultipartFile> files);
 
     // 게시글 수정
-    Board update(User user, Long boardId, BoardCommonRequest boardRequest);
+    Board update(User user, Long boardId, BoardCommonRequest boardRequest, List<MultipartFile> files);
 
     // 게시글 단일 조회
     BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId,User user);

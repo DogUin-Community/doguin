@@ -18,6 +18,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +42,7 @@ public class EventService implements BoardService{
      */
     @Override
     @Transactional
-    public Board create(User user, BoardCommonRequest boardRequest) {
+    public Board create(User user, BoardCommonRequest boardRequest, List<MultipartFile> files) {
         Board board = new Board(boardRequest.title(), boardRequest.content(), boardType,user);
         return boardRepository.save(board);
     }
@@ -59,7 +62,7 @@ public class EventService implements BoardService{
      */
     @Override
     @Transactional
-    public Board update(User user,Long boardId, BoardCommonRequest boardRequest) {
+    public Board update(User user,Long boardId, BoardCommonRequest boardRequest, List<MultipartFile> files) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.EVENT_NOT_FOUND));
         if(!board.getUser().getId().equals(user.getId())){

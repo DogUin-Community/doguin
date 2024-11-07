@@ -2,6 +2,7 @@ package com.sparta.doguin.domain.board.service;
 
 import com.sparta.doguin.domain.answer.dto.AnswerResponse;
 import com.sparta.doguin.domain.answer.service.BulletinAnswerService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
 import com.sparta.doguin.domain.board.BoardType;
 import com.sparta.doguin.domain.board.dto.BoardRequest.BoardCommonRequest;
 import com.sparta.doguin.domain.board.dto.BoardResponse;
@@ -24,10 +25,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.sparta.doguin.domain.attachment.constans.AttachmentTargetType.BULLETIN;
+import static com.sparta.doguin.domain.attachment.constans.AttachmentTargetType.OUTSOURCING;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +43,7 @@ public class BulletinService implements BoardService {
     private final BulletinAnswerService bulletinAnswerService;
     private final PopularService popularService;
     private final ApplicationEventPublisher publisher;
+    private final AttachmentUploadService attachmentUploadService;
 
     private final BoardType boardType = BoardType.BOARD_BULLETIN;
 
@@ -51,9 +57,13 @@ public class BulletinService implements BoardService {
      */
     @Override
     @Transactional
-    public Board create(User user, BoardCommonRequest boardRequest) {
+    public Board create(User user, BoardCommonRequest boardRequest, List<MultipartFile> files) {
         Board board = new Board(boardRequest.title(), boardRequest.content(), boardType, user);
         Board savedBoard = boardRepository.save(board);
+        if(files != null){
+            attachmentUploadService.upload(files,authUser,savedBoard.getId(), BULLETIN);
+            List<Long> fileIds = attachmentGetService.getFileIds(authUser.getUserId(),savedBoard.getId(), BULLETIN);
+        }
         publisher.publishEvent(new SlackEventClass(user.getId(), user.getNickname(), "(이)가 새 게시물을 등록했습니다."));
         return boardRepository.save(savedBoard);
     }
@@ -73,7 +83,7 @@ public class BulletinService implements BoardService {
      */
     @Override
     @Transactional
-    public Board update(User user,Long boardId, BoardCommonRequest boardRequest) {
+    public Board update(User user,Long boardId, BoardCommonRequest boardRequest, List<MultipartFile> files) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.BULLETIN_NOT_FOUND));
 
