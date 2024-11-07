@@ -1,6 +1,7 @@
 package com.sparta.doguin.domain.attachment.service.impl;
 
 
+import com.sparta.doguin.domain.user.entity.User;
 import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.attachment.entity.Attachment;
 import com.sparta.doguin.domain.attachment.repository.AttachmentRepository;
@@ -34,6 +35,19 @@ public class AttachmentDeleteServiceImpl implements AttachmentDeleteService {
         for ( int i=0 ;i<attachments.size(); i++ ){
             Attachment attachment = attachments.get(i);
             AttachmentValidator.isMe(authUser.getUserId(),attachment.getUser().getId());
+            attachmentRepository.delete(attachment);
+        }
+        s3Service.deleteAllAsync(attachments);
+    }
+
+    @Transactional
+    @Override
+    public void delete(User user, List<Long> attachmentIds) {
+        List<Attachment> attachments = attachmentRepository.findAllByAttachment(attachmentIds);
+        AttachmentValidator.isCountEqual(attachmentIds.size(),attachments.size());
+        for ( int i=0 ;i<attachments.size(); i++ ){
+            Attachment attachment = attachments.get(i);
+            AttachmentValidator.isMe(user.getId(),attachment.getUser().getId());
             attachmentRepository.delete(attachment);
         }
         s3Service.deleteAllAsync(attachments);
