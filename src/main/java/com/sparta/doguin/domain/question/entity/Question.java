@@ -101,4 +101,9 @@ public class Question {
     public void changeTotalViewCount(Long now , Long today){
         this.view = now + today;
     }
+
+    // 채택
+    public void accept(QuestionStatus status) {
+        this.questionStatus = status;
+    }
 }
