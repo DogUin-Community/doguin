@@ -25,7 +25,6 @@ spring:
       port: ${REDIS_PORT}
       host: ${REDIS_HOST}
       password: ${REDIS_PASSWORD}
-  date:
     mongodb:
       host: ${MONGO_HOST}
       port: ${MONGO_PORT}
