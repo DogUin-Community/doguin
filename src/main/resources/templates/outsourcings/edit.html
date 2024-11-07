@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>외주 수정</title>
+    <!-- <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico"> -->
+
+    <!-- css -->
+    <link rel="stylesheet" href="/css/reset.css">
+    <link rel="stylesheet" href="/css/content.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/component.css">
+    <!-- //css -->
+
+    <!-- script -->
+    <script src="/js/jquery-1.11.3.min.js"></script>
+    <script src="/js/jquery.easing.1.3.js"></script>
+    <!-- //script -->
+</head>
+<body>
+
+<header>
+    <h1>외주 수정</h1>
+</header>
+
+<main>
+    <form id="outsourcingForm" enctype="multipart/form-data">
+        <!-- 숨겨진 필드에 outsourcingId 추가 -->
+        <input type="hidden" id="outsourcingId" name="outsourcingId" th:value="${outsourcing.id}" />
+
+        <!-- 랜덤 데이터 채우기 버튼 -->
+        <button type="button" onclick="fillRandomData()">랜덤 데이터 채우기</button>
+
+        <section>
+            <h2>기본 정보</h2>
+            <label for="title">제목:</label>
+            <input type="text" id="title" name="title" th:value="${outsourcing.title}" required />
+
+            <label for="content">설명:</label>
+            <textarea id="content" name="content" required th:text="${outsourcing.content}"></textarea>
+        </section>
+
+        <section>
+            <h2>상세 정보</h2>
+            <label for="preferential">우대 사항:</label>
+            <input type="text" id="preferential" name="preferential" th:value="${outsourcing.preferential}" required />
+
+            <label for="work_type">작업 유형:</label>
+            <input type="text" id="work_type" name="work_type" th:value="${outsourcing.work_type}" required />
+
+            <label for="price">예산:</label>
+            <input type="number" id="price" name="price" min="10000" th:value="${outsourcing.price}" required />
+        </section>
+
+        <section>
+            <h2>일정 정보</h2>
+            <label for="recruit_start_date">모집 시작 날짜:</label>
+            <input type="date" id="recruit_start_date" name="recruit_start_date" th:value="${#temporals.format(outsourcing.recruit_start_date, 'yyyy-MM-dd')}" required />
+
+            <label for="recruit_end_date">모집 종료 날짜:</label>
+            <input type="date" id="recruit_end_date" name="recruit_end_date" th:value="${#temporals.format(outsourcing.recruit_end_date, 'yyyy-MM-dd')}" required />
+
+            <label for="work_start_date">작업 시작 날짜:</label>
+            <input type="date" id="work_start_date" name="work_start_date" th:value="${#temporals.format(outsourcing.work_start_date, 'yyyy-MM-dd')}" required />
+
+            <label for="work_end_date">작업 종료 날짜:</label>
+            <input type="date" id="work_end_date" name="work_end_date" th:value="${#temporals.format(outsourcing.work_end_date, 'yyyy-MM-dd')}" required />
+        </section>
+
+        <section>
+            <h2>지역 및 파일 업로드</h2>
+            <label for="area">지역:</label>
+            <select id="area" name="area" required>
+                <option value="" disabled>지역 선택</option>
+                <option th:each="area : ${T(com.sparta.doguin.domain.outsourcing.constans.AreaType).values()}"
+                        th:value="${area.name()}"
+                        th:text="${area.description}"
+                        th:selected="${area.name()} == ${outsourcing.area}">지역 선택</option>
+            </select>
+
+            <label for="files">파일 업로드:</label>
+            <input type="file" id="files" name="files" multiple />
+        </section>
+
+        <section>
+            <h2>수정할 파일 선택</h2>
+            <div id="file-ids-container">
+                <ul>
+                    <!-- 파일 ID 목록 표시 및 체크박스 추가 -->
+                    <li th:each="fileId : ${outsourcing.fileIds}">
+                        <label>
+                            <input type="checkbox" name="fileIds" th:value="${fileId}" />
+                            파일 ID: <span th:text="${fileId}">파일 ID</span>
+                        </label>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <div style="text-align: center; margin-top: 1.5em;">
+            <!-- 버튼의 onclick 이벤트를 updateForm으로 변경 -->
+            <button type="button" onclick="updateForm()">외주 수정</button>
+        </div>
+    </form>
+</main>
+
+<footer style="text-align: center; margin-top: 2em;">
+    <p>&copy; 2024 외주 플랫폼. 모든 권리 보유.</p>
+</footer>
+
+<script>
+    const token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiZW1haWwiOiJ0ZXN0QG5hdmVyLmNvbSIsIm5pY2tuYW1lIjoi65S46riwIiwidXNlclR5cGUiOiJDT01QQU5ZIiwidXNlclJvbGUiOiJST0xFX1VTRVIiLCJleHAiOjE3MzA5NDkwMjUsImlhdCI6MTczMDk0NTQyNX0.8Pk5-EVtnU6f39tZ_9-zK8rQHgoETxE3-uRxQudWyWg";
+    // 랜덤 데이터 채우기 함수 (기존과 동일)
+    function fillRandomData() {
+        document.getElementById("title").value = "랜덤 프로젝트 제목 " + Math.floor(Math.random() * 100);
+        document.getElementById("content").value = "이것은 랜덤 설명입니다. 예시 텍스트를 사용하고 있습니다.";
+        document.getElementById("preferential").value = "우대사항 예시";
+        document.getElementById("work_type").value = "프리랜서";
+        document.getElementById("price").value = Math.floor(Math.random() * 50000) + 10000;
+
+        const today = new Date();
+        document.getElementById("recruit_start_date").value = new Date(today).toISOString().split('T')[0];
+        document.getElementById("recruit_end_date").value = new Date(today.setDate(today.getDate() + 10)).toISOString().split('T')[0];
+        document.getElementById("work_start_date").value = new Date(today.setDate(today.getDate() + 5)).toISOString().split('T')[0];
+        document.getElementById("work_end_date").value = new Date(today.setDate(today.getDate() + 20)).toISOString().split('T')[0];
+
+        const areaOptions = document.getElementById("area").options;
+        areaOptions[Math.floor(Math.random() * (areaOptions.length - 1)) + 1].selected = true;
+    }
+
+    // 업데이트 폼 전송 함수
+    function updateForm() {
+        const form = document.getElementById("outsourcingForm");
+        const formData = new FormData();
+
+        const outsourcingId = document.getElementById("outsourcingId").value;
+
+        const outsourcingRequestUpdateData = {};
+        new FormData(form).forEach((value, key) => {
+            if (key === 'recruit_start_date' || key === 'recruit_end_date' ||
+                key === 'work_start_date' || key === 'work_end_date') {
+                outsourcingRequestUpdateData[key] = `${value}T00:00:00`;
+            } else if (key !== 'files' && key !== 'outsourcingId') {
+                outsourcingRequestUpdateData[key] = value;
+            }
+        });
+
+        // fileIds 배열 추가
+        const fileIds = [];
+        document.querySelectorAll("input[name='fileIds']:checked").forEach((checkbox) => {
+            fileIds.push(checkbox.value); // 선택된 파일 ID 수집
+        });
+        outsourcingRequestUpdateData['fileIds'] = fileIds; // 배열로 추가
+
+        const outsourcingRequestUpdateJSON = JSON.stringify(outsourcingRequestUpdateData);
+        const outsourcingRequestUpdateBlob = new Blob([outsourcingRequestUpdateJSON], { type: 'application/json' });
+
+        formData.append('outsourcingRequestUpdate', outsourcingRequestUpdateBlob);
+
+        const filesInput = document.getElementById('files');
+        if (filesInput.files.length > 0) {
+            for (let i = 0; i < filesInput.files.length; i++) {
+                formData.append('files', filesInput.files[i]);
+            }
+        }
+
+        fetch(`http://localhost:8080/outsourcings/${outsourcingId}`, {
+            method: "PUT",
+            headers: {
+                "Authorization": token
+            },
+            body: formData
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert("외주 수정 성공!");
+                    window.location.href = `/outsourcings/list`;
+                } else {
+                    response.json().then(data => {
+                        alert("외주 수정 실패: " + (data.message || response.statusText));
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("에러 발생:", error);
+                alert("서버 오류");
+            });
+    }
+
+</script>
+
+</body>
+</html>

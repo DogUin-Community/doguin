@@ -1,5 +1,6 @@
 package com.sparta.doguin.domain.attachment.model;
 
+
 public sealed interface AttachmentResponse permits AttachmentResponse.AttachmentResponseGet {
 
     record AttachmentResponseGet(
