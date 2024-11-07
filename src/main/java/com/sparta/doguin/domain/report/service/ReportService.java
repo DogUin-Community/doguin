@@ -81,7 +81,7 @@ public class ReportService {
     }
 
     /**
-     * 신고 전체 내역 보기
+     * 신고 전체 내역 보기 (회원)
      *
      * @param user 신고한 유저
      * @param page 페이지 번호
@@ -93,6 +93,19 @@ public class ReportService {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<ReportResponse.ReportView> reports = reportRepository.findAllByReporterId(pageable,user.getId());
         return reports;
+    }
+
+    /**
+     * 신고 전체 내역 보기 (관리자)
+     *
+     * @param page 페이지 번호
+     * @param size 한 페이지당 게시물 개수
+     * @since 1.0
+     * @author 김창민
+     */
+    public Page<ReportResponse.ReportView> reportViewAllAdmin(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<ReportResponse.ReportView> reports = reportRepository.findAll(pageable);
     }
 
     /**
@@ -128,4 +141,5 @@ public class ReportService {
 
         return response;
     }
+
 }

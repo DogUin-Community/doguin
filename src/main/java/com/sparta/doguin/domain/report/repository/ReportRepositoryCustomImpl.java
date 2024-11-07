@@ -51,7 +51,28 @@ public class ReportRepositoryCustomImpl implements ReportRepositoryCustom {
 
         return new PageImpl<>(result, pageable, count);
     }
+    @Override
+    public Page<ReportResponse.ReportView> findAll(Pageable pageable) {
+        List<ReportResponse.ReportView> result = jpaQueryFactory
+                .select(Projections.constructor(ReportResponse.ReportView.class,
+                        report.id,
+                        report.title,
+                        report.reportee.nickname,
+                        report.reportType
+                ))
+                .from(report)
+                .innerJoin(report.reportee)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
 
+        Long count = jpaQueryFactory
+                .select(Wildcard.count)
+                .from(report)
+                .fetchOne();
+
+        return new PageImpl<>(result, pageable, count);
+    }
 
     @Override
     public Optional<Report> findByIdWithReporterId(Long reporterId, Long reporteeId) {

@@ -56,4 +56,5 @@ public class Board extends Timestamped {
         this.view = now + today;
     }
 
+
 }
