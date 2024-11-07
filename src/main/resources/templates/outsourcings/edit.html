@@ -87,11 +87,12 @@
             <h2>수정할 파일 선택</h2>
             <div id="file-ids-container">
                 <ul>
-                    <!-- 파일 ID 목록 표시 및 체크박스 추가 -->
-                    <li th:each="fileId : ${outsourcing.fileIds}">
+                    <!-- fileIds와 filePaths를 인덱스 기반으로 접근 -->
+                    <li th:each="fileId, stat : ${outsourcing.fileIds}">
                         <label>
                             <input type="checkbox" name="fileIds" th:value="${fileId}" />
-                            파일 ID: <span th:text="${fileId}">파일 ID</span>
+                            <!-- filePaths의 해당 인덱스의 이미지 표시 -->
+                            <img th:src="@{${outsourcing.filePaths[stat.index]}}" alt="첨부 이미지" style="max-width: 200px; max-height: 150px;">
                         </label>
                     </li>
                 </ul>
@@ -110,7 +111,7 @@
 </footer>
 
 <script>
-    const token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiZW1haWwiOiJ0ZXN0QG5hdmVyLmNvbSIsIm5pY2tuYW1lIjoi65S46riwIiwidXNlclR5cGUiOiJDT01QQU5ZIiwidXNlclJvbGUiOiJST0xFX1VTRVIiLCJleHAiOjE3MzA5NDkwMjUsImlhdCI6MTczMDk0NTQyNX0.8Pk5-EVtnU6f39tZ_9-zK8rQHgoETxE3-uRxQudWyWg";
+    const token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwiZW1haWwiOiJ0ZXN0MUBuYXZlci5jb20iLCJuaWNrbmFtZSI6IuqzoOq1rOuniCIsInVzZXJUeXBlIjoiQ09NUEFOWSIsInVzZXJSb2xlIjoiUk9MRV9BRE1JTiIsImV4cCI6MTczMDk2MjY4OSwiaWF0IjoxNzMwOTU5MDg5fQ.dZxV0LGawzmezEr1SHT8LlkweKclaTAhhVXdB5WHQ8E";
     // 랜덤 데이터 채우기 함수 (기존과 동일)
     function fillRandomData() {
         document.getElementById("title").value = "랜덤 프로젝트 제목 " + Math.floor(Math.random() * 100);

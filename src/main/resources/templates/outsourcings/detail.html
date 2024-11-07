@@ -30,7 +30,7 @@
     <div class="con_body">
         <section th:data-id="${outsourcing.id}">
         <h2 th:text="${outsourcing.title}">외주 제목</h2>
-            <p><strong>작성자:</strong> <span th:text="${outsourcing.content}">작성자</span></p>
+            <p><strong>작성자:</strong> <span th:text="${outsourcing.nickname}">작성자</span></p>
             <p><strong>설명:</strong> <span th:text="${outsourcing.content}">외주 설명</span></p>
             <p><strong>지역:</strong> <span th:text="${outsourcing.area}">지역 정보</span></p>
             <p><strong>예산:</strong> <span th:text="${outsourcing.price}">예산 금액</span>원</p>
@@ -65,7 +65,7 @@
 </footer>
 
 <script>
-    const token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiZW1haWwiOiJ0ZXN0QG5hdmVyLmNvbSIsIm5pY2tuYW1lIjoi65S46riwIiwidXNlclR5cGUiOiJDT01QQU5ZIiwidXNlclJvbGUiOiJST0xFX1VTRVIiLCJleHAiOjE3MzA5NDk0NjAsImlhdCI6MTczMDk0NTg2MH0.x8mzgBTTPNxfvtg9sJJXpu8NWXsxKVBY5t6BZzAM9aE";
+    const token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiZW1haWwiOiJ0ZXN0QG5hdmVyLmNvbSIsIm5pY2tuYW1lIjoi65S46riwIiwidXNlclR5cGUiOiJDT01QQU5ZIiwidXNlclJvbGUiOiJST0xFX1VTRVIiLCJleHAiOjE3MzA5NTgyODQsImlhdCI6MTczMDk1NDY4NH0.M0f8Vtk9GAhyYhpBZwove29zkJX8FzXEZiZnmE_COjU";
     // 삭제 기능 호출
     function deleteOutsourcing() {
         const confirmation = confirm("정말 삭제하시겠습니까?");
