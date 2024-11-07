@@ -26,6 +26,14 @@ public class PathService {
                 UUID.randomUUID() + Objects.requireNonNull(file.getOriginalFilename()).replace(" ", "");
     }
 
+    public String mkPath(MultipartFile file, User user, Long targetId, AttachmentTargetType targetType) {
+        return "user" + "/" +
+                user.getId() + "/" +
+                targetType.getTarget() + "/" +
+                targetId + "/" +
+                UUID.randomUUID() + Objects.requireNonNull(file.getOriginalFilename()).replace(" ", "");
+    }
+
     public String mkfullPath(String path) {
         // 경로를 슬래시로 통일
         String normalizedPath = path.replace("\\", "/");
