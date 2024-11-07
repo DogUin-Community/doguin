@@ -29,11 +29,25 @@
 <main>
     <div class="con_body">
         <section th:data-id="${outsourcing.id}">
-        <h2 th:text="${outsourcing.title}">외주 제목</h2>
+            <h2 th:text="${outsourcing.title}">외주 제목</h2>
+
             <p><strong>작성자:</strong> <span th:text="${outsourcing.nickname}">작성자</span></p>
             <p><strong>설명:</strong> <span th:text="${outsourcing.content}">외주 설명</span></p>
+            <p><strong>우대 사항:</strong> <span th:text="${outsourcing.preferential}">우대 사항 정보</span></p>
+            <p><strong>작업 유형:</strong> <span th:text="${outsourcing.work_type}">작업 유형 정보</span></p>
             <p><strong>지역:</strong> <span th:text="${outsourcing.area}">지역 정보</span></p>
             <p><strong>예산:</strong> <span th:text="${outsourcing.price}">예산 금액</span>원</p>
+
+            <h4>일정 정보</h4>
+            <p><strong>모집 시작 날짜:</strong> <span th:text="${#temporals.format(outsourcing.recruit_start_date, 'yyyy-MM-dd HH:mm:ss')}">모집 시작일</span></p>
+            <p><strong>모집 종료 날짜:</strong> <span th:text="${#temporals.format(outsourcing.recruit_end_date, 'yyyy-MM-dd HH:mm:ss')}">모집 종료일</span></p>
+            <p><strong>작업 시작 날짜:</strong> <span th:text="${#temporals.format(outsourcing.work_start_date, 'yyyy-MM-dd HH:mm:ss')}">작업 시작일</span></p>
+            <p><strong>작업 종료 날짜:</strong> <span th:text="${#temporals.format(outsourcing.work_end_date, 'yyyy-MM-dd HH:mm:ss')}">작업 종료일</span></p>
+
+            <h4>생성 및 수정 날짜</h4>
+            <p><strong>생성일:</strong> <span th:text="${#temporals.format(outsourcing.createdAt, 'yyyy-MM-dd HH:mm:ss')}">생성일</span></p>
+            <p><strong>수정일:</strong> <span th:text="${#temporals.format(outsourcing.updatedAt, 'yyyy-MM-dd HH:mm:ss')}">수정일</span></p>
+
             <!-- 파일 이미지 리스트 -->
             <div>
                 <h4>첨부 이미지:</h4>
@@ -45,6 +59,7 @@
                 </ul>
             </div>
         </section>
+
 
         <!-- 수정하기 및 삭제하기 버튼 -->
         <div style="margin-top: 20px;">
@@ -65,7 +80,7 @@
 </footer>
 
 <script>
-    const token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiZW1haWwiOiJ0ZXN0QG5hdmVyLmNvbSIsIm5pY2tuYW1lIjoi65S46riwIiwidXNlclR5cGUiOiJDT01QQU5ZIiwidXNlclJvbGUiOiJST0xFX1VTRVIiLCJleHAiOjE3MzA5NTgyODQsImlhdCI6MTczMDk1NDY4NH0.M0f8Vtk9GAhyYhpBZwove29zkJX8FzXEZiZnmE_COjU";
+    const token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwiZW1haWwiOiJ0ZXN0MUBuYXZlci5jb20iLCJuaWNrbmFtZSI6IuqzoOq1rOuniCIsInVzZXJUeXBlIjoiQ09NUEFOWSIsInVzZXJSb2xlIjoiUk9MRV9BRE1JTiIsImV4cCI6MTczMDk2MjY4OSwiaWF0IjoxNzMwOTU5MDg5fQ.dZxV0LGawzmezEr1SHT8LlkweKclaTAhhVXdB5WHQ8E";
     // 삭제 기능 호출
     function deleteOutsourcing() {
         const confirmation = confirm("정말 삭제하시겠습니까?");
