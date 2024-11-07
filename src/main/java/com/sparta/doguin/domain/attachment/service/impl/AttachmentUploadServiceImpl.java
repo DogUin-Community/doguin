@@ -65,6 +65,28 @@ public class AttachmentUploadServiceImpl implements AttachmentUploadService {
         s3Service.uploadAllAsync(paths,fileBytesList);
     }
 
+
+    @Transactional
+    @Override
+    public void upload(List<MultipartFile> files, User user, Long targetId, AttachmentTargetType target){
+        List<byte[]> fileBytesList = new ArrayList<>();
+        List<String> paths = new ArrayList<>();
+        for ( MultipartFile file : files ) {
+            AttachmentValidator.isInExtension(file);
+            AttachmentValidator.isSizeBig(file);
+            String path = pathService.mkPath(file,user,targetId,target);
+            try {
+                fileBytesList.add(file.getBytes());
+            } catch (Exception e){
+                throw new FileException(FILE_IO_ERROR);
+            }
+
+            paths.add(path);
+            saveAttachmentGetId(path,file,user,targetId,target);
+        }
+        s3Service.uploadAllAsync(paths,fileBytesList);
+    }
+
     /**
      * @title 사용자로부터 들러온 파일들의 정보를, DB에 저장하는 메서드
      * @description S3에 파일이 저장될떄, 해당 파일의 데이터를 사용하여 DB에 저장시킨다

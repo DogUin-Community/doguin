@@ -8,12 +8,11 @@ import com.sparta.doguin.security.AuthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
-@RequestMapping("/discussions/{discussionId}/replies")
+@RequestMapping("/api/v1/discussions/{discussionId}/replies")
 public class ReplyController {
     private final ReplyService replyService;
 
