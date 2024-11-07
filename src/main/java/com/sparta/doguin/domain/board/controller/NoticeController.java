@@ -13,12 +13,10 @@ import com.sparta.doguin.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping("/boards")
+@RestController
+@RequestMapping("/api/v1/boards/notices")
 public class NoticeController {
 
     private final BoardService boardService;
@@ -50,28 +48,13 @@ public class NoticeController {
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.NOTICE_FIND_ONE_SUCCESS, response));
     }
 
-
-
-
-
-
-    @GetMapping("/notice")
-    public String viewAll(@RequestParam(defaultValue = "1") int page,
-                          @RequestParam(defaultValue = "100") int size,
-                          Model model) {
+    @GetMapping
+    public ResponseEntity<ApiResponse<Page<BoardCommonResponse>>> viewAll(@RequestParam(defaultValue = "1") int page,
+                                                                    @RequestParam(defaultValue = "10") int size) {
         Page<BoardCommonResponse> responses = boardService.viewAll(page, size);
-        model.addAttribute("notices", responses.getContent());
-        return "board/board_list";
+        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.NOTICE_FIND_ALL_SUCCESS, responses));
+
     }
-
-
-
-
-
-
-
-
-
 
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<Page<BoardCommonResponse>>> search(@RequestParam(defaultValue = "1") int page,
