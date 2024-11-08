@@ -2,6 +2,7 @@ package com.sparta.doguin.domain.discussions.controller;
 
 import com.sparta.doguin.domain.bookmark.constans.BookmarkTargetType;
 import com.sparta.doguin.domain.bookmark.model.BookmarkRequest;
+import com.sparta.doguin.domain.bookmark.service.BookmarkService;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseBookmarkEnum;
 import com.sparta.doguin.domain.common.response.ApiResponseDiscussionEnum;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 public class DiscussionController {
 
     private final DiscussionService discussionService;
+    private final BookmarkService bookmarkService;
 
     @PostMapping
     public ResponseEntity<ApiResponse<DiscussionResponse.SingleResponse>> createDiscussion(
@@ -81,7 +83,7 @@ public class DiscussionController {
             @PathVariable Long discussionId,
             @AuthenticationPrincipal AuthUser authUser) {
         BookmarkRequest.BookmarkRequestCreate reqDto = new BookmarkRequest.BookmarkRequestCreate(discussionId, BookmarkTargetType.DISCUSSION);
-        discussionService.bookmarkDiscussion(reqDto, authUser);
+        bookmarkService.createBookmark(reqDto, authUser);
         ApiResponse<Void> response = ApiResponse.of(ApiResponseBookmarkEnum.BOOKMARK_OK);
         return ResponseEntity.status(ApiResponseBookmarkEnum.BOOKMARK_OK.getHttpStatus()).body(response);
     }
