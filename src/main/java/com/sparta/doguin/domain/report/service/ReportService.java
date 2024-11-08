@@ -129,14 +129,14 @@ public class ReportService {
     /**
      * admin유저가 보는 특정 유저가 신고 당한 횟수
      *
-     * @param reporteeId 신고한 유저
+     * @param reporteeNickname 신고당한 유저
      * @since 1.0
      * @throws HandleNotFound 해당 신고가 존재하지 않을 경우 발생
      * @author 김창민
      */
-    public ReportResponse.ReportTotalView reportTotal(Long reporteeId) {
+    public ReportResponse.ReportTotalView reportTotal(String reporteeNickname) {
 
-        ReportResponse.ReportTotalView response = reportRepository.findCountByReporteeId(reporteeId).orElseThrow(
+        ReportResponse.ReportTotalView response = reportRepository.findCountByReporteeNickname(reporteeNickname).orElseThrow(
                 () -> new HandleNotFound(ApiResponseReportEnum.REPORT_NOT_FOUND)
         );
 

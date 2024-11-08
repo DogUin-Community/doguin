@@ -87,12 +87,12 @@ public class ReportRepositoryCustomImpl implements ReportRepositoryCustom {
     }
 
     @Override
-    public Optional<ReportResponse.ReportTotalView> findCountByReporteeId(Long reporteeId) {
+    public Optional<ReportResponse.ReportTotalView> findCountByReporteeNickname(String nickName) {
 
         Object[] result = jpaQueryFactory
                 .select(report.reportee.nickname, report.count())
                 .from(report)
-                .where(eqReporteeId(reporteeId))
+                .where(eqReporteeNickname(nickName))
                 .groupBy(report.reportee.nickname)
                 .fetchOne().toArray();
 

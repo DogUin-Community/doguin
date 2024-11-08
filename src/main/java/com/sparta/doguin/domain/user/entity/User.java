@@ -96,6 +96,7 @@ public class User extends Timestamped {
                 .email(authUser.getEmail())
                 .userType(authUser.getUserType())
                 .userRole(UserRole.of(roleName))
+                .nickname(authUser.getNickname())
                 .build();  // 선택 필드들은 나중에 설정
     }
 

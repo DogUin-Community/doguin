@@ -73,6 +73,7 @@ public class BulletinService implements BoardService {
             attachmentGetService.getFileIds(user.getId(),board.getId(), BULLETIN);
         }
 
+        log.info(user.getNickname());
         publisher.publishEvent(new SlackEventClass(user.getId(), user.getNickname(), "(이)가 새 게시물을 등록했습니다."));
     }
 

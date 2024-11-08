@@ -76,9 +76,9 @@ public class ReportController {
     }
 
     // 특정인 누적 신고수 조회 (admin only)
-    @GetMapping("/total/{userId}")
-    public ResponseEntity<ApiResponse<ReportResponse.ReportTotalView>> reportTotal(@PathVariable Long userId) {
-        ReportResponse.ReportTotalView responses = reportService.reportTotal(userId);
+    @GetMapping("/total")
+    public ResponseEntity<ApiResponse<ReportResponse.ReportTotalView>> reportTotal(@RequestParam String reporteeNickname) {
+        ReportResponse.ReportTotalView responses = reportService.reportTotal(reporteeNickname);
         return ApiResponse.of(ApiResponse.of(ApiResponseReportEnum.REPORT_VIEW_SUCCESS, responses));
     }
 }
