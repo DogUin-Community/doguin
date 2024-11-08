@@ -1,8 +1,14 @@
 package com.sparta.doguin.domain.discussions.service;
 
+import com.sparta.doguin.domain.attachment.constans.AttachmentTargetType;
+import com.sparta.doguin.domain.attachment.entity.Attachment;
+import com.sparta.doguin.domain.attachment.repository.AttachmentRepository;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
 import com.sparta.doguin.domain.common.exception.DiscussionException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseDiscussionEnum;
+import com.sparta.doguin.domain.discussions.dto.DiscussionAttachmentResponse;
 import com.sparta.doguin.domain.discussions.dto.ReplyRequest;
 import com.sparta.doguin.domain.discussions.dto.ReplyResponse;
 import com.sparta.doguin.domain.discussions.entity.Discussion;
@@ -16,6 +22,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -27,6 +37,9 @@ public class ReplyService {
     private final DiscussionRepository discussionRepository;
     private final ReplyRepository replyRepository;
     private final UserService userService;
+    private final AttachmentUploadService attachmentUploadService;
+    private final AttachmentDeleteService attachmentDeleteService;
+    private final AttachmentRepository attachmentRepository;
     private final RedisTemplate<String, Object> redisTemplate;
 
     /**
@@ -39,18 +52,21 @@ public class ReplyService {
      * @since 1.0
      * @author 최욱연
      */
-    public ApiResponse<ReplyResponse.AddReplyResponse> addReply(Long discussionId, ReplyRequest.CreateRequest request, AuthUser authUser) {
+    public ApiResponse<ReplyResponse.AddReplyResponse> addReply(Long discussionId, List<MultipartFile> attachments, ReplyRequest.CreateRequest request, AuthUser authUser) {
         Discussion discussion = discussionRepository.findByIdOrThrow(discussionId);
-
-        // 토론이 활성 상태인지 확인 (Redis TTL 및 closed 필드 모두 확인)
         validateDiscussionIsActive(discussion);
 
         User user = userService.findById(authUser.getUserId());
         Reply reply = new Reply(request.content(), discussion, user);
         replyRepository.save(reply);
 
+        if (attachments != null && !attachments.isEmpty()) {
+            attachmentUploadService.upload(attachments, authUser, reply.getId(), AttachmentTargetType.REPLY);
+        }
+
         return createAddReplyResponse(reply, user);
     }
+
 
     /**
      * 토론이 활성 상태인지 확인하는 메서드
@@ -97,14 +113,58 @@ public class ReplyService {
      * @since 1.0
      * @author 최욱연
      */
-    public ApiResponse<ReplyResponse.SingleResponse> updateReply(Long replyId, ReplyRequest.UpdateRequest request, AuthUser authUser) {
+    public ApiResponse<ReplyResponse.SingleResponse> updateReply(Long replyId, List<MultipartFile> newAttachments, List<Long> attachmentIdsToDelete, ReplyRequest.UpdateRequest request, AuthUser authUser) {
+        // 1. 답변 조회 및 소유권 검증
         Reply reply = findReplyById(replyId);
         validateOwnership(reply, authUser);
 
+        // 2. 첨부 파일 처리 (삭제 및 업로드)
+        handleAttachments(replyId, authUser, attachmentIdsToDelete, newAttachments);
+
+        // 3. 답변 내용 업데이트
         reply.updateContent(request.content());
         replyRepository.save(reply);
 
+        // 4. 수정된 답변에 대한 응답 생성 및 반환
         return createUpdateReplyResponse(reply);
+    }
+
+    private void handleAttachments(Long replyId, AuthUser authUser, List<Long> attachmentIdsToDelete, List<MultipartFile> newAttachments) {
+        // 첨부 파일 삭제 처리
+        if (attachmentIdsToDelete != null && !attachmentIdsToDelete.isEmpty()) {
+            List<Long> validAttachmentIds = attachmentRepository.findAllAttachmentIdByUserIdAndTagertIdAndTarget(
+                    authUser.getUserId(), replyId, AttachmentTargetType.REPLY);
+
+            List<Long> idsToDelete = attachmentIdsToDelete.stream()
+                    .filter(validAttachmentIds::contains)
+                    .collect(Collectors.toList());
+
+            if (!idsToDelete.isEmpty()) {
+                attachmentDeleteService.delete(authUser, idsToDelete);
+            }
+        }
+
+        // 새 첨부 파일 업로드 처리
+        if (newAttachments != null && !newAttachments.isEmpty()) {
+            attachmentUploadService.upload(newAttachments, authUser, replyId, AttachmentTargetType.REPLY);
+        }
+    }
+
+    private List<DiscussionAttachmentResponse> getAttachmentResponses(Long targetId, AttachmentTargetType targetType) {
+        // targetId와 targetType에 따라 첨부 파일 ID를 가져옴
+        List<Long> attachmentIds = attachmentRepository.findAllAttachmentIdByTagertIdAndTarget(targetId, targetType);
+
+        // 가져온 ID 리스트로 실제 첨부 파일 객체를 조회
+        List<Attachment> attachments = attachmentRepository.findAllByAttachment(attachmentIds);
+
+        // 첨부 파일 객체를 `DiscussionAttachmentResponse` 객체로 변환하여 반환
+        return attachments.stream()
+                .map(attachment -> new DiscussionAttachmentResponse(
+                        attachment.getId(),
+                        attachment.getAttachment_original_name(),
+                        "/attachments/" + attachment.getAttachment_relative_path()
+                ))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -143,15 +203,17 @@ public class ReplyService {
      * @param user  / 답변 작성자 정보
      * @return ApiResponse<ReplyResponse.AddReplyResponse> / 답변 생성 성공 응답 반환
      * @since 1.0
-     * @author 최욱연
      */
     private ApiResponse<ReplyResponse.AddReplyResponse> createAddReplyResponse(Reply reply, User user) {
+        List<DiscussionAttachmentResponse> attachmentResponses = getAttachmentResponses(reply.getId(), AttachmentTargetType.REPLY);
+
         return ApiResponse.of(ApiResponseDiscussionEnum.REPLY_CREATE_SUCCESS,
                 new ReplyResponse.AddReplyResponse(
                         reply.getId(),
                         reply.getContent(),
                         user.getNickname(),
-                        reply.getCreatedAt().toString()
+                        reply.getCreatedAt().toString(),
+                        attachmentResponses
                 ));
     }
 
@@ -161,16 +223,19 @@ public class ReplyService {
      * @param reply / 수정된 답변 객체
      * @return ApiResponse<ReplyResponse.SingleResponse> / 답변 수정 성공 응답 반환
      * @since 1.0
-     * @author 최욱연
      */
     private ApiResponse<ReplyResponse.SingleResponse> createUpdateReplyResponse(Reply reply) {
+        // targetType을 추가로 전달
+        List<DiscussionAttachmentResponse> attachmentResponses = getAttachmentResponses(reply.getId(), AttachmentTargetType.REPLY);
+
         return ApiResponse.of(ApiResponseDiscussionEnum.REPLY_UPDATE_SUCCESS,
                 new ReplyResponse.SingleResponse(
                         reply.getId(),
                         reply.getContent(),
                         reply.getUser().getNickname(),
                         reply.getCreatedAt().toString(),
-                        reply.getUpdatedAt().toString()
+                        reply.getUpdatedAt().toString(),
+                        attachmentResponses
                 ));
     }
 }

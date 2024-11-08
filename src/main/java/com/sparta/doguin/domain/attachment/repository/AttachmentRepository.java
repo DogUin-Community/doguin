@@ -83,5 +83,17 @@ public interface AttachmentRepository extends JpaRepository<Attachment, Long> {
     )
     List<String> findAllByAttachmentPath(List<Long> attachmentIds);
 
+    /**
+     * @title 타겟아이디, 타겟이 일치하는 파일의 아이디 전체 반환 쿼리
+     *
+     * @param targetId 타겟아이디
+     * @param target 타겟
+     * @return 위 조건에 맞는 파일의 아이디 목록 반환
+     * @since 1.0
+     */
+    @Query("SELECT a.id from Attachment a " +
+            "WHERE a.targetId = :targetId " +
+            "AND a.target = :target")
+    List<Long> findAllAttachmentIdByTagertIdAndTarget(Long targetId, AttachmentTargetType target);
 
 }
