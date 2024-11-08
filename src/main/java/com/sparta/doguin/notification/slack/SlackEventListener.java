@@ -23,7 +23,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SlackEventListener {
 
-    private static final Logger log = LoggerFactory.getLogger(SlackEventListener.class);
     @Value(value = "${slack.bot-token}")
     private String token;
 

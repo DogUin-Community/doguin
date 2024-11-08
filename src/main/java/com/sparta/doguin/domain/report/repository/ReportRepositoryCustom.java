@@ -12,10 +12,11 @@ public interface ReportRepositoryCustom  {
 
     Page<ReportResponse.ReportView> findAllByReporterId(Pageable pageable, Long id);
 
+    Page<ReportResponse.ReportView> findAllReports(Pageable pageable);
 
     Optional<Report> findByIdWithReporterId(Long reporterId, Long reporteeId);
 
-    Optional<ReportResponse.ReportTotalView> findCountByReporteeId(Long reporteeId);
+    Optional<ReportResponse.ReportTotalView> findCountByReporteeNickname(String nickName);
 
-    Optional<Report> findByReporterIdAndReporteeId(Long id, Long aLong);
+    Optional<Report> findByReporterIdAndReporteeNickname(Long id, String nickName);
 }
