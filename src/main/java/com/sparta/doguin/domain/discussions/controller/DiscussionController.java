@@ -1,5 +1,7 @@
 package com.sparta.doguin.domain.discussions.controller;
 
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
 import com.sparta.doguin.domain.bookmark.constans.BookmarkTargetType;
 import com.sparta.doguin.domain.bookmark.model.BookmarkRequest;
 import com.sparta.doguin.domain.bookmark.service.BookmarkService;
@@ -18,6 +20,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,15 +35,16 @@ public class DiscussionController {
     @PostMapping
     public ResponseEntity<ApiResponse<DiscussionResponse.SingleResponse>> createDiscussion(
             @AuthenticationPrincipal AuthUser authUser,
-            @RequestBody DiscussionRequest.CreateRequest request) {
-        return ApiResponse.of(discussionService.createDiscussion(authUser, request));
+            @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments,
+            @RequestPart("request") DiscussionRequest.CreateRequest request) {
+        return ApiResponse.of(discussionService.createDiscussion(authUser, attachments, request));
     }
 
     @GetMapping("/{discussionId}")
     public ResponseEntity<ApiResponse<DiscussionResponse.SingleResponse>> getDiscussion(
             @PathVariable Long discussionId,
             @AuthenticationPrincipal AuthUser authUser) {
-        return ApiResponse.of(ApiResponse.of(ApiResponseDiscussionEnum.DISCUSSION_FETCH_SUCCESS,discussionService.getDiscussion(discussionId, authUser)));
+        return ApiResponse.of(ApiResponse.of(ApiResponseDiscussionEnum.DISCUSSION_FETCH_SUCCESS, discussionService.getDiscussion(discussionId, authUser)));
     }
 
     @GetMapping
@@ -65,9 +71,13 @@ public class DiscussionController {
     @PutMapping("/{discussionId}")
     public ResponseEntity<ApiResponse<DiscussionResponse.SingleResponse>> updateDiscussion(
             @PathVariable Long discussionId,
-            @RequestBody DiscussionRequest.UpdateRequest request,
-            @AuthenticationPrincipal AuthUser authUser) {
-        return ApiResponse.of(ApiResponse.of(ApiResponseDiscussionEnum.DISCUSSION_UPDATE_SUCCESS, discussionService.updateDiscussion(discussionId, request, authUser)));
+            @RequestPart("request") DiscussionRequest.UpdateRequest request,
+            @AuthenticationPrincipal AuthUser authUser,
+            @RequestPart(value = "attachmentIdsToDelete", required = false) List<Long> attachmentIdsToDelete,
+            @RequestPart(value = "newAttachments", required = false) List<MultipartFile> newAttachments) {
+
+        DiscussionResponse.SingleResponse response = discussionService.updateDiscussion(discussionId, request, authUser, attachmentIdsToDelete, newAttachments);
+        return ApiResponse.of(ApiResponse.of(ApiResponseDiscussionEnum.DISCUSSION_UPDATE_SUCCESS, response));
     }
 
     @DeleteMapping("/{discussionId}")

@@ -1,10 +1,18 @@
 package com.sparta.doguin.domain.discussions.service;
 
+import com.sparta.doguin.domain.attachment.constans.AttachmentTargetType;
+import com.sparta.doguin.domain.attachment.entity.Attachment;
+import com.sparta.doguin.domain.attachment.model.AttachmentResponse;
+import com.sparta.doguin.domain.attachment.repository.AttachmentRepository;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentGetService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
 import com.sparta.doguin.domain.bookmark.model.BookmarkRequest;
 import com.sparta.doguin.domain.bookmark.service.BookmarkService;
 import com.sparta.doguin.domain.common.exception.DiscussionException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseDiscussionEnum;
+import com.sparta.doguin.domain.discussions.dto.DiscussionAttachmentResponse;
 import com.sparta.doguin.domain.discussions.dto.DiscussionRequest;
 import com.sparta.doguin.domain.discussions.dto.DiscussionResponse;
 import com.sparta.doguin.domain.discussions.dto.ReplyResponse;
@@ -23,8 +31,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +44,9 @@ public class DiscussionService {
 
     private final DiscussionRepository discussionRepository;
     private final UserService userService;
+    private final AttachmentUploadService attachmentUploadService;
+    private final AttachmentDeleteService attachmentDeleteService;
+    private final AttachmentRepository attachmentRepository;
     private final RedisTemplate<String, Object> redisTemplate;
 
     private static final Duration DISCUSSION_TTL = Duration.ofDays(90);
@@ -41,17 +54,28 @@ public class DiscussionService {
     /**
      * 새로운 토론을 생성하는 메서드
      *
-     * @param authUser  / 토론을 생성하는 사용자 정보
-     * @param request   / 토론 생성에 필요한 데이터 (제목, 내용)
+     * @param authUser / 토론을 생성하는 사용자 정보
+     * @param request  / 토론 생성에 필요한 데이터 (제목, 내용)
      * @return ApiResponse<DiscussionResponse.SingleResponse> / 생성된 토론 응답 데이터 반환
-     * @since 1.0
      * @author 최욱연
+     * @since 1.0
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ApiResponse<DiscussionResponse.SingleResponse> createDiscussion(AuthUser authUser, DiscussionRequest.CreateRequest request) {
+    public ApiResponse<DiscussionResponse.SingleResponse> createDiscussion(AuthUser authUser, List<MultipartFile> attachments, DiscussionRequest.CreateRequest request) {
+        if (attachments == null) {
+            attachments = List.of();
+        }
+
         User user = userService.findById(authUser.getUserId());
         Discussion discussion = new Discussion(request.title(), request.content(), user);
         discussionRepository.save(discussion);
+
+        if (!attachments.isEmpty()) {
+            attachmentUploadService.upload(attachments, authUser, discussion.getId(), AttachmentTargetType.DISCUSSION);
+        }
+
+        // 최신 첨부파일을 가져오기 위해 다시 데이터를 조회
+        discussion = discussionRepository.findByIdOrThrow(discussion.getId());
 
         setDiscussionTTLInCache(discussion.getId());
         return ApiResponse.of(ApiResponseDiscussionEnum.DISCUSSION_CREATE_SUCCESS, toSingleResponse(discussion));
@@ -64,8 +88,8 @@ public class DiscussionService {
      * @param authUser     / 토론 조회를 요청한 사용자 정보
      * @return DiscussionResponse.SingleResponse / 조회된 토론 데이터 반환
      * @throws DiscussionException / 토론이 존재하지 않을 때 발생되는 예외
-     * @since 1.0
      * @author 최욱연
+     * @since 1.0
      */
     @Cacheable(value = "discussionsCache", key = "'discussion_' + #discussionId")
     public DiscussionResponse.SingleResponse getDiscussion(Long discussionId, AuthUser authUser) {
@@ -89,16 +113,16 @@ public class DiscussionService {
     }
 
     /**
-     * 모든 토론을 페이지 단위로 조회하는 메서드
+     * 모든 토론을 페이지 단위로 조회하며, 진행 중인 토론이 우선적으로 반환되는 메서드
      *
      * @param pageable / 페이지 정보 (페이지 번호, 페이지 크기, 정렬 옵션 등)
      * @return Page<DiscussionResponse.ListResponse> / 조회된 토론 목록을 페이지 단위로 반환
-     * @since 1.0
      * @author 최욱연
+     * @since 1.0
      */
     @Cacheable(value = "discussionsCache", key = "'allDiscussions_page_' + #pageable.pageNumber + '_size_' + #pageable.pageSize")
     public Page<DiscussionResponse.ListResponse> getAllDiscussions(Pageable pageable) {
-        Page<Discussion> discussions = discussionRepository.findAll(pageable);
+        Page<Discussion> discussions = discussionRepository.findAllByOrderByClosedAscCreatedAtDesc(pageable);
         discussions.forEach(Discussion::checkAndCloseDiscussion);
 
         return discussions.map(this::toListResponse);
@@ -112,8 +136,8 @@ public class DiscussionService {
      * @param content  / 검색할 본문
      * @param nickname / 검색할 사용자 닉네임
      * @return Page<DiscussionResponse.ListResponse> / 검색된 토론 목록을 페이지 단위로 반환
-     * @since 1.0
      * @author 최욱연
+     * @since 1.0
      */
     @Transactional(readOnly = true)
     public Page<DiscussionResponse.ListResponse> searchDiscussions(Pageable pageable, String title, String content, String nickname) {
@@ -129,19 +153,61 @@ public class DiscussionService {
      * @param authUser     / 토론 수정 요청한 사용자 정보
      * @return DiscussionResponse.SingleResponse / 수정된 토론 데이터 반환
      * @throws DiscussionException / 토론 소유자가 아닐 때 발생되는 예외
-     * @since 1.0
      * @author 최욱연
+     * @since 1.0
      */
     @CacheEvict(value = "discussionsCache", key = "'allDiscussions'")
     @CachePut(value = "discussionsCache", key = "'discussion_' + #discussionId")
-    public DiscussionResponse.SingleResponse updateDiscussion(Long discussionId, DiscussionRequest.UpdateRequest request, AuthUser authUser) {
+    public DiscussionResponse.SingleResponse updateDiscussion(
+            Long discussionId,
+            DiscussionRequest.UpdateRequest request,
+            AuthUser authUser,
+            List<Long> attachmentIdsToDelete,
+            List<MultipartFile> newAttachments) {
+
         Discussion discussion = discussionRepository.findByIdOrThrow(discussionId);
         validateOwner(discussion, authUser);
 
+        // 첨부파일 처리
+        handleAttachments(discussionId, authUser, attachmentIdsToDelete, newAttachments);
+
+        // 토론 내용 수정
         discussion.update(request.title(), request.content());
         discussionRepository.save(discussion);
 
         return toSingleResponse(discussion);
+    }
+
+    /**
+     * 첨부파일을 처리하는 메서드
+     *
+     * @param discussionId          / 토론 ID
+     * @param authUser              / 현재 사용자
+     * @param attachmentIdsToDelete / 삭제할 첨부파일 ID 목록
+     * @param newAttachments        / 새로 추가할 첨부파일 목록
+     */
+    private void handleAttachments(
+            Long discussionId,
+            AuthUser authUser,
+            List<Long> attachmentIdsToDelete,
+            List<MultipartFile> newAttachments) {
+
+        if (attachmentIdsToDelete != null && !attachmentIdsToDelete.isEmpty()) {
+            List<Long> validAttachmentIds = attachmentRepository.findAllAttachmentIdByUserIdAndTagertIdAndTarget(
+                    authUser.getUserId(), discussionId, AttachmentTargetType.DISCUSSION);
+
+            List<Long> idsToDelete = attachmentIdsToDelete.stream()
+                    .filter(validAttachmentIds::contains)
+                    .collect(Collectors.toList());
+
+            if (!idsToDelete.isEmpty()) {
+                attachmentDeleteService.delete(authUser, idsToDelete);
+            }
+        }
+
+        if (newAttachments != null && !newAttachments.isEmpty()) {
+            attachmentUploadService.upload(newAttachments, authUser, discussionId, AttachmentTargetType.DISCUSSION);
+        }
     }
 
     /**
@@ -150,8 +216,8 @@ public class DiscussionService {
      * @param discussionId / 삭제할 토론의 ID
      * @param authUser     / 토론 삭제 요청한 사용자 정보
      * @throws DiscussionException / 토론 소유자가 아닐 때 발생되는 예외
-     * @since 1.0
      * @author 최욱연
+     * @since 1.0
      */
     @CacheEvict(value = "discussionsCache", key = "'discussion_' + #discussionId")
     public void deleteDiscussion(Long discussionId, AuthUser authUser) {
@@ -165,8 +231,8 @@ public class DiscussionService {
      * Redis에서 토론 TTL 설정 메서드
      *
      * @param discussionId / TTL을 설정할 토론 ID
-     * @since 1.0
      * @author 최욱연
+     * @since 1.0
      */
     private void setDiscussionTTLInCache(Long discussionId) {
         String discussionKey = "discussion:" + discussionId;
@@ -180,8 +246,8 @@ public class DiscussionService {
      * @param discussion / 확인할 토론 객체
      * @param authUser   / 현재 사용자 정보
      * @throws DiscussionException / 작성자가 아닐 경우 예외 발생
-     * @since 1.0
      * @author 최욱연
+     * @since 1.0
      */
     private void validateOwner(Discussion discussion, AuthUser authUser) {
         if (!discussion.getUser().getId().equals(authUser.getUserId())) {
@@ -189,7 +255,28 @@ public class DiscussionService {
         }
     }
 
+    private List<DiscussionAttachmentResponse> getAttachmentResponses(Long targetId, AttachmentTargetType targetType) {
+        List<Long> attachmentIds = attachmentRepository.findAllAttachmentIdByTagertIdAndTarget(targetId, targetType);
+        List<Attachment> attachments = attachmentRepository.findAllByAttachment(attachmentIds);
+
+        return attachments.stream()
+                .map(attachment -> new DiscussionAttachmentResponse(
+                        attachment.getId(),
+                        attachment.getAttachment_original_name(),
+                        "/attachments/" + attachment.getAttachment_relative_path()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 단일 토론 객체를 SingleResponse DTO로 변환하는 메서드
+     *
+     * @param discussion / 변환할 토론 객체
+     * @return DiscussionResponse.SingleResponse / 변환된 응답 DTO
+     * @since 1.0
+     */
     private DiscussionResponse.SingleResponse toSingleResponse(Discussion discussion) {
+        List<DiscussionAttachmentResponse> attachmentResponses = getAttachmentResponses(discussion.getId(), AttachmentTargetType.DISCUSSION);
         return new DiscussionResponse.SingleResponse(
                 discussion.getId(),
                 discussion.getTitle(),
@@ -200,18 +287,31 @@ public class DiscussionService {
                 discussion.getCreatedAt().toString(),
                 discussion.getUpdatedAt().toString(),
                 discussion.getReplies().stream()
-                        .map(reply -> new ReplyResponse.SingleResponse(
-                                reply.getId(),
-                                reply.getContent(),
-                                reply.getNickname(),
-                                reply.getCreatedAt().toString(),
-                                reply.getUpdatedAt().toString()
-                        ))
-                        .collect(Collectors.toList())
+                        .map(reply -> {
+                            List<DiscussionAttachmentResponse> replyAttachmentResponses = getAttachmentResponses(reply.getId(), AttachmentTargetType.REPLY);
+                            return new ReplyResponse.SingleResponse(
+                                    reply.getId(),
+                                    reply.getContent(),
+                                    reply.getNickname(),
+                                    reply.getCreatedAt().toString(),
+                                    reply.getUpdatedAt().toString(),
+                                    replyAttachmentResponses
+                            );
+                        })
+                        .collect(Collectors.toList()),
+                attachmentResponses
         );
     }
 
+    /**
+     * 단일 토론 객체를 ListResponse DTO로 변환하는 메서드
+     *
+     * @param discussion / 변환할 토론 객체
+     * @return DiscussionResponse.ListResponse / 변환된 응답 DTO
+     * @since 1.0
+     */
     private DiscussionResponse.ListResponse toListResponse(Discussion discussion) {
+        List<DiscussionAttachmentResponse> attachmentResponses = getAttachmentResponses(discussion.getId(), AttachmentTargetType.DISCUSSION);
         return new DiscussionResponse.ListResponse(
                 discussion.getId(),
                 discussion.getTitle(),
@@ -220,7 +320,9 @@ public class DiscussionService {
                 discussion.getViewCount(),
                 discussion.isClosed() ? "종료" : "진행중",
                 discussion.getCreatedAt().toString(),
-                discussion.getUpdatedAt().toString()
+                discussion.getUpdatedAt().toString(),
+                attachmentResponses
         );
     }
 }
+
