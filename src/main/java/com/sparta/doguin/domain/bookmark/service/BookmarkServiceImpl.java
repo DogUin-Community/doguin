@@ -47,19 +47,9 @@ public class BookmarkServiceImpl implements BookmarkService {
     @Override
     public ApiResponse<Void> createBookmark(BookmarkRequest.BookmarkRequestCreate reqDto, AuthUser authUser) {
         User user = User.fromAuthUser(authUser);
-        Long targetId;
-        if (reqDto.target() == BookmarkTargetType.OUTSOURCING) {
-            targetId = outsourcingService.findById(reqDto.targetId()).getId();
-        } else if (reqDto.target() == BookmarkTargetType.QUESTION) {
-            targetId = questionService.findById(reqDto.targetId()).getId();
-        } else if (reqDto.target() == BookmarkTargetType.DISCUSSION) {
-            targetId = discussionService.getDiscussion(reqDto.targetId(), authUser).id();
-        } else {
-            throw new IllegalArgumentException("Invalid BookmarkTargetType: " + reqDto.target());
-        }
         Bookmark bookmark = Bookmark.builder()
                 .user(user)
-                .targetId(targetId)
+                .targetId(reqDto.targetId())
                 .target(reqDto.target())
                 .build();
         bookmarkRepository.save(bookmark);
