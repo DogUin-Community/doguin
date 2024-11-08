@@ -4,17 +4,21 @@ import com.sparta.doguin.domain.question.enums.FirstCategory;
 import com.sparta.doguin.domain.question.enums.LastCategory;
 import com.sparta.doguin.domain.question.enums.SecondCategory;
 
-public sealed interface QuestionRequest permits QuestionRequest.CreatedQuestion, QuestionRequest.UpdateQuestion {
+import java.util.List;
 
-    record CreatedQuestion(String title,
-                           String content,
-                           FirstCategory firstCategory,
-                           SecondCategory secondCategory,
-                           LastCategory lastCategory) implements QuestionRequest {}
+public sealed interface QuestionRequest permits QuestionRequest.QuestionRequestCreate, QuestionRequest.QuestionRequestUpdate {
 
-    record UpdateQuestion(String title,
-                           String content,
-                           FirstCategory firstCategory,
-                           SecondCategory secondCategory,
-                           LastCategory lastCategory) implements QuestionRequest {}
+    record QuestionRequestCreate(String title,
+                                 String content,
+                                 FirstCategory firstCategory,
+                                 SecondCategory secondCategory,
+                                 LastCategory lastCategory) implements QuestionRequest {}
+
+    record QuestionRequestUpdate(String title,
+                                 String content,
+                                 FirstCategory firstCategory,
+                                 SecondCategory secondCategory,
+                                 LastCategory lastCategory,
+                                 List<Long> files) implements QuestionRequest {}
+
 }
