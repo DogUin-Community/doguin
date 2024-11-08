@@ -1,0 +1,101 @@
+/***** Pretendard *****/
+@font-face {
+	font-family:'Pretendard';font-weight:100;font-display:swap;
+	src: url(Pretendard-Thin.woff2) format('woff2'),
+		url(Pretendard-Thin.woff) format('woff'),
+}
+@font-face {
+	font-family:'Pretendard';font-weight:200;font-display:swap;
+	src: url(Pretendard-ExtraLight.woff2) format('woff2'),
+		url(Pretendard-ExtraLight.woff) format('woff'),
+}
+@font-face {
+	font-family:'Pretendard';font-weight:300;font-display:swap;
+	src: url(Pretendard-Light.woff2) format('woff2'),
+		url(Pretendard-Light.woff) format('woff'),
+}
+@font-face {
+	font-family:'Pretendard';font-weight:400;font-display:swap;
+	src: url(Pretendard-Regular.woff2) format('woff2'),
+		url(Pretendard-Regular.woff) format('woff'),
+}
+@font-face {
+	font-family:'Pretendard';font-weight:500;font-display:swap;
+	src: url(Pretendard-Medium.woff2) format('woff2'),
+		url(Pretendard-Medium.woff) format('woff'),
+}
+@font-face {
+	font-family:'Pretendard';font-weight:600;font-display:swap;
+	src: url(Pretendard-SemiBold.woff2) format('woff2'),
+		url(Pretendard-SemiBold.woff) format('woff'),
+}
+@font-face {
+	font-family:'Pretendard';font-weight:700;font-display:swap;
+	src: url(Pretendard-Bold.woff2) format('woff2'),
+		url(Pretendard-Bold.woff) format('woff'),
+}
+@font-face {
+	font-family:'Pretendard';font-weight:800;font-display:swap;
+	src: url(Pretendard-ExtraBold.woff2) format('woff2'),
+		url(Pretendard-ExtraBold.woff) format('woff'),
+}
+@font-face {
+	font-family:'Pretendard';font-weight:900;font-display:swap;
+	src: url(Pretendard-Black.woff2) format('woff2'),
+		url(Pretendard-Black.woff) format('woff'),
+}
+
+
+
+
+/***** Montserrat *****/
+@font-face {
+	font-family:'Montserrat';font-weight:300;font-display:swap;
+	src: url(Montserrat-Light.woff) format('woff'),
+		url(Montserrat-Light.woff2) format('woff2'),
+}
+@font-face {
+	font-family:'Montserrat';font-weight:400;font-display:swap;
+	src: url(Montserrat-Regular.woff2) format('woff'),
+		url(Montserrat-Regular.woff) format('woff2'),
+}
+@font-face {
+	font-family:'Montserrat';font-weight:500;font-display:swap;
+	src: url(Montserrat-Medium.woff) format('woff'),
+		url(Montserrat-Medium.woff2) format('woff2'),
+}
+@font-face {
+	font-family:'Montserrat';font-weight:700;font-display:swap;
+	src: url(Montserrat-Bold.woff) format('woff'),
+		url(Montserrat-Bold.woff2) format('woff2'),
+}
+@font-face {
+	font-family:'Montserrat';font-weight:800;font-display:swap;
+	src: url(Montserrat-ExtraBold.woff) format('woff'),
+		url(Montserrat-ExtraBold.woff2) format('woff2'),
+}
+@font-face {
+	font-family:'Montserrat';font-weight:900;font-display:swap;
+	src: url(Montserrat-Black.woff) format('woff'),
+		url(Montserrat-Black.woff2) format('woff2'),
+}
+
+
+/***** Gmarket Sans *****/
+@font-face {
+	font-family:'Gmarketsans'; font-weight:400; font-display:swap;
+	src: url(GmarketSansLight.woff) format('woff'),
+		url(GmarketSansLight.otf) format('opentype');
+}
+@font-face {
+	font-family:'Gmarketsans'; font-weight:500; font-display:swap;
+	src: url(GmarketSansMedium.woff) format('woff'),
+		url(GmarketSansMedium.otf) format('opentype');
+}
+@font-face {
+	font-family:'Gmarketsans'; font-weight:700; font-display:swap;
+	src: url(GmarketSansBold.woff) format('woff'),
+		url(GmarketSansBold.otf) format('opentype');
+}
+
+
