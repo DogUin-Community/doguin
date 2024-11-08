@@ -1,7 +1,5 @@
 package com.sparta.doguin.domain.bookmark.service;
 
-import com.sparta.doguin.domain.discussions.service.DiscussionService;
-import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.bookmark.constans.BookmarkTargetType;
 import com.sparta.doguin.domain.bookmark.entity.Bookmark;
 import com.sparta.doguin.domain.bookmark.model.BookmarkRequest;
@@ -13,22 +11,23 @@ import com.sparta.doguin.domain.common.exception.HandleNotFound;
 import com.sparta.doguin.domain.common.exception.OutsourcingException;
 import com.sparta.doguin.domain.common.exception.ValidatorException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
-import com.sparta.doguin.domain.outsourcing.service.OutsourcingServiceImpl;
-import com.sparta.doguin.domain.question.service.QuestionService;
 import com.sparta.doguin.domain.user.entity.User;
+import com.sparta.doguin.security.AuthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.sparta.doguin.domain.common.response.ApiResponseBookmarkEnum.*;
+import java.util.Optional;
+
+import static com.sparta.doguin.domain.common.response.ApiResponseBookmarkEnum.BOOKMARK_NOT_FOUND;
+import static com.sparta.doguin.domain.common.response.ApiResponseBookmarkEnum.BOOKMARK_OK;
 
 @Service
 @RequiredArgsConstructor
 public class BookmarkServiceImpl implements BookmarkService {
     private final BookmarkRepository bookmarkRepository;
-
 
     /**
      * 북마크 생성 메서드
@@ -43,14 +42,22 @@ public class BookmarkServiceImpl implements BookmarkService {
      */
     @Transactional
     @Override
-    public ApiResponse<Void> createBookmark(BookmarkRequest.BookmarkRequestCreate reqDto, AuthUser authUser) {
+    public ApiResponse<Void> togleBookmark(BookmarkRequest.BookmarkRequestCreate reqDto, AuthUser authUser) {
         User user = User.fromAuthUser(authUser);
-        Bookmark bookmark = Bookmark.builder()
-                .user(user)
-                .targetId(reqDto.targetId())
-                .target(reqDto.target())
-                .build();
-        bookmarkRepository.save(bookmark);
+        Optional<Bookmark> findBookmark = bookmarkRepository.findBookmarkByTargetIdAndBookmarkTargetType(reqDto.targetId(), reqDto.target());
+        // 값이 존재한다면
+        if (findBookmark.isPresent()) {
+            bookmarkRepository.delete(findBookmark.get());
+        } else {
+            // 비어있다면
+            Bookmark bookmark = Bookmark.builder()
+                    .user(user)
+                    .targetId(reqDto.targetId())
+                    .target(reqDto.target())
+                    .build();
+            bookmarkRepository.save(bookmark);
+        }
+
         return ApiResponse.of(BOOKMARK_OK);
     }
 
