@@ -19,6 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 import static com.sparta.doguin.domain.common.response.ApiResponseBookmarkEnum.BOOKMARK_NOT_FOUND;
 import static com.sparta.doguin.domain.common.response.ApiResponseBookmarkEnum.BOOKMARK_OK;
 
@@ -40,14 +42,22 @@ public class BookmarkServiceImpl implements BookmarkService {
      */
     @Transactional
     @Override
-    public ApiResponse<Void> createBookmark(BookmarkRequest.BookmarkRequestCreate reqDto, AuthUser authUser) {
+    public ApiResponse<Void> togleBookmark(BookmarkRequest.BookmarkRequestCreate reqDto, AuthUser authUser) {
         User user = User.fromAuthUser(authUser);
-        Bookmark bookmark = Bookmark.builder()
-                .user(user)
-                .targetId(reqDto.targetId())
-                .target(reqDto.target())
-                .build();
-        bookmarkRepository.save(bookmark);
+        Optional<Bookmark> findBookmark = bookmarkRepository.findBookmarkByTargetIdAndBookmarkTargetType(reqDto.targetId(), reqDto.target());
+        // 값이 존재한다면
+        if (findBookmark.isPresent()) {
+            bookmarkRepository.delete(findBookmark.get());
+        } else {
+            // 비어있다면
+            Bookmark bookmark = Bookmark.builder()
+                    .user(user)
+                    .targetId(reqDto.targetId())
+                    .target(reqDto.target())
+                    .build();
+            bookmarkRepository.save(bookmark);
+        }
+
         return ApiResponse.of(BOOKMARK_OK);
     }
 

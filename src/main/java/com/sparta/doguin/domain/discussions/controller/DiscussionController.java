@@ -93,7 +93,7 @@ public class DiscussionController {
             @PathVariable Long discussionId,
             @AuthenticationPrincipal AuthUser authUser) {
         BookmarkRequest.BookmarkRequestCreate reqDto = new BookmarkRequest.BookmarkRequestCreate(discussionId, BookmarkTargetType.DISCUSSION);
-        bookmarkService.createBookmark(reqDto, authUser);
+        bookmarkService.togleBookmark(reqDto, authUser);
         ApiResponse<Void> response = ApiResponse.of(ApiResponseBookmarkEnum.BOOKMARK_OK);
         return ResponseEntity.status(ApiResponseBookmarkEnum.BOOKMARK_OK.getHttpStatus()).body(response);
     }

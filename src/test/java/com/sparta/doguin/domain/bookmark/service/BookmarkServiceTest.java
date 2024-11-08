@@ -102,7 +102,7 @@ class BookmarkServiceTest {
             given(outsourcingService.findById(outsourcingBookmarkRequestCreate1.targetId())).willReturn(outsourcing1);
 
             // when
-            bookmarkService.createBookmark(outsourcingBookmarkRequestCreate1,authUser1);
+            bookmarkService.togleBookmark(outsourcingBookmarkRequestCreate1,authUser1);
 
             // then - 1번 호출됐는지와, 예상한 데이터와 실제 데이터가 일치하는지 검증
             Mockito.verify(bookmarkRepository, Mockito.times(1)).save(Mockito.argThat(bookmark ->
@@ -119,7 +119,7 @@ class BookmarkServiceTest {
             given(questionService.findById(questionBookmarkRequestCreate1.targetId())).willReturn(question1);
 
             // when
-            bookmarkService.createBookmark(questionBookmarkRequestCreate1,authUser1);
+            bookmarkService.togleBookmark(questionBookmarkRequestCreate1,authUser1);
 
             // then - 1번 호출됐는지와, 예상한 데이터와 실제 데이터가 일치하는지 검증
             Mockito.verify(bookmarkRepository, Mockito.times(1)).save(Mockito.argThat(bookmark ->
