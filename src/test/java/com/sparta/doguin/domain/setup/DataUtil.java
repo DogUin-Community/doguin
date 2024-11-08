@@ -255,8 +255,8 @@ public class DataUtil {
         );
     }
 
-    public static QuestionRequest.CreatedQuestion questionRequestCreate1(){
-        return new QuestionRequest.CreatedQuestion(
+    public static QuestionRequest.QuestionRequestCreate questionRequestCreate1(){
+        return new QuestionRequest.QuestionRequestCreate(
                 "test title",
                 "test content",
                 FirstCategory.JAVA,
@@ -265,8 +265,8 @@ public class DataUtil {
         );
     }
 
-    public static QuestionRequest.CreatedQuestion questionRequestCreate2(){
-        return new QuestionRequest.CreatedQuestion(
+    public static QuestionRequest.QuestionRequestCreate questionRequestCreate2(){
+        return new QuestionRequest.QuestionRequestCreate(
                 "test title1",
                 "test content1",
                 FirstCategory.JAVA,
