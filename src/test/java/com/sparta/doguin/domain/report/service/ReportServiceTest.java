@@ -74,7 +74,7 @@ class ReportServiceTest {
         ReportRequest.Report reportRequest = new ReportRequest.Report("신고합니다.", "아주 무시무시합니다.", 2L);
 
         given(userService.findById(anyLong())).willReturn(reporter);
-        given(reportRepository.findByReporterIdAndReporteeId(anyLong(), anyLong())).willReturn(Optional.empty());
+        given(reportRepository.findByReporterIdAndReporteeNickname(anyLong(), anyLong())).willReturn(Optional.empty());
         given(reportRepository.save(any(Report.class))).willReturn(report);
 
         reportService.report(reporter, reportRequest);
@@ -95,7 +95,7 @@ class ReportServiceTest {
         ReportRequest.Report reportRequest = new ReportRequest.Report("신고합니다.", "아주 무시무시합니다.", 2L);
 
         given(userService.findById(anyLong())).willReturn(reporter);
-        given(reportRepository.findByReporterIdAndReporteeId(anyLong(), anyLong())).willReturn(Optional.of(report));
+        given(reportRepository.findByReporterIdAndReporteeNickname(anyLong(), anyLong())).willReturn(Optional.of(report));
 
 
         InvalidRequestException exception = assertThrows(InvalidRequestException.class, () -> reportService.report(reporter, reportRequest));
@@ -176,7 +176,7 @@ class ReportServiceTest {
     @Test
     @DisplayName("특정인 신고 결과 조회")
     void reportSearch() {
-        given(reportRepository.findByReporterIdAndReporteeId(1L, 2L)).willReturn(Optional.of(report));
+        given(reportRepository.findByReporterIdAndReporteeNickname(1L, 2L)).willReturn(Optional.of(report));
 
         ReportResponse.ReportView response = reportService.reportSearch(reporter, 2L);
         assertEquals(response.nickName(), reportee.getNickname());
@@ -184,7 +184,7 @@ class ReportServiceTest {
     @Test
     @DisplayName("특정인 신고 결과 조회 실패 (내역없음)")
     void reportSearch_내역없음() {
-        given(reportRepository.findByReporterIdAndReporteeId(1L, 2L)).willReturn(Optional.empty());
+        given(reportRepository.findByReporterIdAndReporteeNickname(1L, 2L)).willReturn(Optional.empty());
 
         HandleNotFound exception = assertThrows(HandleNotFound.class, () -> reportService.reportSearch(reporter, 2L));
 

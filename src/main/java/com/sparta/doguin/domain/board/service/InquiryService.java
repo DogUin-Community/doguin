@@ -2,6 +2,10 @@ package com.sparta.doguin.domain.board.service;
 
 import com.sparta.doguin.domain.answer.dto.AnswerResponse;
 import com.sparta.doguin.domain.answer.service.InquiryAnswerService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentGetService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUpdateService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
 import com.sparta.doguin.domain.board.BoardType;
 import com.sparta.doguin.domain.board.dto.BoardRequest.BoardCommonRequest;
 import com.sparta.doguin.domain.board.dto.BoardResponse;
@@ -18,6 +22,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+
+import static com.sparta.doguin.domain.attachment.constans.AttachmentTargetType.*;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +35,13 @@ public class InquiryService implements BoardService{
     private final InquiryAnswerService inquiryAnswerService;
     private final BoardRepository boardRepository;
     private final PopularService popularService;
+
+    private final AttachmentUploadService attachmentUploadService;
+    private final AttachmentUpdateService attachmentUpdateService;
+    private final AttachmentGetService attachmentGetService;
+    private final AttachmentDeleteService attachmentDeleteService;
+
+
     private final BoardType boardType = BoardType.BOARD_INQUIRY;
 
     /**
@@ -38,9 +54,15 @@ public class InquiryService implements BoardService{
      */
     @Override
     @Transactional
-    public Board create(User user, BoardCommonRequest boardRequest) {
+    public void create(User user, BoardCommonRequest boardRequest, List<MultipartFile> files) {
         Board board = new Board(boardRequest.title(), boardRequest.content(), boardType,user);
-        return boardRepository.save(board);
+        boardRepository.save(board);
+
+        if(files!=null){
+            attachmentUploadService.upload(files,user,board.getId(), INQUIRY);
+            attachmentGetService.getFileIds(user.getId(),board.getId(), INQUIRY);
+        }
+
     }
 
     /**
@@ -55,7 +77,7 @@ public class InquiryService implements BoardService{
      */
     @Override
     @Transactional
-    public Board update(User user,Long boardId, BoardCommonRequest boardRequest) {
+    public void update(User user,Long boardId, BoardCommonRequest boardRequest,List<MultipartFile> files) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.INQUIRY_NOT_FOUND));
         if(!board.getUser().getId().equals(user.getId())){
@@ -65,7 +87,6 @@ public class InquiryService implements BoardService{
             throw new InvalidRequestException(ApiResponseBoardEnum.INQUIRY_WRONG);
         }
         board.update(boardRequest.title(),boardRequest.content());
-        return board;
     }
 
     /**
@@ -87,11 +108,12 @@ public class InquiryService implements BoardService{
         if (board.getBoardType() != boardType) {
             throw new InvalidRequestException(ApiResponseBoardEnum.INQUIRY_WRONG);
         }
+        List<String> filePaths = attachmentGetService.getAllAttachmentPath(boardId, INQUIRY);
         Page<AnswerResponse.Response> responses = inquiryAnswerService.findByBoardId(boardId,PageRequest.of(0,10));
         popularService.trackUserView(boardId, user.getId());
         Long viewCount = popularService.getHourUniqueViewCount(boardId)+board.getView();
 
-        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(),viewCount, responses);
+        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(),viewCount, responses,filePaths);
     }
 
     /**
@@ -159,6 +181,9 @@ public class InquiryService implements BoardService{
         if(board.getBoardType()!=boardType){
             throw new InvalidRequestException(ApiResponseBoardEnum.INQUIRY_WRONG);
         }
+
+        List<Long> fileIds = attachmentGetService.getFileIds(user.getId(),board.getId(), INQUIRY);
+        attachmentDeleteService.delete(user,fileIds);
 
         boardRepository.delete(board);
     }

@@ -23,7 +23,7 @@ public class DiscordMessageService {
      * @param title alert 채널에 띄울 제목
      * @param description alert 채널에 띄울 본문
      */
-    public void sendMsgReportChannel(Long report, Long reported, String title, String description){
+    public void sendMsgReportChannel(Long report, String reported, String title, String description){
         DiscordWebhook webhook = new DiscordWebhook(reportUrl);
         webhook.addEmbed(
                 new DiscordWebhook.EmbedObject()

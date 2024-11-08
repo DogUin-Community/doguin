@@ -4,6 +4,7 @@ import com.sparta.doguin.domain.answer.dto.AnswerResponse;
 import org.springframework.data.domain.Page;
 
 import java.io.Serializable;
+import java.util.List;
 
 public sealed interface BoardResponse permits BoardResponse.BoardCommonResponse, BoardResponse.BoardWithAnswer {
 
@@ -19,7 +20,8 @@ public sealed interface BoardResponse permits BoardResponse.BoardCommonResponse,
             String title,
             String content,
             Long view,
-            Page<AnswerResponse.Response> response
+            Page<AnswerResponse.Response> response,
+            List<String> filePaths
     )implements  BoardResponse, Serializable {}
 
 
