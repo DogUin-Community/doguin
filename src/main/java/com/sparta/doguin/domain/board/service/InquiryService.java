@@ -26,8 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-import static com.sparta.doguin.domain.attachment.constans.AttachmentTargetType.EVENT;
-import static com.sparta.doguin.domain.attachment.constans.AttachmentTargetType.INQUIRY;
+import static com.sparta.doguin.domain.attachment.constans.AttachmentTargetType.*;
 
 @Service
 @RequiredArgsConstructor
@@ -109,11 +108,12 @@ public class InquiryService implements BoardService{
         if (board.getBoardType() != boardType) {
             throw new InvalidRequestException(ApiResponseBoardEnum.INQUIRY_WRONG);
         }
+        List<String> filePaths = attachmentGetService.getAllAttachmentPath(boardId, INQUIRY);
         Page<AnswerResponse.Response> responses = inquiryAnswerService.findByBoardId(boardId,PageRequest.of(0,10));
         popularService.trackUserView(boardId, user.getId());
         Long viewCount = popularService.getHourUniqueViewCount(boardId)+board.getView();
 
-        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(),viewCount, responses);
+        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(),viewCount, responses,filePaths);
     }
 
     /**

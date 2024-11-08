@@ -125,6 +125,8 @@ public class BulletinService implements BoardService {
             throw new InvalidRequestException(ApiResponseBoardEnum.BULLETIN_WRONG);
         }
 
+        List<String> filePaths = attachmentGetService.getAllAttachmentPath(boardId, BULLETIN);
+
         Page<AnswerResponse.Response> responses = bulletinAnswerService.findByBoardId(boardId,PageRequest.of(0,10));
 
         if(user!=null){
@@ -133,7 +135,7 @@ public class BulletinService implements BoardService {
 
         Long viewCount = popularService.getHourUniqueViewCount(boardId)+board.getView(); // 한시간 조회수 + 누적 조회수 로 토탈 조회수
 
-        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(),viewCount, responses);
+        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(),viewCount, responses,filePaths);
     }
 
     /**

@@ -106,8 +106,6 @@ public class EventService implements BoardService{
      * @author 김창민
      * @since 1.0
      */
-
-
     @Override
     public BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId, User user) {
         Board board = boardRepository.findById(boardId)
@@ -116,6 +114,8 @@ public class EventService implements BoardService{
             throw new InvalidRequestException(ApiResponseBoardEnum.EVENT_WRONG);
         }
 
+        List<String> filePaths = attachmentGetService.getAllAttachmentPath(boardId, EVENT);
+
         Page<AnswerResponse.Response> responses = noticeAnswerService.findByBoardId(boardId,PageRequest.of(0,10));
 
         if(user!=null){
@@ -123,7 +123,7 @@ public class EventService implements BoardService{
         }
 
         Long viewCount = popularService.getHourUniqueViewCount(boardId)+board.getView();
-        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(),viewCount, responses);
+        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(),viewCount, responses,filePaths);
     }
 
     /**
