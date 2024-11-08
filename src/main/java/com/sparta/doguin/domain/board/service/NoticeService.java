@@ -191,6 +191,10 @@ public class NoticeService implements BoardService{
         if(board.getBoardType()!=boardType){
             throw new InvalidRequestException(ApiResponseBoardEnum.NOTICE_WRONG);
         }
+
+        List<Long> fileIds = attachmentGetService.getFileIds(user.getId(),board.getId(), NOTICE);
+        attachmentDeleteService.delete(user,fileIds);
+
         boardRepository.delete(board);
     }
 

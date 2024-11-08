@@ -182,6 +182,9 @@ public class InquiryService implements BoardService{
             throw new InvalidRequestException(ApiResponseBoardEnum.INQUIRY_WRONG);
         }
 
+        List<Long> fileIds = attachmentGetService.getFileIds(user.getId(),board.getId(), INQUIRY);
+        attachmentDeleteService.delete(user,fileIds);
+
         boardRepository.delete(board);
     }
 

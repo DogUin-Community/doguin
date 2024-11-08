@@ -192,6 +192,10 @@ public class EventService implements BoardService{
         if(board.getBoardType()!=boardType){
             throw new InvalidRequestException(ApiResponseBoardEnum.EVENT_WRONG);
         }
+
+        List<Long> fileIds = attachmentGetService.getFileIds(user.getId(),board.getId(), EVENT);
+        attachmentDeleteService.delete(user,fileIds);
+
         boardRepository.delete(board);
     }
 

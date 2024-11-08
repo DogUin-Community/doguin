@@ -204,6 +204,9 @@ public class BulletinService implements BoardService {
             throw new InvalidRequestException(ApiResponseBoardEnum.BULLETIN_WRONG);
         }
 
+        List<Long> fileIds = attachmentGetService.getFileIds(user.getId(),board.getId(), BULLETIN);
+        attachmentDeleteService.delete(user,fileIds);
+
         boardRepository.delete(board);
     }
 
