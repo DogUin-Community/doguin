@@ -8,6 +8,7 @@ import com.sparta.doguin.domain.common.response.ApiResponseQuestionEnum;
 import com.sparta.doguin.domain.question.dto.QuestionRequest;
 import com.sparta.doguin.domain.question.dto.QuestionResponse;
 import com.sparta.doguin.domain.question.entity.Question;
+import com.sparta.doguin.domain.question.enums.QuestionStatus;
 import com.sparta.doguin.domain.question.repository.QuestionRepository;
 import com.sparta.doguin.domain.user.entity.User;
 import com.sparta.doguin.security.AuthUser;
@@ -86,6 +87,27 @@ public class QuestionService {
 
         // 성공 응답 반환
         return ApiResponse.of(ApiResponseQuestionEnum.QUESTION_UPDATE_SUCCESS, new QuestionResponse.CreatedQuestion(question.getId(), question.getTitle(), question.getContent(), question.getFirstCategory(), question.getSecondCategory(), question.getLastCategory(), question.getQuestionStatus()));
+    }
+
+    @Transactional
+    public ApiResponse<Void> acceptQuestion(AuthUser authUser, long questionId) {
+
+        // 로그인한 사용자의 인증 정보
+        User user = User.fromAuthUser(authUser);
+
+        // 해당 질문이 있는지 검증
+        Question question = findById(questionId);
+
+        // 본인이 등록한 게시글인지 확인
+        if (!question.getUser().getId().equals(user.getId())) {
+            throw new QuestionException(ApiResponseQuestionEnum.QUESTION_UPDATE_ACCESS_DENIED);
+        }
+
+        // 질문 상태 수정
+        question.accept(QuestionStatus.ADOPTED);
+
+        // 성공 응답 반환
+        return ApiResponse.of(ApiResponseQuestionEnum.QUESTION_ACCEPT_SUCCESS);
     }
 
     /**
