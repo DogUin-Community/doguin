@@ -11,8 +11,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -23,44 +23,38 @@ public class PopularService {
     private final BoardRepository boardRepository;
 
     /**
-     * 한 게시글의 조회수. 어뷰징 방지를 위해 한시간당 한명
+     * 한 게시글의 조회수. 어뷰징 방지를 위해 한 시간당 한 명만 유효하게 처리
      *
      * @param boardId 조회 대상 일반 게시물의 id
-     * @param userId 로그인 한 계정
-     * @author 김창민
-     * @since 1.0
+     * @param userId  로그인 한 계정
      */
     public void trackUserView(Long boardId, Long userId) {
         String hourKey = "hourView:" + boardId;
-        redisTemplate.opsForSet().add(hourKey, userId.toString()); // set형식으로 안에는 String형의 userId가 들어감.
+        redisTemplate.opsForSet().add(hourKey, userId.toString());
+        // 조회수를 Sorted Set에 업데이트하여 인기 게시글 관리를 위한 데이터 추가
+        redisTemplate.opsForZSet().incrementScore("popularBoard", boardId.toString(), 1);
     }
 
     /**
-     * 지난 1시간의 누적 조회인을 하루 조회인에 업로드 하고 리셋
-     *
-     * @author 김창민
-     * @since 1.0
+     * 지난 1시간의 누적 조회인을 하루 조회인에 업로드하고 리셋
      */
     @Scheduled(cron = "0 0 * * * ?")
     @Transactional
     public void updateTodayView() {
         Set<String> keysToUpdate = redisTemplate.keys("hourView:*");
         if (keysToUpdate != null && !keysToUpdate.isEmpty()) {
-            for (String val : keysToUpdate) {                                      // 레디스에 존재하는 1시간 조회 키 순회
-                String[] keys = val.split(":");                             // 나눠서 id 파싱
-                String todayKey = "todayView:" + keys[1];                          // todayKey를 생성합니다.
+            for (String val : keysToUpdate) {
+                String[] keys = val.split(":");
+                String todayKey = "todayView:" + keys[1];
 
-                // 오늘 누적 조회수 가져오기
                 String todayViewStr = (String) redisTemplate.opsForValue().get(todayKey);
-                Long todayView = (todayViewStr != null) ? Long.parseLong(todayViewStr) : 0L; // String을 Long으로 변환
+                Long todayView = (todayViewStr != null) ? Long.parseLong(todayViewStr) : 0L;
 
-                // 한 시간 누적 조회수 가져오기
-                long hourView = redisTemplate.opsForSet().size(val); // long으로 가져오기
+                long hourView = redisTemplate.opsForSet().size(val);
 
                 Long totalView = todayView + hourView;
 
-                // 오늘의 뷰 수 업데이트
-                redisTemplate.opsForValue().set(todayKey, Long.toString(totalView));    // 지금까지의 누적 수 갱신
+                redisTemplate.opsForValue().set(todayKey, Long.toString(totalView));
                 redisTemplate.delete(val);
             }
         }
@@ -70,21 +64,16 @@ public class PopularService {
      * 일일 조회수 반환기
      *
      * @param boardId 조회 대상 일반 게시물의 id
-     * @author 김창민
      * @return 일일 조회수
-     * @since 1.0
      */
     public Long getHourUniqueViewCount(Long boardId) {
-        String hourKey = "hourView:" +boardId;
+        String hourKey = "hourView:" + boardId;
         Long count = (long) redisTemplate.opsForSet().members(hourKey).size();
         return count != null ? count : 0L;
     }
 
     /**
-     * 정각에 레디스에 저장된 각 게시물의 일일 조회수를 삭제하고, 누적 조회수에 반영
-     *
-     * @author 김창민
-     * @since 1.0
+     * 정각에 Redis에 저장된 각 게시물의 일일 조회수를 삭제하고, 누적 조회수에 반영
      */
     @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
@@ -97,56 +86,48 @@ public class PopularService {
                 Board board = boardRepository.findById(Long.parseLong(keys[1]))
                         .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.BULLETIN_NOT_FOUND));
 
-                // 오늘 전체 조회수 가져오기 (String을 Long으로 변환)
-                String todayViewStr = (String) redisTemplate.opsForValue().get(val); // 오늘 전체 조회수
-                Long todayView = (todayViewStr != null) ? Long.parseLong(todayViewStr) : 0L; // String을 Long으로 변환
+                String todayViewStr = (String) redisTemplate.opsForValue().get(val);
+                Long todayView = (todayViewStr != null) ? Long.parseLong(todayViewStr) : 0L;
 
                 Long totalView = board.getView();
                 board.changeTotalViewCount(totalView, todayView);
+
+                redisTemplate.delete(val);
             }
         }
         log.info("누적 조회수 업로드 완료");
     }
 
     /**
-     * 한시간 마다 인기글 업로드 3개
+     * 인기 게시글 상위 3개 조회
      *
-     * @author 김창민
-     * @since 1.0
+     * @return 인기 게시글 ID 목록
+     */
+    public Set<Long> viewPopularBoardList() {
+        // Sorted Set에서 상위 3개의 인기 게시글 ID를 조회하고 Long 타입으로 변환
+        Set<Object> popularBoardIds = redisTemplate.opsForZSet().reverseRange("popularBoard", 0, 2);
+        // Object 타입을 Long 타입으로 변환
+        return popularBoardIds.stream()
+                .map(id -> Long.parseLong(id.toString()))
+                .collect(Collectors.toSet());
+    }
+
+
+    /**
+     * 한 시간마다 인기 게시글 목록을 최신화
      */
     @Scheduled(cron = "0 0 * * * ?")
     @Transactional
     public void updatePopularBoard(){
-        PriorityQueue<Long[]> views = new PriorityQueue<>((a, b) -> Long.compare(a[1], b[1]));
-        String popularBoard = "popularBoard";
-
-        Set<String> popularBoards = redisTemplate.keys(popularBoard);
         Set<String> keysToUpdate = redisTemplate.keys("hourView:*");
-
-        if (keysToUpdate != null && !keysToUpdate.isEmpty()&&popularBoards != null) {
-            for(String val : keysToUpdate) {
+        if (keysToUpdate != null && !keysToUpdate.isEmpty()) {
+            for (String val : keysToUpdate) {
                 String[] keys = val.split(":");
                 Long boardId = Long.parseLong(keys[1]);
-                //이미 인기글에 있는지 체크 해야함.
-                if(popularBoards.contains(popularBoard+boardId)){
-                    continue;
-                }
 
                 Long hourView = redisTemplate.opsForSet().size(val);
-                views.offer(new Long[]{boardId, hourView});
-                if(views.size()>3){
-                    views.poll();
-                }
+                redisTemplate.opsForZSet().incrementScore("popularBoard", boardId.toString(), hourView);
             }
         }
-
-        //여기서 인기글로 추가
-        for(Long[] val : views){
-            redisTemplate.opsForSet().add(popularBoard,val[0]);
-        }
-    }
-
-    public Set viewPopularBoardList(){
-        return redisTemplate.opsForSet().members("popularBoard");
     }
 }
