@@ -10,6 +10,7 @@ import com.sparta.doguin.domain.board.service.EventService;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseBoardEnum;
 import com.sparta.doguin.domain.user.entity.User;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,8 +31,8 @@ public class EventController{
 
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> create(@AuthenticationPrincipal AuthUser authUser,
-                                                    @RequestBody BoardCommonRequest boardRequest,
-                                                    @RequestPart(required = false) List<MultipartFile> files){
+                                                    @RequestPart(name = "boardRequest") @Valid BoardCommonRequest boardRequest,
+                                                    @RequestPart(name = "files", required = false) List<MultipartFile> files){
         User user = User.fromAuthUser(authUser);
         boardService.create(user, boardRequest,files);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.EVENT_CREATE_SUCCESS));
@@ -40,8 +41,8 @@ public class EventController{
     @PutMapping("{boardId}")
     public ResponseEntity<ApiResponse<Void>> update(@AuthenticationPrincipal AuthUser authUser,
                                                     @PathVariable Long boardId,
-                                                    @RequestBody BoardCommonRequest boardRequest,
-                                                    @RequestPart(required = false) List<MultipartFile> files) {
+                                                    @RequestPart(name = "boardRequest") @Valid BoardCommonRequest boardRequest,
+                                                    @RequestPart(name = "files", required = false) List<MultipartFile> files) {
         User user = User.fromAuthUser(authUser);
         boardService.update(user, boardId, boardRequest,files);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.EVENT_UPDATE_SUCCESS));
