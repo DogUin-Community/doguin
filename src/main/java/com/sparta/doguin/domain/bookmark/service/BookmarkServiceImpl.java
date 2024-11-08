@@ -28,9 +28,7 @@ import static com.sparta.doguin.domain.common.response.ApiResponseBookmarkEnum.*
 @RequiredArgsConstructor
 public class BookmarkServiceImpl implements BookmarkService {
     private final BookmarkRepository bookmarkRepository;
-    private final OutsourcingServiceImpl outsourcingService;
-    private final QuestionService questionService;
-    private final DiscussionService discussionService;
+
 
     /**
      * 북마크 생성 메서드
