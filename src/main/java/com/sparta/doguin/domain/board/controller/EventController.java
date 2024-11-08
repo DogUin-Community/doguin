@@ -14,6 +14,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/boards/events")
@@ -26,14 +29,19 @@ public class EventController{
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Void>> create(@AuthenticationPrincipal AuthUser authUser, @RequestBody BoardCommonRequest boardRequest){
+    public ResponseEntity<ApiResponse<Void>> create(@AuthenticationPrincipal AuthUser authUser,
+                                                    @RequestBody BoardCommonRequest boardRequest,
+                                                    @RequestPart(required = false) List<MultipartFile> files){
         User user = User.fromAuthUser(authUser);
         boardService.create(user, boardRequest);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.EVENT_CREATE_SUCCESS));
     }
 
     @PutMapping("{boardId}")
-    public ResponseEntity<ApiResponse<Void>> update(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long boardId,@RequestBody BoardCommonRequest boardRequest) {
+    public ResponseEntity<ApiResponse<Void>> update(@AuthenticationPrincipal AuthUser authUser,
+                                                    @PathVariable Long boardId,
+                                                    @RequestBody BoardCommonRequest boardRequest,
+                                                    @RequestPart(required = false) List<MultipartFile> files) {
         User user = User.fromAuthUser(authUser);
         boardService.update(user, boardId, boardRequest);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.EVENT_UPDATE_SUCCESS));

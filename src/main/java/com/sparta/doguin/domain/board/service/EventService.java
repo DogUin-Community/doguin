@@ -2,6 +2,10 @@ package com.sparta.doguin.domain.board.service;
 
 import com.sparta.doguin.domain.answer.dto.AnswerResponse;
 import com.sparta.doguin.domain.answer.service.NoticeAnswerService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentGetService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUpdateService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
 import com.sparta.doguin.domain.board.BoardType;
 import com.sparta.doguin.domain.board.dto.BoardRequest.BoardCommonRequest;
 import com.sparta.doguin.domain.board.dto.BoardResponse;
@@ -18,6 +22,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+
+import static com.sparta.doguin.domain.attachment.constans.AttachmentTargetType.BULLETIN;
+import static com.sparta.doguin.domain.attachment.constans.AttachmentTargetType.EVENT;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +37,15 @@ public class EventService implements BoardService{
     private final NoticeAnswerService noticeAnswerService;
     private final PopularService popularService;
 
+    private final AttachmentUploadService attachmentUploadService;
+    private final AttachmentUpdateService attachmentUpdateService;
+    private final AttachmentGetService attachmentGetService;
+    private final AttachmentDeleteService attachmentDeleteService;
+
+
     private final BoardType boardType = BoardType.BOARD_EVENT;
+
+
 
     /**
      * 이벤트 게시물 생성
@@ -39,9 +57,14 @@ public class EventService implements BoardService{
      */
     @Override
     @Transactional
-    public void create(User user, BoardCommonRequest boardRequest) {
+    public void create(User user, BoardCommonRequest boardRequest, List<MultipartFile> files) {
         Board board = new Board(boardRequest.title(), boardRequest.content(), boardType,user);
         boardRepository.save(board);
+
+        if(files!=null){
+            attachmentUploadService.upload(files,user,board.getId(), EVENT);
+            attachmentGetService.getFileIds(user.getId(),board.getId(), EVENT);
+        }
     }
 
     /**
@@ -59,7 +82,7 @@ public class EventService implements BoardService{
      */
     @Override
     @Transactional
-    public void update(User user,Long boardId, BoardCommonRequest boardRequest) {
+    public void update(User user,Long boardId, BoardCommonRequest boardRequest,List<MultipartFile> files) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.EVENT_NOT_FOUND));
         if(!board.getUser().getId().equals(user.getId())){
