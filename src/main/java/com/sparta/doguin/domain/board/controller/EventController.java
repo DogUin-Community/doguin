@@ -33,7 +33,7 @@ public class EventController{
                                                     @RequestBody BoardCommonRequest boardRequest,
                                                     @RequestPart(required = false) List<MultipartFile> files){
         User user = User.fromAuthUser(authUser);
-        boardService.create(user, boardRequest);
+        boardService.create(user, boardRequest,files);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.EVENT_CREATE_SUCCESS));
     }
 
@@ -43,7 +43,7 @@ public class EventController{
                                                     @RequestBody BoardCommonRequest boardRequest,
                                                     @RequestPart(required = false) List<MultipartFile> files) {
         User user = User.fromAuthUser(authUser);
-        boardService.update(user, boardId, boardRequest);
+        boardService.update(user, boardId, boardRequest,files);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.EVENT_UPDATE_SUCCESS));
     }
 

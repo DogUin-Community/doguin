@@ -105,7 +105,7 @@ public class ReportService {
      */
     public Page<ReportResponse.ReportView> reportViewAllAdmin(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<ReportResponse.ReportView> reports = reportRepository.findAll(pageable);
+        Page<ReportResponse.ReportView> reports = reportRepository.findAllReports(pageable);
         return reports;
     }
 

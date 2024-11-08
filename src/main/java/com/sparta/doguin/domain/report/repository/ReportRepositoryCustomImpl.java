@@ -52,7 +52,7 @@ public class ReportRepositoryCustomImpl implements ReportRepositoryCustom {
         return new PageImpl<>(result, pageable, count);
     }
     @Override
-    public Page<ReportResponse.ReportView> findAll(Pageable pageable) {
+    public Page<ReportResponse.ReportView> findAllReports(Pageable pageable) {
         List<ReportResponse.ReportView> result = jpaQueryFactory
                 .select(Projections.constructor(ReportResponse.ReportView.class,
                         report.id,

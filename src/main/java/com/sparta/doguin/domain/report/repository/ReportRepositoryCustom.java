@@ -12,7 +12,7 @@ public interface ReportRepositoryCustom  {
 
     Page<ReportResponse.ReportView> findAllByReporterId(Pageable pageable, Long id);
 
-    Page<ReportResponse.ReportView> findAll(Pageable pageable);
+    Page<ReportResponse.ReportView> findAllReports(Pageable pageable);
 
     Optional<Report> findByIdWithReporterId(Long reporterId, Long reporteeId);
 

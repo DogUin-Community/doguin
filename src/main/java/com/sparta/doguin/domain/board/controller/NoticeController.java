@@ -33,7 +33,7 @@ public class NoticeController {
                                                     @RequestBody BoardCommonRequest boardRequest,
                                                     @RequestPart(required = false) List<MultipartFile> files){
         User user = User.fromAuthUser(authUser);
-        boardService.create(user, boardRequest);
+        boardService.create(user, boardRequest,files);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.NOTICE_CREATE_SUCCESS));
     }
 
@@ -43,7 +43,7 @@ public class NoticeController {
                                                     @RequestBody BoardCommonRequest boardRequest,
                                                     @RequestPart(required = false) List<MultipartFile> files) {
         User user = User.fromAuthUser(authUser);
-        boardService.update(user, boardId, boardRequest);
+        boardService.update(user, boardId, boardRequest,files);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.NOTICE_UPDATE_SUCCESS));
     }
 
