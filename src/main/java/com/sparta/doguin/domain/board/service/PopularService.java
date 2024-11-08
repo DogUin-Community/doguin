@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,8 +32,6 @@ public class PopularService {
     public void trackUserView(Long boardId, Long userId) {
         String hourKey = "hourView:" + boardId;
         redisTemplate.opsForSet().add(hourKey, userId.toString());
-        // 조회수를 Sorted Set에 업데이트하여 인기 게시글 관리를 위한 데이터 추가
-        redisTemplate.opsForZSet().incrementScore("popularBoard", boardId.toString(), 1);
     }
 
     /**
@@ -99,14 +98,12 @@ public class PopularService {
     }
 
     /**
-     * 인기 게시글 상위 3개 조회
+     * 상위 인기 게시글 조회
      *
      * @return 인기 게시글 ID 목록
      */
     public Set<Long> viewPopularBoardList() {
-        // Sorted Set에서 상위 3개의 인기 게시글 ID를 조회하고 Long 타입으로 변환
         Set<Object> popularBoardIds = redisTemplate.opsForZSet().reverseRange("popularBoard", 0, 2);
-        // Object 타입을 Long 타입으로 변환
         return popularBoardIds.stream()
                 .map(id -> Long.parseLong(id.toString()))
                 .collect(Collectors.toSet());
@@ -114,20 +111,44 @@ public class PopularService {
 
 
     /**
-     * 한 시간마다 인기 게시글 목록을 최신화
+     * 한 시간마다 상위 3개의 인기 게시글을 업데이트
      */
     @Scheduled(cron = "0 0 * * * ?")
     @Transactional
-    public void updatePopularBoard(){
+    public void updatePopularBoard() {
+        PriorityQueue<Long[]> views = new PriorityQueue<>((a, b) -> Long.compare(a[1], b[1]));
+        String popularBoard = "popularBoard";
+
+        // 1시간 동안 수집된 조회수를 이용해 인기글 순위를 계산
         Set<String> keysToUpdate = redisTemplate.keys("hourView:*");
+        Set<Object> currentPopularBoard = redisTemplate.opsForZSet().range(popularBoard, 0, -1);
+
         if (keysToUpdate != null && !keysToUpdate.isEmpty()) {
-            for (String val : keysToUpdate) {
-                String[] keys = val.split(":");
+            for (String key : keysToUpdate) {
+                String[] keys = key.split(":");
                 Long boardId = Long.parseLong(keys[1]);
 
-                Long hourView = redisTemplate.opsForSet().size(val);
-                redisTemplate.opsForZSet().incrementScore("popularBoard", boardId.toString(), hourView);
+                // 기존 인기글에 포함되지 않은 게시글만 고려
+                if (currentPopularBoard == null || !currentPopularBoard.contains(boardId.toString())) {
+                    long hourView = redisTemplate.opsForSet().size(key);
+                    views.offer(new Long[]{boardId, hourView});
+
+                    // 상위 3개의 게시글만 유지
+                    if (views.size() > 3) {
+                        views.poll();
+                    }
+                }
+
+                // 수집한 hourView 데이터를 삭제
+                redisTemplate.delete(key);
             }
         }
+
+        // 새로 선정된 인기 게시글을 `popularBoard`에 추가
+        for (Long[] viewData : views) {
+            redisTemplate.opsForZSet().add(popularBoard, viewData[0].toString(), viewData[1]);
+        }
+
+        log.info("인기 게시글 업데이트 완료");
     }
 }

@@ -228,7 +228,6 @@ public class BulletinService implements BoardService {
     public Page<Long> viewPopular(int page, int size){
         Pageable pageable = PageRequest.of(page - 1, size);
         Set<Long> popularBoardIds = popularService.viewPopularBoardList();
-        log.info(String.valueOf(popularBoardIds.size()));
 
         // 게시물 ID 목록이 없을 경우 빈 페이지 반환
         if (popularBoardIds == null || popularBoardIds.isEmpty()) {
