@@ -42,10 +42,13 @@ public class BookmarkController {
         return ApiResponse.of(apiResponse);
     }
 
-    @Operation(summary = "북마크 생성", description = "북마크 생성 API")
+    @Operation(summary = "북마크 토글", description = "북마크 존재시 -> 삭제 / 없을시 -> 생성")
     @PostMapping
-    public ResponseEntity<ApiResponse<Void>> createBookmark(@RequestBody BookmarkRequest.BookmarkRequestCreate reqDto, @AuthenticationPrincipal AuthUser authUser){
-        ApiResponse<Void> apiResponse = bookmarkService.createBookmark(reqDto,authUser);
+    public ResponseEntity<ApiResponse<Void>> togleBookmark(
+            @RequestBody BookmarkRequest.BookmarkRequestCreate reqDto,
+            @AuthenticationPrincipal AuthUser authUser)
+    {
+        ApiResponse<Void> apiResponse = bookmarkService.togleBookmark(reqDto,authUser);
         return ApiResponse.of(apiResponse);
     }
 
