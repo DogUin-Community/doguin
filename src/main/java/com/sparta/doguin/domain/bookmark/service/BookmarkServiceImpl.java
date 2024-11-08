@@ -1,5 +1,6 @@
 package com.sparta.doguin.domain.bookmark.service;
 
+import com.sparta.doguin.domain.discussions.service.DiscussionService;
 import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.bookmark.constans.BookmarkTargetType;
 import com.sparta.doguin.domain.bookmark.entity.Bookmark;
@@ -29,17 +30,18 @@ public class BookmarkServiceImpl implements BookmarkService {
     private final BookmarkRepository bookmarkRepository;
     private final OutsourcingServiceImpl outsourcingService;
     private final QuestionService questionService;
+    private final DiscussionService discussionService;
 
     /**
      * 북마크 생성 메서드
      *
-     * @param reqDto / 생성할 북마크 데이터
+     * @param reqDto   / 생성할 북마크 데이터
      * @param authUser / 북마크 생성할 유저
      * @return ApiResponse<Void> / 성공 응답 반환
      * @throws OutsourcingException / 외주가 존재하지않을때 발생되는 예외
-     * @throws HandleNotFound 질문이 존재하지 않을 경우 발생
-     * @since 1.0
+     * @throws HandleNotFound       질문이 존재하지 않을 경우 발생
      * @author 김경민
+     * @since 1.0
      */
     @Transactional
     @Override
@@ -48,8 +50,12 @@ public class BookmarkServiceImpl implements BookmarkService {
         Long targetId;
         if (reqDto.target() == BookmarkTargetType.OUTSOURCING) {
             targetId = outsourcingService.findById(reqDto.targetId()).getId();
-        } else {
+        } else if (reqDto.target() == BookmarkTargetType.QUESTION) {
             targetId = questionService.findById(reqDto.targetId()).getId();
+        } else if (reqDto.target() == BookmarkTargetType.DISCUSSION) {
+            targetId = discussionService.getDiscussion(reqDto.targetId(), authUser).id();
+        } else {
+            throw new IllegalArgumentException("Invalid BookmarkTargetType: " + reqDto.target());
         }
         Bookmark bookmark = Bookmark.builder()
                 .user(user)
@@ -65,17 +71,17 @@ public class BookmarkServiceImpl implements BookmarkService {
      *
      * @param bookmarkId / 취소할 북마크 ID
      * @return ApiResponse<Void> / 성공 응답 반환
-     * @throws BookmarkException / 북마크 없을시 예외처리
+     * @throws BookmarkException  / 북마크 없을시 예외처리
      * @throws ValidatorException / 북마크 한 사람이 본인이 아닐경우 예외처리
-     * @since 1.0
      * @author 김경민
+     * @since 1.0
      */
     @Transactional
     @Override
-    public ApiResponse<Void> deleteBookmark(Long bookmarkId,AuthUser authUser) {
+    public ApiResponse<Void> deleteBookmark(Long bookmarkId, AuthUser authUser) {
         User user = User.fromAuthUser(authUser);
         Bookmark bookmark = findById(bookmarkId);
-        BookmarkValidator.isMe(user.getId(),bookmark.getUser().getId());
+        BookmarkValidator.isMe(user.getId(), bookmark.getUser().getId());
         bookmarkRepository.delete(bookmark);
         return ApiResponse.of(BOOKMARK_OK);
     }
@@ -84,9 +90,9 @@ public class BookmarkServiceImpl implements BookmarkService {
      * 특정 유저에 대한 북마크들
      *
      * @param pageable / 페이지 데이터 (페이지,사이즈,정렬)
-     * @return ApiResponse<List<BookmarkDto>> / 북마크들 반환
-     * @since 1.0
+     * @return ApiResponse<List < BookmarkDto>> / 북마크들 반환
      * @author 김경민
+     * @since 1.0
      */
     @Transactional(readOnly = true)
     @Override
@@ -96,11 +102,11 @@ public class BookmarkServiceImpl implements BookmarkService {
         if (target == null) {
             pageableBookmarks = bookmarkRepository.findBookmarkByUser(user, pageable);
         } else {
-            pageableBookmarks = bookmarkRepository.findBookmarkByUserAndTarget(user,pageable,target);
+            pageableBookmarks = bookmarkRepository.findBookmarkByUserAndTarget(user, pageable, target);
         }
 
         Page<BookmarkResponse> bookmarks = pageableBookmarks.map(BookmarkResponse.BookmarkResponseGet::of);
-        return ApiResponse.of(BOOKMARK_OK,bookmarks);
+        return ApiResponse.of(BOOKMARK_OK, bookmarks);
     }
 
     /**
@@ -109,8 +115,8 @@ public class BookmarkServiceImpl implements BookmarkService {
      * @param bookmarkId / 찾을 북마크 ID
      * @return Bookmark / 찾은 북마크 데이터 반환
      * @throws BookmarkException / 북마크 없을시 예외처리
-     * @since 1.0
      * @author 김경민
+     * @since 1.0
      */
     @Transactional(readOnly = true)
     public Bookmark findById(Long bookmarkId) {
