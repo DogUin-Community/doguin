@@ -1,5 +1,7 @@
 package com.sparta.doguin.domain.discussions.service;
 
+import com.sparta.doguin.domain.bookmark.model.BookmarkRequest;
+import com.sparta.doguin.domain.bookmark.service.BookmarkService;
 import com.sparta.doguin.domain.common.exception.DiscussionException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseDiscussionEnum;
@@ -32,6 +34,7 @@ public class DiscussionService {
 
     private final DiscussionRepository discussionRepository;
     private final UserService userService;
+    private final BookmarkService bookmarkService;
     private final RedisTemplate<String, Object> redisTemplate;
 
     private static final Duration DISCUSSION_TTL = Duration.ofDays(90);
@@ -185,6 +188,10 @@ public class DiscussionService {
         if (!discussion.getUser().getId().equals(authUser.getUserId())) {
             throw new DiscussionException(ApiResponseDiscussionEnum.NOT_DISCUSSION_OWNER);
         }
+    }
+
+    public void bookmarkDiscussion(BookmarkRequest.BookmarkRequestCreate reqDto, AuthUser authUser) {
+        bookmarkService.createBookmark(reqDto, authUser);
     }
 
     private DiscussionResponse.SingleResponse toSingleResponse(Discussion discussion) {

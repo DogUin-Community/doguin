@@ -1,0 +1,18 @@
+body { overflow-x: hidden; }
+
+/***************** color *****************/
+:root {
+    --main-color: #6DB33F;
+    --main-dark-color: #192A0E;
+    --bk11: #111;
+    --bk22: #222;
+    --bk33: #333;
+    --gray66: #666;
+    --gray55: #555;
+}
+
+.fc_main_color { color: var(--main-color); }
+
+/***************** font *****************/
+.gmarket_font { font-family:'Gmarketsans'; }
+.montserrat_font { font-family:'Montserrat'; }
