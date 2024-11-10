@@ -33,7 +33,6 @@ public class MatchingServiceImpl implements MatchingService {
     private final OutsourcingServiceImpl outsourcingService;
     private final PortfolioServiceImpl portfolioService;
 
-
     /**
      * 매칭생성 메서드 (유저,포트폴리오,외주 3개로 확인함)
      *
@@ -52,7 +51,6 @@ public class MatchingServiceImpl implements MatchingService {
             User user = User.fromAuthUser(authUser);
             Outsourcing outsourcing = outsourcingService.findById(reqDto.outsourcingId());
             Portfolio portfolio = portfolioService.findById(reqDto.portfolioId());
-            MatchingValidator.isMe(portfolio.getUser().getId(), user.getId());
             Matching matching = Matching.builder()
                     .user(user)
                     .portfolio(portfolio)
@@ -69,11 +67,11 @@ public class MatchingServiceImpl implements MatchingService {
 
     /**
      * 매칭 상태 수정 (준비,완료,거절)
+     * 회사만 할 수 있다고 가정
      *
      * @param matchingId / 수정할 매칭 ID
      * @param updateReqDto / 수정할 상태 데이터
      * @return ApiResponse<Void> / 성공 응답 반환
-     * @throws MatchingException / 매칭 찾지 못할때 발생되는 예외
      * @since 1.0
      * @author 김경민
      */
@@ -81,7 +79,7 @@ public class MatchingServiceImpl implements MatchingService {
     @Override
     public ApiResponse<Void> updateMatching(Long matchingId, MatchingRequest.MatchingRequestUpdate updateReqDto, AuthUser authUser) {
         try {
-            MatchingValidator.isNotCompany(authUser);
+            MatchingValidator.isCompany(authUser);
             Matching findMatching = findById(matchingId);
             findMatching.statusChange(updateReqDto.status());
             matchingRepository.flush();

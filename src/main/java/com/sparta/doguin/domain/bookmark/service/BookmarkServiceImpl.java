@@ -5,11 +5,7 @@ import com.sparta.doguin.domain.bookmark.entity.Bookmark;
 import com.sparta.doguin.domain.bookmark.model.BookmarkRequest;
 import com.sparta.doguin.domain.bookmark.model.BookmarkResponse;
 import com.sparta.doguin.domain.bookmark.repository.BookmarkRepository;
-import com.sparta.doguin.domain.bookmark.validator.BookmarkValidator;
 import com.sparta.doguin.domain.common.exception.BookmarkException;
-import com.sparta.doguin.domain.common.exception.HandleNotFound;
-import com.sparta.doguin.domain.common.exception.OutsourcingException;
-import com.sparta.doguin.domain.common.exception.ValidatorException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.user.entity.User;
 import com.sparta.doguin.security.AuthUser;
@@ -30,15 +26,13 @@ public class BookmarkServiceImpl implements BookmarkService {
     private final BookmarkRepository bookmarkRepository;
 
     /**
-     * 북마크 생성 메서드
+     * 북마크 추가 or 삭제 메서드
      *
      * @param reqDto   / 생성할 북마크 데이터
      * @param authUser / 북마크 생성할 유저
      * @return ApiResponse<Void> / 성공 응답 반환
-     * @throws OutsourcingException / 외주가 존재하지않을때 발생되는 예외
-     * @throws HandleNotFound       질문이 존재하지 않을 경우 발생
      * @author 김경민
-     * @since 1.0
+     * @since 1.1
      */
     @Transactional
     @Override
@@ -58,26 +52,6 @@ public class BookmarkServiceImpl implements BookmarkService {
             bookmarkRepository.save(bookmark);
         }
 
-        return ApiResponse.of(BOOKMARK_OK);
-    }
-
-    /**
-     * 북마크 취소 메서드
-     *
-     * @param bookmarkId / 취소할 북마크 ID
-     * @return ApiResponse<Void> / 성공 응답 반환
-     * @throws BookmarkException  / 북마크 없을시 예외처리
-     * @throws ValidatorException / 북마크 한 사람이 본인이 아닐경우 예외처리
-     * @author 김경민
-     * @since 1.0
-     */
-    @Transactional
-    @Override
-    public ApiResponse<Void> deleteBookmark(Long bookmarkId, AuthUser authUser) {
-        User user = User.fromAuthUser(authUser);
-        Bookmark bookmark = findById(bookmarkId);
-        BookmarkValidator.isMe(user.getId(), bookmark.getUser().getId());
-        bookmarkRepository.delete(bookmark);
         return ApiResponse.of(BOOKMARK_OK);
     }
 
