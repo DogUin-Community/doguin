@@ -75,7 +75,7 @@ public class PortfolioServiceImpl implements PortfolioService {
                 .content(portfolioRequest.content())
                 .work_experience(portfolioRequest.work_experience())
                 .work_type(portfolioRequest.work_type())
-                .project_history(portfolioRequest.proejct_history())
+                .project_history(portfolioRequest.project_history())
                 .area(portfolioRequest.area())
                 .build();
         Portfolio savePortfolio = portfolioRepository.save(portfolio);
@@ -103,8 +103,8 @@ public class PortfolioServiceImpl implements PortfolioService {
     @Transactional
     @Override
     public ApiResponse<Void> updatePortfolio(Long portfolioId, PortfolioRequest.PortfolioRequestUpdate portfolioRequestUpdate, AuthUser authUser, List<MultipartFile> updateFiles) {
-        User user = User.fromAuthUser(authUser);
         Portfolio findPortfolio = findById(portfolioId);
+        PortfolioValidator.isMe(authUser.getUserId(), findPortfolio.getUser().getId());
         Portfolio portfolio = Portfolio.builder()
                 .id(findPortfolio.getId())
                 .user(findPortfolio.getUser())
@@ -118,7 +118,6 @@ public class PortfolioServiceImpl implements PortfolioService {
         if (updateFiles != null) {
             attachmentUpdateService.update(updateFiles,portfolioRequestUpdate.fileIds(),authUser);
         }
-        PortfolioValidator.isMe(user.getId(),findPortfolio.getUser().getId());
         portfolioRepository.save(portfolio);
         return ApiResponse.of(PORTFOLIO_OK);
     }

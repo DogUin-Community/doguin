@@ -10,6 +10,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface BookmarkService {
     ApiResponse<Void> togleBookmark(BookmarkRequest.BookmarkRequestCreate reqDto, AuthUser authUser);
-    ApiResponse<Void> deleteBookmark(Long bookmarkId,AuthUser authUser);
     ApiResponse<Page<BookmarkResponse>> getAllBookmarksByUser(Pageable pageable, AuthUser authUser, BookmarkTargetType target);
 }
