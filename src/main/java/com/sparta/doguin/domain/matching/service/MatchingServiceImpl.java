@@ -69,7 +69,7 @@ public class MatchingServiceImpl implements MatchingService {
     /**
      * 매칭 상태 수정 (준비,완료,거절)
      * 회사만 할 수 있다고 가정
-     *
+     * 외주를 만든사람만이 매칭 수정 가능
      * @param matchingId / 수정할 매칭 ID
      * @param updateReqDto / 수정할 상태 데이터
      * @return ApiResponse<Void> / 성공 응답 반환
@@ -82,7 +82,8 @@ public class MatchingServiceImpl implements MatchingService {
         try {
             MatchingValidator.isCompany(authUser);
             Matching findMatching = findById(matchingId);
-            MatchingValidator.isMe(findMatching.getUser().getId(),authUser.getUserId());
+            Outsourcing outsourcing = outsourcingService.findById(findMatching.getOutsourcing().getId());
+            MatchingValidator.isMe(outsourcing.getUser().getId(),authUser.getUserId());
             findMatching.statusChange(updateReqDto.status());
             matchingRepository.flush();
             return ApiResponse.of(MATHCING_SUCCESS);
@@ -95,6 +96,7 @@ public class MatchingServiceImpl implements MatchingService {
      * 매칭 삭제
      *
      * @param matchingId / 삭제할 매칭 ID
+     * 외주를 만든 사람만이, 매칭에 대해 삭제 할 수 있음
      * @return ApiResponse<Void> / 성공 응답 반환
      * @throws MatchingException / 매칭 찾지 못할때 발생되는 예외
      * @since 1.0
@@ -104,9 +106,9 @@ public class MatchingServiceImpl implements MatchingService {
     @Override
     public ApiResponse<Void> deleteMatching(Long matchingId, AuthUser authUser) {
         MatchingValidator.isCompany(authUser);
-        User user = User.fromAuthUser(authUser);
         Matching matching = findById(matchingId);
-        MatchingValidator.isMe(user.getId(),matching.getUser().getId());
+        Outsourcing outsourcing = outsourcingService.findById(matching.getOutsourcing().getId());
+        MatchingValidator.isMe(outsourcing.getUser().getId(),authUser.getUserId());
         matchingRepository.delete(matching);
         return ApiResponse.of(MATHCING_SUCCESS);
     }
