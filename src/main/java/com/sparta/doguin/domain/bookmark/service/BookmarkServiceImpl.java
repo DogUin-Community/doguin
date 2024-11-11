@@ -5,6 +5,7 @@ import com.sparta.doguin.domain.bookmark.entity.Bookmark;
 import com.sparta.doguin.domain.bookmark.model.BookmarkRequest;
 import com.sparta.doguin.domain.bookmark.model.BookmarkResponse;
 import com.sparta.doguin.domain.bookmark.repository.BookmarkRepository;
+import com.sparta.doguin.domain.bookmark.validator.BookmarkValidator;
 import com.sparta.doguin.domain.common.exception.BookmarkException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.user.entity.User;
@@ -41,6 +42,7 @@ public class BookmarkServiceImpl implements BookmarkService {
         Optional<Bookmark> findBookmark = bookmarkRepository.findBookmarkByTargetIdAndBookmarkTargetType(reqDto.targetId(), reqDto.target());
         // 값이 존재한다면
         if (findBookmark.isPresent()) {
+            BookmarkValidator.isMe(findBookmark.get().getUser().getId(), user.getId());
             bookmarkRepository.delete(findBookmark.get());
         } else {
             // 비어있다면

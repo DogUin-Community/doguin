@@ -1,6 +1,5 @@
 package com.sparta.doguin.domain.bookmark.service;
 
-import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.bookmark.constans.BookmarkTargetType;
 import com.sparta.doguin.domain.bookmark.entity.Bookmark;
 import com.sparta.doguin.domain.bookmark.model.BookmarkRequest;
@@ -13,6 +12,7 @@ import com.sparta.doguin.domain.question.entity.Question;
 import com.sparta.doguin.domain.question.service.QuestionService;
 import com.sparta.doguin.domain.setup.DataUtil;
 import com.sparta.doguin.domain.user.entity.User;
+import com.sparta.doguin.security.AuthUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -27,7 +27,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -130,25 +129,6 @@ class BookmarkServiceTest {
         }
     }
 
-    @Nested
-    public class 북마크_제거_테스트 {
-        @Test
-        @DisplayName("북마크 제거 성공")
-        void test() {
-            // given
-            given(bookmarkRepository.findById(bookmarkId1)).willReturn(Optional.of(outsourcingBookmark1));
-
-            // when
-            bookmarkService.deleteBookmark(bookmarkId1,authUser1);
-
-            // then - 메서드의 호출횟수와, 예상한 데이터와 실제 데이터가 일치하는지 검증
-            Mockito.verify(bookmarkRepository, Mockito.times(1)).delete(Mockito.argThat(bookmark ->
-                    bookmark.getUser().getId().equals(authUser1.getUserId()) &&
-                            bookmark.getTarget().equals(outsourcingBookmark1.getTarget()) &&
-                            bookmark.getTargetId().equals(outsourcingBookmark1.getTargetId())
-                    ));
-        }
-    }
 
     @Nested
     public class 북마크_다건_조회_테스트 {
