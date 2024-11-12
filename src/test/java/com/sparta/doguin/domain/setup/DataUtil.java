@@ -255,8 +255,8 @@ public class DataUtil {
         );
     }
 
-    public static QuestionRequest.CreatedQuestion questionRequestCreate1(){
-        return new QuestionRequest.CreatedQuestion(
+    public static QuestionRequest.QuestionRequestCreate questionRequestCreate1(){
+        return new QuestionRequest.QuestionRequestCreate(
                 "test title",
                 "test content",
                 FirstCategory.JAVA,
@@ -265,8 +265,8 @@ public class DataUtil {
         );
     }
 
-    public static QuestionRequest.CreatedQuestion questionRequestCreate2(){
-        return new QuestionRequest.CreatedQuestion(
+    public static QuestionRequest.QuestionRequestCreate questionRequestCreate2(){
+        return new QuestionRequest.QuestionRequestCreate(
                 "test title1",
                 "test content1",
                 FirstCategory.JAVA,
@@ -361,7 +361,7 @@ public class DataUtil {
                 portfolioRequestCreate1().content(),
                 portfolioRequestCreate1().work_experience(),
                 portfolioRequestCreate1().work_type(),
-                portfolioRequestCreate1().proejct_history(),
+                portfolioRequestCreate1().project_history(),
                 portfolioRequestCreate1().area()
         );
     }
@@ -374,7 +374,7 @@ public class DataUtil {
                 portfolioRequestCreate2().content(),
                 portfolioRequestCreate2().work_experience(),
                 portfolioRequestCreate2().work_type(),
-                portfolioRequestCreate2().proejct_history(),
+                portfolioRequestCreate2().project_history(),
                 portfolioRequestCreate2().area()
         );
     }

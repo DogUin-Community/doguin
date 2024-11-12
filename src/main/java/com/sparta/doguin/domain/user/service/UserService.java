@@ -127,4 +127,18 @@ public class UserService {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserException(ApiResponseUserEnum.USER_NOT_FOUND));
     }
+
+    /**
+     * 닉네임으로 유저를 찾는 메서드
+     *
+     * @param nickName 찾고자 하는 유저의 닉네임
+     * @return User 찾은 유저 객체
+     * @throws UserException 유저를 찾지 못한 경우 예외 처리
+     * @since 1.0
+     * @author 황윤서
+     */
+    public User findByNickname(String nickName) {
+        return userRepository.findByNickname(nickName)
+                .orElseThrow(() -> new UserException(ApiResponseUserEnum.USER_NOT_FOUND));
+    }
 }

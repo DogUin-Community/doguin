@@ -51,7 +51,28 @@ public class ReportRepositoryCustomImpl implements ReportRepositoryCustom {
 
         return new PageImpl<>(result, pageable, count);
     }
+    @Override
+    public Page<ReportResponse.ReportView> findAllReports(Pageable pageable) {
+        List<ReportResponse.ReportView> result = jpaQueryFactory
+                .select(Projections.constructor(ReportResponse.ReportView.class,
+                        report.id,
+                        report.title,
+                        report.reportee.nickname,
+                        report.reportType
+                ))
+                .from(report)
+                .innerJoin(report.reportee)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
 
+        Long count = jpaQueryFactory
+                .select(Wildcard.count)
+                .from(report)
+                .fetchOne();
+
+        return new PageImpl<>(result, pageable, count);
+    }
 
     @Override
     public Optional<Report> findByIdWithReporterId(Long reporterId, Long reporteeId) {
@@ -66,12 +87,12 @@ public class ReportRepositoryCustomImpl implements ReportRepositoryCustom {
     }
 
     @Override
-    public Optional<ReportResponse.ReportTotalView> findCountByReporteeId(Long reporteeId) {
+    public Optional<ReportResponse.ReportTotalView> findCountByReporteeNickname(String nickName) {
 
         Object[] result = jpaQueryFactory
                 .select(report.reportee.nickname, report.count())
                 .from(report)
-                .where(eqReporteeId(reporteeId))
+                .where(eqReporteeNickname(nickName))
                 .groupBy(report.reportee.nickname)
                 .fetchOne().toArray();
 
@@ -86,11 +107,11 @@ public class ReportRepositoryCustomImpl implements ReportRepositoryCustom {
     }
 
     @Override
-    public Optional<Report> findByReporterIdAndReporteeId(Long reporterId, Long reporteeId) {
+    public Optional<Report> findByReporterIdAndReporteeNickname(Long reporterId, String reporteeNickname) {
         return Optional.ofNullable(jpaQueryFactory
                 .selectFrom(report)
                 .innerJoin(report.reportee, user).fetchJoin()
-                .where(eqReporterId(reporterId), eqReporteeId(reporteeId))
+                .where(eqReporterId(reporterId), eqReporteeNickname(reporteeNickname))
                 .fetchFirst()); // fetchFirst()로 변경하여 안전성 증가
     }
 
@@ -101,6 +122,10 @@ public class ReportRepositoryCustomImpl implements ReportRepositoryCustom {
 
     private BooleanExpression eqReporteeId(Long userId) {
         return report.reportee.id.eq(userId);
+    }
+
+    private BooleanExpression eqReporteeNickname(String reporteeNickname) {
+        return report.reportee.nickname.eq(reporteeNickname);
     }
 
 

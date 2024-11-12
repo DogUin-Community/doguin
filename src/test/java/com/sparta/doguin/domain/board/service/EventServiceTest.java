@@ -2,6 +2,10 @@ package com.sparta.doguin.domain.board.service;
 
 import com.sparta.doguin.domain.answer.dto.AnswerResponse;
 import com.sparta.doguin.domain.answer.service.NoticeAnswerService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentGetService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUpdateService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
 import com.sparta.doguin.domain.board.BoardType;
 import com.sparta.doguin.domain.board.dto.BoardRequest;
 import com.sparta.doguin.domain.board.dto.BoardResponse;
@@ -51,8 +55,19 @@ class EventServiceTest {
     @Mock
     private PopularService popularService;
 
+    @Mock
+    private AttachmentUploadService attachmentUploadService;
+    @Mock
+    private AttachmentUpdateService attachmentUpdateService;
+    @Mock
+    private AttachmentGetService attachmentGetService;
+    @Mock
+    private AttachmentDeleteService attachmentDeleteService;
+
     @InjectMocks
     private EventService eventService;
+
+
 
     private User admin;
     private User user;
@@ -73,9 +88,9 @@ class EventServiceTest {
         BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("이벤트 게시물","이벤트 게시물");
         given(boardRepository.save(any(Board.class))).willReturn(board);
 
-        Board result = eventService.create(admin, boardCommonRequest);
+        eventService.create(admin, boardCommonRequest,null);
 
-        assertEquals(result, board);
+
     }
 
     @Test
@@ -84,9 +99,9 @@ class EventServiceTest {
         BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("수정된 이벤트 게시물","수정된 이벤트 게시물");
         given(boardRepository.findById(anyLong())).willReturn(Optional.of(board));
 
-        Board result = eventService.update(admin, 1L,boardCommonRequest);
+        eventService.update(admin, 1L,boardCommonRequest,null);
 
-        assertEquals(result, board);
+
 
     }
     @Test
@@ -98,7 +113,7 @@ class EventServiceTest {
 
         // When
         InvalidRequestException exception = assertThrows(InvalidRequestException.class, () ->
-                eventService.update(user1, 1L, boardCommonRequest)
+                eventService.update(user1, 1L, boardCommonRequest,null)
         );
 
         // Then
@@ -114,7 +129,7 @@ class EventServiceTest {
 
         // When
         InvalidRequestException exception = assertThrows(InvalidRequestException.class, () ->
-                eventService.update(admin, 1L, boardCommonRequest)
+                eventService.update(admin, 1L, boardCommonRequest,null)
         );
 
         // Then

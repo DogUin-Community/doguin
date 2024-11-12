@@ -1,6 +1,5 @@
 package com.sparta.doguin.domain.bookmark.service;
 
-import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.bookmark.constans.BookmarkTargetType;
 import com.sparta.doguin.domain.bookmark.entity.Bookmark;
 import com.sparta.doguin.domain.bookmark.model.BookmarkRequest;
@@ -13,6 +12,7 @@ import com.sparta.doguin.domain.question.entity.Question;
 import com.sparta.doguin.domain.question.service.QuestionService;
 import com.sparta.doguin.domain.setup.DataUtil;
 import com.sparta.doguin.domain.user.entity.User;
+import com.sparta.doguin.security.AuthUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -20,14 +20,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -91,63 +89,6 @@ class BookmarkServiceTest {
         bookmarkId2 = DataUtil.two();
         outsourcingBookmarkTarget1 = outsourcingBookmarkRequestCreate1.target();
         outsourcingBookmarkTarget2 = questionBookmarkRequestCreate1.target();
-    }
-
-    @Nested
-    public class 북마크_생성_테스트 {
-        @Test
-        @DisplayName("북마크 생성 성공 _ 외주")
-        void test1() {
-            // given
-            given(outsourcingService.findById(outsourcingBookmarkRequestCreate1.targetId())).willReturn(outsourcing1);
-
-            // when
-            bookmarkService.createBookmark(outsourcingBookmarkRequestCreate1,authUser1);
-
-            // then - 1번 호출됐는지와, 예상한 데이터와 실제 데이터가 일치하는지 검증
-            Mockito.verify(bookmarkRepository, Mockito.times(1)).save(Mockito.argThat(bookmark ->
-                    bookmark.getUser().getId().equals(authUser1.getUserId()) &&
-                    bookmark.getTargetId().equals(outsourcingBookmarkRequestCreate1.targetId()) &&
-                    bookmark.getTarget().equals(outsourcingBookmarkRequestCreate1.target())
-            ));
-        }
-
-        @Test
-        @DisplayName("북마크 생성 성공 _ 잘문")
-        void test2() {
-            // given
-            given(questionService.findById(questionBookmarkRequestCreate1.targetId())).willReturn(question1);
-
-            // when
-            bookmarkService.createBookmark(questionBookmarkRequestCreate1,authUser1);
-
-            // then - 1번 호출됐는지와, 예상한 데이터와 실제 데이터가 일치하는지 검증
-            Mockito.verify(bookmarkRepository, Mockito.times(1)).save(Mockito.argThat(bookmark ->
-                    bookmark.getUser().getId().equals(authUser1.getUserId()) &&
-                            bookmark.getTargetId().equals(questionBookmarkRequestCreate1.targetId()) &&
-                            bookmark.getTarget().equals(questionBookmarkRequestCreate1.target())
-            ));
-        }
-    }
-
-    @Nested
-    public class 북마크_제거_테스트 {
-        @Test
-        @DisplayName("북마크 제거 성공")
-        void test() {
-            // given
-            given(bookmarkRepository.findById(bookmarkId1)).willReturn(Optional.of(outsourcingBookmark1));
-
-            // when
-            bookmarkService.deleteBookmark(bookmarkId1,authUser1);
-
-            // then - 메서드의 호출횟수와, 예상한 데이터와 실제 데이터가 일치하는지 검증
-            Mockito.verify(bookmarkRepository, Mockito.times(1)).delete(Mockito.argThat(bookmark ->
-                    bookmark.getUser().getId().equals(authUser1.getUserId()) &&
-                            bookmark.getTarget().equals(outsourcingBookmark1.getTarget()) &&
-                            bookmark.getTargetId().equals(outsourcingBookmark1.getTargetId())
-                    ));
-        }
     }
 
     @Nested

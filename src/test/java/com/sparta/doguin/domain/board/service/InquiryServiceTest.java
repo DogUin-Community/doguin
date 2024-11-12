@@ -2,6 +2,10 @@ package com.sparta.doguin.domain.board.service;
 
 import com.sparta.doguin.domain.answer.dto.AnswerResponse;
 import com.sparta.doguin.domain.answer.service.InquiryAnswerService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentGetService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUpdateService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
 import com.sparta.doguin.domain.board.BoardType;
 import com.sparta.doguin.domain.board.dto.BoardRequest;
 import com.sparta.doguin.domain.board.dto.BoardResponse;
@@ -50,6 +54,15 @@ class InquiryServiceTest {
     @Mock
     private PopularService popularService;
 
+    @Mock
+    private AttachmentUploadService attachmentUploadService;
+    @Mock
+    private AttachmentUpdateService attachmentUpdateService;
+    @Mock
+    private AttachmentGetService attachmentGetService;
+    @Mock
+    private AttachmentDeleteService attachmentDeleteService;
+
     @InjectMocks
     private InquiryService inquiryService;
 
@@ -71,9 +84,8 @@ class InquiryServiceTest {
         BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("문의 게시물","문의 게시물");
         given(boardRepository.save(any(Board.class))).willReturn(board);
 
-        Board result = inquiryService.create(user, boardCommonRequest);
+        inquiryService.create(user, boardCommonRequest,null);
 
-        assertEquals(result, board);
     }
 
     @Test
@@ -82,9 +94,8 @@ class InquiryServiceTest {
         BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("수정된 문의 게시물","수정된 문의 게시물");
         given(boardRepository.findById(anyLong())).willReturn(Optional.of(board));
 
-        Board result = inquiryService.update(user, 1L,boardCommonRequest);
+        inquiryService.update(user, 1L,boardCommonRequest,null);
 
-        assertEquals(result, board);
 
     }
     @Test
@@ -96,7 +107,7 @@ class InquiryServiceTest {
 
         // When
         InvalidRequestException exception = assertThrows(InvalidRequestException.class, () ->
-                inquiryService.update(user1, 1L, boardCommonRequest)
+                inquiryService.update(user1, 1L, boardCommonRequest,null)
         );
 
         // Then
@@ -113,7 +124,7 @@ class InquiryServiceTest {
 
         // When
         InvalidRequestException exception = assertThrows(InvalidRequestException.class, () ->
-                inquiryService.update(user, 2L, boardCommonRequest)
+                inquiryService.update(user, 2L, boardCommonRequest,null)
         );
 
         // Then

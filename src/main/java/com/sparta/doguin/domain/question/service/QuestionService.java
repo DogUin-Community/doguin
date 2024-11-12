@@ -1,13 +1,22 @@
 package com.sparta.doguin.domain.question.service;
 
 import com.sparta.doguin.domain.answer.dto.AnswerResponse;
+import com.sparta.doguin.domain.attachment.constans.AttachmentTargetType;
+import com.sparta.doguin.domain.attachment.service.impl.AttachmentDeleteServiceImpl;
+import com.sparta.doguin.domain.attachment.service.impl.AttachmentGetServiceImpl;
+import com.sparta.doguin.domain.attachment.service.impl.AttachmentUploadServiceImpl;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUpdateService;
 import com.sparta.doguin.domain.common.exception.HandleNotFound;
 import com.sparta.doguin.domain.common.exception.QuestionException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseQuestionEnum;
-import com.sparta.doguin.domain.question.dto.QuestionRequest;
+import com.sparta.doguin.domain.question.dto.QuestionRequest.QuestionRequestCreate;
+import com.sparta.doguin.domain.question.dto.QuestionRequest.QuestionRequestUpdate;
 import com.sparta.doguin.domain.question.dto.QuestionResponse;
+import com.sparta.doguin.domain.question.dto.QuestionResponse.QuestionResponseGet;
+import com.sparta.doguin.domain.question.dto.QuestionResponse.QuestionResponseGetWithFiles;
 import com.sparta.doguin.domain.question.entity.Question;
+import com.sparta.doguin.domain.question.enums.QuestionStatus;
 import com.sparta.doguin.domain.question.repository.QuestionRepository;
 import com.sparta.doguin.domain.user.entity.User;
 import com.sparta.doguin.security.AuthUser;
@@ -20,6 +29,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +46,10 @@ public class QuestionService {
     private final static String QUESTION_CACHE = "questionBoard";
     private final static String QUESTION_POPULAR = "questionPopular";
     private final RedisTemplate redisTemplate;
+    private final AttachmentUploadServiceImpl attachmentUploadServiceImpl;
+    private final AttachmentGetServiceImpl attachmentGetServiceImpl;
+    private final AttachmentUpdateService attachmentUpdateService;
+    private final AttachmentDeleteServiceImpl attachmentDeleteServiceImpl;
 
     /**
      * 질문 생성
@@ -45,15 +59,30 @@ public class QuestionService {
      * @return 생성된 질문의 정보를 포함하는 ApiResponse 객체
      * @author 유태이
      */
-    public ApiResponse<QuestionResponse.CreatedQuestion> createdQuestion(AuthUser authUser, QuestionRequest.CreatedQuestion request) {
+    @Transactional
+    public ApiResponse<QuestionResponse> createdQuestion(AuthUser authUser, QuestionRequestCreate request, List<MultipartFile> files) {
+
         // 로그인한 사용자의 인증 정보
         User user = User.fromAuthUser(authUser);
+
         // 질문 생성
-        Question newQuestion = new Question(request.title(), request.content(), request.firstCategory(), request.secondCategory(), request.lastCategory(), user);
+        Question question = new Question(request.title(), request.content(), request.firstCategory(), request.secondCategory(), request.lastCategory(), user);
+
         // 질문 저장
-        questionRepository.save(newQuestion);
-        // 성공 응답 반환
-        return ApiResponse.of(ApiResponseQuestionEnum.QUESTION_CREATE_SUCCESS, new QuestionResponse.CreatedQuestion(newQuestion.getId(), newQuestion.getTitle(), newQuestion.getContent(), newQuestion.getFirstCategory(), newQuestion.getSecondCategory(), newQuestion.getLastCategory(), newQuestion.getQuestionStatus()));
+        Question saveQuestion = questionRepository.save(question);
+
+        // 이미지 첨부파일
+        if (files != null) {
+            // 파일 업로드
+            attachmentUploadServiceImpl.upload(files, authUser, saveQuestion.getId(), AttachmentTargetType.QUESTION);
+            // 파일 ID 가져오기
+            List<Long> fileIds = attachmentGetServiceImpl.getFileIds(authUser.getUserId(), saveQuestion.getId(), AttachmentTargetType.QUESTION);
+            QuestionResponseGetWithFiles data = QuestionResponseGetWithFiles.of(question, fileIds);
+            return ApiResponse.of(ApiResponseQuestionEnum.QUESTION_CREATE_SUCCESS, data);
+        }
+
+        QuestionResponseGet data = QuestionResponseGet.of(question);
+        return ApiResponse.of(ApiResponseQuestionEnum.QUESTION_CREATE_SUCCESS, data);
     }
 
     /**
@@ -66,7 +95,8 @@ public class QuestionService {
      * @return 수정 된 질문의 정보를 포함하는 ApiResponse 객체
      * @author 유태이
      */
-    public ApiResponse<QuestionResponse.CreatedQuestion> updatedQuestion(AuthUser authUser, long questionId, QuestionRequest.UpdateQuestion request) {
+    @Transactional
+    public ApiResponse<QuestionResponse> updatedQuestion(AuthUser authUser, long questionId, QuestionRequestUpdate request, List<MultipartFile> files) {
         // 해당 댓글 있는지 검증
         Question question = findById(questionId);
 
@@ -81,11 +111,40 @@ public class QuestionService {
         // 질문 수정
         question.update(request);
 
-        // 질문 저장
-        questionRepository.save(question);
+        // 파일 수정
+        if (files != null && request.files() != null) {
+            attachmentUpdateService.update(files, request.files(), authUser);
+        }
+
+        return ApiResponse.of(ApiResponseQuestionEnum.QUESTION_UPDATE_SUCCESS);
+    }
+
+    /**
+     * 질문 채택
+     *
+     * @param authUser
+     * @param questionId
+     * @return
+     */
+    @Transactional
+    public ApiResponse<Void> acceptQuestion(AuthUser authUser, long questionId) {
+
+        // 로그인한 사용자의 인증 정보
+        User user = User.fromAuthUser(authUser);
+
+        // 해당 질문이 있는지 검증
+        Question question = findById(questionId);
+
+        // 본인이 등록한 게시글인지 확인
+        if (!question.getUser().getId().equals(user.getId())) {
+            throw new QuestionException(ApiResponseQuestionEnum.QUESTION_UPDATE_ACCESS_DENIED);
+        }
+
+        // 질문 상태 수정
+        question.accept(QuestionStatus.ADOPTED);
 
         // 성공 응답 반환
-        return ApiResponse.of(ApiResponseQuestionEnum.QUESTION_UPDATE_SUCCESS, new QuestionResponse.CreatedQuestion(question.getId(), question.getTitle(), question.getContent(), question.getFirstCategory(), question.getSecondCategory(), question.getLastCategory(), question.getQuestionStatus()));
+        return ApiResponse.of(ApiResponseQuestionEnum.QUESTION_ACCEPT_SUCCESS);
     }
 
     /**
@@ -149,6 +208,8 @@ public class QuestionService {
                 })
                 .toList();
 
+        List<Long> files = attachmentGetServiceImpl.getFileIds(user.getId(), questionId, AttachmentTargetType.QUESTION);
+
         return new QuestionResponse.GetQuestion(
                 question.getId(),
                 question.getTitle(),
@@ -158,7 +219,8 @@ public class QuestionService {
                 question.getLastCategory(),
                 question.getQuestionStatus(),
                 viewCount,
-                answers
+                answers,
+                files
         );
     }
 
@@ -171,6 +233,7 @@ public class QuestionService {
      * @return 삭제 성공 ApiResponse 객체
      * @author 유태이
      */
+    @Transactional
     public ApiResponse<Void> deleteQuestion(AuthUser authUser, long questionId) {
 
         // 사용자가 로그인 했는지 검증
@@ -191,6 +254,10 @@ public class QuestionService {
 
         // 질문 삭제
         questionRepository.delete(question);
+
+        // 파일 삭제
+        List<Long> files = attachmentGetServiceImpl.getFileIds(authUser.getUserId(), questionId, AttachmentTargetType.QUESTION);
+        attachmentDeleteServiceImpl.delete(authUser, files);
 
         // 성공 응답 반환
         return ApiResponse.of(ApiResponseQuestionEnum.QUESTION_DELETE_SUCCESS);
@@ -232,18 +299,6 @@ public class QuestionService {
         return new PageImpl<>(paginatedQuestionIds,pageable, popularQuestionIdList.size());
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * 질문 ID로 질문 조회

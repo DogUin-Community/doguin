@@ -2,6 +2,10 @@ package com.sparta.doguin.domain.board.service;
 
 import com.sparta.doguin.domain.answer.dto.AnswerResponse;
 import com.sparta.doguin.domain.answer.service.BulletinAnswerService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentGetService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUpdateService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
 import com.sparta.doguin.domain.board.BoardType;
 import com.sparta.doguin.domain.board.dto.BoardRequest.BoardCommonRequest;
 import com.sparta.doguin.domain.board.dto.BoardResponse;
@@ -24,10 +28,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.sparta.doguin.domain.attachment.constans.AttachmentTargetType.BULLETIN;
+import static com.sparta.doguin.domain.attachment.constans.AttachmentTargetType.OUTSOURCING;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +46,11 @@ public class BulletinService implements BoardService {
     private final BulletinAnswerService bulletinAnswerService;
     private final PopularService popularService;
     private final ApplicationEventPublisher publisher;
+
+    private final AttachmentUploadService attachmentUploadService;
+    private final AttachmentUpdateService attachmentUpdateService;
+    private final AttachmentGetService attachmentGetService;
+    private final AttachmentDeleteService attachmentDeleteService;
 
     private final BoardType boardType = BoardType.BOARD_BULLETIN;
 
@@ -51,11 +64,17 @@ public class BulletinService implements BoardService {
      */
     @Override
     @Transactional
-    public Board create(User user, BoardCommonRequest boardRequest) {
+    public void create(User user, BoardCommonRequest boardRequest,List<MultipartFile> files) {
         Board board = new Board(boardRequest.title(), boardRequest.content(), boardType, user);
-        Board savedBoard = boardRepository.save(board);
+        boardRepository.save(board);
+
+        if(files!=null){
+            attachmentUploadService.upload(files,user,board.getId(), BULLETIN);
+            attachmentGetService.getFileIds(user.getId(),board.getId(), BULLETIN);
+        }
+
+        log.info(user.getNickname());
         publisher.publishEvent(new SlackEventClass(user.getId(), user.getNickname(), "(이)가 새 게시물을 등록했습니다."));
-        return boardRepository.save(savedBoard);
     }
 
     /**
@@ -73,7 +92,7 @@ public class BulletinService implements BoardService {
      */
     @Override
     @Transactional
-    public Board update(User user,Long boardId, BoardCommonRequest boardRequest) {
+    public void update(User user,Long boardId, BoardCommonRequest boardRequest,List<MultipartFile> files) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.BULLETIN_NOT_FOUND));
 
@@ -84,7 +103,7 @@ public class BulletinService implements BoardService {
             throw new InvalidRequestException(ApiResponseBoardEnum.BULLETIN_WRONG);
         }
         board.update(boardRequest.title(), boardRequest.content()); // 업데이트 정보 null 처리
-        return board;
+
     }
 
     /**
@@ -107,6 +126,8 @@ public class BulletinService implements BoardService {
             throw new InvalidRequestException(ApiResponseBoardEnum.BULLETIN_WRONG);
         }
 
+        List<String> filePaths = attachmentGetService.getAllAttachmentPath(boardId, BULLETIN);
+
         Page<AnswerResponse.Response> responses = bulletinAnswerService.findByBoardId(boardId,PageRequest.of(0,10));
 
         if(user!=null){
@@ -115,7 +136,7 @@ public class BulletinService implements BoardService {
 
         Long viewCount = popularService.getHourUniqueViewCount(boardId)+board.getView(); // 한시간 조회수 + 누적 조회수 로 토탈 조회수
 
-        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(),viewCount, responses);
+        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(),viewCount, responses,filePaths);
     }
 
     /**
@@ -184,6 +205,9 @@ public class BulletinService implements BoardService {
             throw new InvalidRequestException(ApiResponseBoardEnum.BULLETIN_WRONG);
         }
 
+        List<Long> fileIds = attachmentGetService.getFileIds(user.getId(),board.getId(), BULLETIN);
+        attachmentDeleteService.delete(user,fileIds);
+
         boardRepository.delete(board);
     }
 
@@ -204,7 +228,6 @@ public class BulletinService implements BoardService {
     public Page<Long> viewPopular(int page, int size){
         Pageable pageable = PageRequest.of(page - 1, size);
         Set<Long> popularBoardIds = popularService.viewPopularBoardList();
-        log.info(String.valueOf(popularBoardIds.size()));
 
         // 게시물 ID 목록이 없을 경우 빈 페이지 반환
         if (popularBoardIds == null || popularBoardIds.isEmpty()) {

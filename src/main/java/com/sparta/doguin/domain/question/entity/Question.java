@@ -1,7 +1,7 @@
 package com.sparta.doguin.domain.question.entity;
 
 import com.sparta.doguin.domain.answer.entity.Answer;
-import com.sparta.doguin.domain.question.dto.QuestionRequest;
+import com.sparta.doguin.domain.question.dto.QuestionRequest.QuestionRequestUpdate;
 import com.sparta.doguin.domain.question.enums.FirstCategory;
 import com.sparta.doguin.domain.question.enums.LastCategory;
 import com.sparta.doguin.domain.question.enums.QuestionStatus;
@@ -89,7 +89,7 @@ public class Question {
     }
 
     // 수정
-    public void update(QuestionRequest.UpdateQuestion request) {
+    public void update(QuestionRequestUpdate request) {
         this.title = request.title();
         this.content = request.content();
         this.firstCategory = request.firstCategory();
@@ -100,5 +100,10 @@ public class Question {
     // 조회수
     public void changeTotalViewCount(Long now , Long today){
         this.view = now + today;
+    }
+
+    // 채택
+    public void accept(QuestionStatus status) {
+        this.questionStatus = status;
     }
 }

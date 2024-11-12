@@ -39,9 +39,9 @@ public class ReportService {
      */
     @Transactional
     public void report(User user, ReportRequest.Report reportRequest) {
-        User reportee = userService.findById(reportRequest.reporteeId());
+        User reportee = userService.findByNickname(reportRequest.reporteeNickname());
 
-        if(reportRepository.findByReporterIdAndReporteeId(user.getId(),reportRequest.reporteeId()).isPresent()){
+        if(reportRepository.findByReporterIdAndReporteeNickname(user.getId(),reportRequest.reporteeNickname()).isPresent()){
             throw new InvalidRequestException(ApiResponseReportEnum.REPORT_ALREADY_EXIST);
         }
         Report report = new Report(reportRequest.title(), reportRequest.content(), user, reportee, REPORT_NOT_CONFIRMED);
@@ -81,7 +81,7 @@ public class ReportService {
     }
 
     /**
-     * 신고 전체 내역 보기
+     * 신고 전체 내역 보기 (회원)
      *
      * @param user 신고한 유저
      * @param page 페이지 번호
@@ -96,6 +96,20 @@ public class ReportService {
     }
 
     /**
+     * 신고 전체 내역 보기 (관리자)
+     *
+     * @param page 페이지 번호
+     * @param size 한 페이지당 게시물 개수
+     * @since 1.0
+     * @author 김창민
+     */
+    public Page<ReportResponse.ReportView> reportViewAllAdmin(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<ReportResponse.ReportView> reports = reportRepository.findAllReports(pageable);
+        return reports;
+    }
+
+    /**
      * 내가 신고한 특정 유저 결과 확인
      *
      * @param user 신고한 유저
@@ -104,8 +118,8 @@ public class ReportService {
      * @throws HandleNotFound 해당 신고가 존재하지 않을 경우 발생
      * @author 김창민
      */
-    public ReportResponse.ReportView reportSearch(User user, Long reporteeId) {
-        Report report = reportRepository.findByReporterIdAndReporteeId(user.getId(),reporteeId).orElseThrow(
+    public ReportResponse.ReportView reportSearch(User user, String reporteeId) {
+        Report report = reportRepository.findByReporterIdAndReporteeNickname(user.getId(),reporteeId).orElseThrow(
                 () -> new HandleNotFound(ApiResponseReportEnum.REPORT_NOT_FOUND)
         );
 
@@ -115,17 +129,18 @@ public class ReportService {
     /**
      * admin유저가 보는 특정 유저가 신고 당한 횟수
      *
-     * @param reporteeId 신고한 유저
+     * @param reporteeNickname 신고당한 유저
      * @since 1.0
      * @throws HandleNotFound 해당 신고가 존재하지 않을 경우 발생
      * @author 김창민
      */
-    public ReportResponse.ReportTotalView reportTotal(Long reporteeId) {
+    public ReportResponse.ReportTotalView reportTotal(String reporteeNickname) {
 
-        ReportResponse.ReportTotalView response = reportRepository.findCountByReporteeId(reporteeId).orElseThrow(
+        ReportResponse.ReportTotalView response = reportRepository.findCountByReporteeNickname(reporteeNickname).orElseThrow(
                 () -> new HandleNotFound(ApiResponseReportEnum.REPORT_NOT_FOUND)
         );
 
         return response;
     }
+
 }

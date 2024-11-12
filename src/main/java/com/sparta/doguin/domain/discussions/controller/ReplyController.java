@@ -8,21 +8,24 @@ import com.sparta.doguin.security.AuthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-@Controller
+import java.util.List;
+
+@RestController
 @RequiredArgsConstructor
-@RequestMapping("/discussions/{discussionId}/replies")
+@RequestMapping("/api/v1/discussions/{discussionId}/replies")
 public class ReplyController {
     private final ReplyService replyService;
 
     @PostMapping
     public ResponseEntity<ApiResponse<ReplyResponse.AddReplyResponse>> addReply(
             @PathVariable Long discussionId,
-            @RequestBody ReplyRequest.CreateRequest request,
+            @RequestPart("attachments") List<MultipartFile> attachments,
+            @RequestPart("request") ReplyRequest.CreateRequest request,
             @AuthenticationPrincipal AuthUser authUser) {
-        return ApiResponse.of(replyService.addReply(discussionId, request, authUser));
+        return ApiResponse.of(replyService.addReply(discussionId, attachments, request, authUser));
     }
 
     @DeleteMapping("/{replyId}")
@@ -35,8 +38,10 @@ public class ReplyController {
     @PutMapping("/{replyId}")
     public ResponseEntity<ApiResponse<ReplyResponse.SingleResponse>> updateReply(
             @PathVariable Long replyId,
-            @RequestBody ReplyRequest.UpdateRequest request,
+            @RequestPart(value = "newAttachments", required = false) List<MultipartFile> newAttachments,
+            @RequestPart(value = "attachmentIdsToDelete", required = false) List<Long> attachmentIdsToDelete,
+            @RequestPart("request") ReplyRequest.UpdateRequest request,
             @AuthenticationPrincipal AuthUser authUser) {
-        return ApiResponse.of(replyService.updateReply(replyId, request, authUser));
+        return ApiResponse.of(replyService.updateReply(replyId, newAttachments, attachmentIdsToDelete, request, authUser));
     }
 }

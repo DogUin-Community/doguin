@@ -14,6 +14,8 @@ public enum ApiResponseDiscussionEnum implements ApiResponseEnum {
     REPLY_CREATE_SUCCESS(HttpStatus.OK, "답변이 성공적으로 추가되었습니다."),
     REPLY_DELETE_SUCCESS(HttpStatus.OK, "답변이 성공적으로 삭제되었습니다."),
     REPLY_UPDATE_SUCCESS(HttpStatus.OK, "답변이 성공적으로 수정되었습니다."),
+    ATTACHMENT_UPDATE_SUCCESS(HttpStatus.OK, "첨부파일이 성공적으로 수정되었습니다."),
+    ATTACHMENT_DELETE_SUCCESS(HttpStatus.OK, "첨부파일이 성공적으로 삭제되었습니다."),
 
     // 400 - 잘못된 요청
     INVALID_DISCUSSION_TITLE(HttpStatus.BAD_REQUEST, "유효하지 않은 토론 제목입니다."),

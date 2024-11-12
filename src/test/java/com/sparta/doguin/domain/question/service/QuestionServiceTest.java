@@ -1,6 +1,11 @@
 package com.sparta.doguin.domain.question.service;
 
 import com.sparta.doguin.domain.answer.repository.AnswerRepository;
+import com.sparta.doguin.domain.attachment.constans.AttachmentTargetType;
+import com.sparta.doguin.domain.attachment.service.impl.AttachmentDeleteServiceImpl;
+import com.sparta.doguin.domain.attachment.service.impl.AttachmentGetServiceImpl;
+import com.sparta.doguin.domain.attachment.service.impl.AttachmentUpdateServiceImpl;
+import com.sparta.doguin.domain.attachment.service.impl.AttachmentUploadServiceImpl;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.question.dto.QuestionRequest;
 import com.sparta.doguin.domain.question.dto.QuestionResponse;
@@ -20,6 +25,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +45,18 @@ public class QuestionServiceTest {
     @Mock
     private AnswerRepository answerRepository;
 
+    @Mock
+    private AttachmentUploadServiceImpl attachmentUploadService;
+
+    @Mock
+    private AttachmentUpdateServiceImpl attachmentUpdateService;
+
+    @Mock
+    private AttachmentGetServiceImpl attachmentGetService;
+
+    @Mock
+    private AttachmentDeleteServiceImpl attachmentDeleteServiceImpl;
+
     @InjectMocks
     private QuestionService questionService;
 
@@ -45,11 +64,30 @@ public class QuestionServiceTest {
     void 질문_생성_성공() {
         // given
         AuthUser authUser = DataUtil.authUser1();
-        QuestionRequest.CreatedQuestion request = DataUtil.questionRequestCreate1();
+        QuestionRequest.QuestionRequestCreate request = DataUtil.questionRequestCreate1();
+        List<MultipartFile> files = List.of(
+                new MockMultipartFile("file1", "test1.jpg", "image/jpeg", "test image content".getBytes()),
+                new MockMultipartFile("file2", "test2.jpg", "image/jpeg", "test image content".getBytes())
+        );
+
+        Question savedQuestion = new Question(
+                DataUtil.one(),
+                request.title(),
+                request.content(),
+                request.firstCategory(),
+                request.secondCategory(),
+                request.lastCategory(),
+                DataUtil.user1()
+        );
+
+        List<Long> fileIds = List.of(1L, 2L);
 
         // when
-        given(questionRepository.save(any(Question.class))).willReturn(DataUtil.question1());
-        ApiResponse<QuestionResponse.CreatedQuestion> response = questionService.createdQuestion(authUser, request);
+        given(questionRepository.save(any(Question.class))).willReturn(savedQuestion);
+        given(attachmentGetService.getFileIds(authUser.getUserId(), savedQuestion.getId(), AttachmentTargetType.QUESTION))
+                .willReturn(fileIds);
+
+        ApiResponse<QuestionResponse> response = questionService.createdQuestion(authUser, request, files);
 
         // then
         assertEquals("질문 등록에 성공하였습니다.", response.getMessage());
@@ -60,9 +98,15 @@ public class QuestionServiceTest {
     void 질문_수정_성공() {
         // given
         long questionId = DataUtil.one();
-
         AuthUser authUser = DataUtil.authUser1();
-        QuestionRequest.UpdateQuestion request = new QuestionRequest.UpdateQuestion("title", "content", FirstCategory.JAVA, SecondCategory.STRING, LastCategory.REDIS);
+        QuestionRequest.QuestionRequestUpdate request = new QuestionRequest.QuestionRequestUpdate(
+                "title", "content", FirstCategory.JAVA, SecondCategory.STRING, LastCategory.REDIS, List.of(1L, 2L)
+        );
+
+        List<MultipartFile> files = List.of(
+                new MockMultipartFile("file1", "test1.jpg", "image/jpeg", "test image content".getBytes()),
+                new MockMultipartFile("file2", "test2.jpg", "image/jpeg", "test image content".getBytes())
+        );
 
         Question question = new Question(
                 questionId,
@@ -76,9 +120,8 @@ public class QuestionServiceTest {
 
         // when
         given(questionRepository.findById(questionId)).willReturn(Optional.of(question));
-        given(questionRepository.save(any(Question.class))).willReturn(question);
 
-        ApiResponse<QuestionResponse.CreatedQuestion> response = questionService.updatedQuestion(authUser, questionId, request);
+        ApiResponse<QuestionResponse> response = questionService.updatedQuestion(authUser, questionId, request, files);
 
         // then
         assertEquals("질문 수정에 성공하셨습니다.", response.getMessage());
@@ -116,14 +159,17 @@ public class QuestionServiceTest {
                 DataUtil.user1()
         );
 
+        // 파일 ID
+        List<Long> fileIds = List.of(1L, 2L, 3L);
+
         // when
         given(questionRepository.findById(questionId)).willReturn(Optional.of(question));
+        given(attachmentGetService.getFileIds(authUser.getUserId(), questionId, AttachmentTargetType.QUESTION))
+                .willReturn(fileIds);
         ApiResponse<Void> response = questionService.deleteQuestion(authUser, questionId);
 
         // then
         assertEquals("질문 삭제에 성공하였습니다.", response.getMessage());
     }
-
-
 
 }

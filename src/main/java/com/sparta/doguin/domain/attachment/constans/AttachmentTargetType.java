@@ -12,7 +12,8 @@ public enum AttachmentTargetType {
     NOTICE("notice"),
     PROFILE("profile"),
     QUESTION("question"),
-    ;
+    DISCUSSION("discussion"),
+    REPLY("reply"),;
 
     private final String target;
 
