@@ -85,7 +85,6 @@ public class BulletinService implements BoardService {
      * @throws HandleNotFound 일반 게시물 조회 시 데이터가 없을 경우 발생
      * @throws InvalidRequestException 게시물 제작자와 로그인한 유저가 다를 경우 발생
      * @throws InvalidRequestException 게시물 타입이 일반 게시물이 아닐 경우 발생
-     * @return 수정된 일반 게시물 객체
      * @author 김창민
      */
     @Override
@@ -241,11 +240,6 @@ public class BulletinService implements BoardService {
         int end = Math.min(start + size, popularBoardIdList.size());
         List<Long> paginatedBoardIds = popularBoardIdList.subList(start, end);
 
-
         return new PageImpl<>(paginatedBoardIds,pageable, popularBoardIdList.size());
     }
-
-
-
-
 }
