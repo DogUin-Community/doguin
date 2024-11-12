@@ -17,7 +17,6 @@ public class SlackSendPush {
 
     @Async // 비동기
     protected void sendPush(String slackId, String nickName, String message) {
-        log.info("시작");
         String url = "https://slack.com/api/chat.postMessage";
 
         HttpHeaders headers = new HttpHeaders();
@@ -34,18 +33,9 @@ public class SlackSendPush {
         RestTemplate restTemplate = new RestTemplate();
 
         try {
-            ResponseEntity<String> responseEntity = restTemplate.exchange(
-                    url, HttpMethod.POST, requestEntity, String.class);
-
-            HttpStatus httpStatus = (HttpStatus) responseEntity.getStatusCode();
-            int status = httpStatus.value();
-            String response = responseEntity.getBody();
-
-            System.out.println("Status: " + status);
-            System.out.println("Response: " + response);
+            restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        log.info("끝");
     }
 }

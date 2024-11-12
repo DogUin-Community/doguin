@@ -23,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SlackEventListener {
 
+    private static final Logger log = LoggerFactory.getLogger(SlackEventListener.class);
     @Value(value = "${slack.bot-token}")
     private String token;
 
@@ -37,6 +38,7 @@ public class SlackEventListener {
         String message = slackEventClass.getMessage();
 
         List<FollowResponse.Follow> followerUserEmail = followService.getFollowerList(userId);
+
 
         for(FollowResponse.Follow val : followerUserEmail){
             String userEmail = val.email();
