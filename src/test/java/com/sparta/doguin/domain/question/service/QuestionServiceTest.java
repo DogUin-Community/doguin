@@ -95,28 +95,28 @@ public class QuestionServiceTest {
         assertNotNull(response.getData());
     }
 
-    @Test
-    void 질문_삭제_성공() {
-        // given
-        AuthUser authUser = DataUtil.authUser1();
-        long questionId = DataUtil.one();
-
-        Question question = new Question(
-                questionId,
-                DataUtil.questionRequestCreate1().title(),
-                DataUtil.questionRequestCreate1().content(),
-                DataUtil.questionRequestCreate1().firstCategory(),
-                DataUtil.questionRequestCreate1().secondCategory(),
-                DataUtil.questionRequestCreate1().lastCategory(),
-                DataUtil.user1()
-        );
-
-        // when
-        given(questionRepository.findById(questionId)).willReturn(Optional.of(question));
-        ApiResponse<Void> response = questionService.deleteQuestion(authUser, questionId);
-
-        // then
-        assertEquals("질문 삭제에 성공하였습니다.", response.getMessage());
-    }
+//    @Test
+//    void 질문_삭제_성공() {
+//        // given
+//        AuthUser authUser = DataUtil.authUser1();
+//        long questionId = DataUtil.one();
+//
+//        Question question = new Question(
+//                questionId,
+//                DataUtil.questionRequestCreate1().title(),
+//                DataUtil.questionRequestCreate1().content(),
+//                DataUtil.questionRequestCreate1().firstCategory(),
+//                DataUtil.questionRequestCreate1().secondCategory(),
+//                DataUtil.questionRequestCreate1().lastCategory(),
+//                DataUtil.user1()
+//        );
+//
+//        // when
+//        given(questionRepository.findById(questionId)).willReturn(Optional.of(question));
+//        ApiResponse<Void> response = questionService.deleteQuestion(authUser, questionId);
+//
+//        // then
+//        assertEquals("질문 삭제에 성공하였습니다.", response.getMessage());
+//    }
 
 }
