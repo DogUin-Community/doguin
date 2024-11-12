@@ -1,6 +1,7 @@
 package com.sparta.doguin.domain.answer.entity;
 
 import com.sparta.doguin.domain.answer.dto.AnswerRequest;
+import com.sparta.doguin.domain.answer.enums.AnswerStatus;
 import com.sparta.doguin.domain.answer.enums.AnswerType;
 import com.sparta.doguin.domain.board.entity.Board;
 import com.sparta.doguin.domain.common.Timestamped;
@@ -41,6 +42,9 @@ public class Answer extends Timestamped {
 
     private int depth = 0; // 0: 댓글, 1: 대댓글
 
+    @Enumerated(EnumType.STRING)
+    private AnswerStatus status = AnswerStatus.ACTIVE; // 기본 상태 ACTIVE
+
     // 일반 게시글 댓글 생성자
     public Answer(String content, User user, Board board) {
         this.content = content;
@@ -77,6 +81,11 @@ public class Answer extends Timestamped {
 
     public Long getQuestionId() {
         return question != null ? question.getId() : null;
+    }
+
+    // 상태 변경
+    public void markAsDeleted() {
+        this.status = AnswerStatus.DELETED;
     }
 
 }
