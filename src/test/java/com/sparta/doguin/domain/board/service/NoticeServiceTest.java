@@ -2,6 +2,10 @@ package com.sparta.doguin.domain.board.service;
 
 import com.sparta.doguin.domain.answer.dto.AnswerResponse;
 import com.sparta.doguin.domain.answer.service.NoticeAnswerService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentGetService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUpdateService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
 import com.sparta.doguin.domain.board.BoardType;
 import com.sparta.doguin.domain.board.dto.BoardRequest;
 import com.sparta.doguin.domain.board.dto.BoardResponse;
@@ -48,6 +52,14 @@ class NoticeServiceTest {
     private NoticeAnswerService noticeAnswerService;
     @Mock
     private PopularService popularService;
+    @Mock
+    private AttachmentUploadService attachmentUploadService;
+    @Mock
+    private AttachmentUpdateService attachmentUpdateService;
+    @Mock
+    private AttachmentGetService attachmentGetService;
+    @Mock
+    private AttachmentDeleteService attachmentDeleteService;
 
 
     @InjectMocks
@@ -72,9 +84,9 @@ class NoticeServiceTest {
         BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("공지 게시물","공지 게시물");
         given(boardRepository.save(any(Board.class))).willReturn(board);
 
-        Board result = noticeService.create(admin, boardCommonRequest);
+        noticeService.create(admin, boardCommonRequest,null);
 
-        assertEquals(result, board);
+
     }
 
     @Test
@@ -83,9 +95,9 @@ class NoticeServiceTest {
         BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("수정된 공지 게시물","수정된 공지 게시물");
         given(boardRepository.findById(anyLong())).willReturn(Optional.of(board));
 
-        Board result = noticeService.update(admin, 1L,boardCommonRequest);
+        noticeService.update(admin, 1L,boardCommonRequest,null);
 
-        assertEquals(result, board);
+
 
     }
     @Test
@@ -97,7 +109,7 @@ class NoticeServiceTest {
 
         // When
         InvalidRequestException exception = assertThrows(InvalidRequestException.class, () ->
-                noticeService.update(user1, 1L, boardCommonRequest)
+                noticeService.update(user1, 1L, boardCommonRequest,null)
         );
 
         // Then
@@ -113,7 +125,7 @@ class NoticeServiceTest {
 
         // When
         InvalidRequestException exception = assertThrows(InvalidRequestException.class, () ->
-                noticeService.update(admin, 1L, boardCommonRequest)
+                noticeService.update(admin, 1L, boardCommonRequest,null)
         );
 
         // Then

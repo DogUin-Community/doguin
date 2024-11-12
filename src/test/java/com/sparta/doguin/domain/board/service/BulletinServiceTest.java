@@ -2,6 +2,10 @@ package com.sparta.doguin.domain.board.service;
 
 import com.sparta.doguin.domain.answer.dto.AnswerResponse;
 import com.sparta.doguin.domain.answer.service.BulletinAnswerService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentGetService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUpdateService;
+import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
 import com.sparta.doguin.domain.board.BoardType;
 import com.sparta.doguin.domain.board.dto.BoardRequest;
 import com.sparta.doguin.domain.board.dto.BoardResponse;
@@ -52,7 +56,14 @@ class BulletinServiceTest {
     private PopularService popularService;
     @Mock
     private ApplicationEventPublisher publisher;
-
+    @Mock
+    private  AttachmentUploadService attachmentUploadService;
+    @Mock
+    private  AttachmentUpdateService attachmentUpdateService;
+    @Mock
+    private  AttachmentGetService attachmentGetService;
+    @Mock
+    private  AttachmentDeleteService attachmentDeleteService;
     @InjectMocks
     private BulletinService bulletinService;
 
@@ -73,9 +84,8 @@ class BulletinServiceTest {
         BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("일반 게시물","일반 게시물");
         given(boardRepository.save(any(Board.class))).willReturn(board);
 
-        Board result = bulletinService.create(user, boardCommonRequest);
+        bulletinService.create(user, boardCommonRequest,null);
 
-        assertEquals(result, board);
     }
 
     @Test
@@ -84,9 +94,9 @@ class BulletinServiceTest {
         BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("수정된 일반 게시물","수정된 일반 게시물");
         given(boardRepository.findById(anyLong())).willReturn(Optional.of(board));
 
-        Board result = bulletinService.update(user, 1L,boardCommonRequest);
+        bulletinService.update(user, 1L,boardCommonRequest,null);
 
-        assertEquals(result, board);
+
 
     }
     @Test
@@ -98,7 +108,7 @@ class BulletinServiceTest {
 
         // When
         InvalidRequestException exception = assertThrows(InvalidRequestException.class, () ->
-                bulletinService.update(user1, 1L, boardCommonRequest)
+                bulletinService.update(user1, 1L, boardCommonRequest,null)
         );
 
         // Then
@@ -115,7 +125,7 @@ class BulletinServiceTest {
 
         // When
         InvalidRequestException exception = assertThrows(InvalidRequestException.class, () ->
-                bulletinService.update(user, 2L, boardCommonRequest)
+                bulletinService.update(user, 2L, boardCommonRequest,null)
         );
 
         // Then
