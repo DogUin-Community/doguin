@@ -6,12 +6,13 @@ import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.io.Serializable;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.List;
 
 @Getter
-public class AuthUser implements Principal{
+public class AuthUser implements Principal, Serializable {
     private final Long userId;
     private final String email;
     private final String nickname;

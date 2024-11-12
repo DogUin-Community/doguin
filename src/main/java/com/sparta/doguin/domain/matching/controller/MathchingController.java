@@ -51,7 +51,7 @@ public class MathchingController {
             @Valid @RequestBody MatchingRequest.MatchingRequestCreate reqDto,
             @AuthenticationPrincipal AuthUser authUser
     ){
-        ApiResponse<Void> apiResponse = matchingService.createMatching(reqDto,authUser);
+        ApiResponse<Void> apiResponse = matchingService.toggleMatching(reqDto,authUser);
         return ApiResponse.of(apiResponse);
     }
 
