@@ -118,7 +118,7 @@ class MatchingServiceImplTest {
             given(portfolioService.findById(matchingRequestCreate2.portfolioId())).willReturn(portfolio2);
 
             // when
-            matchingService.createMatching(matchingRequestCreate2,authUser2);
+            matchingService.toggleMatching(matchingRequestCreate2,authUser2);
 
             // then - 1번 호출됐는지와, 예상 데이터 실제 데이터가 일치하는지 검증
             Mockito.verify(matchingRepository,Mockito.times(1)).save(Mockito.argThat(matching ->

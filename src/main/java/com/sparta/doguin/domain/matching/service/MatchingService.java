@@ -9,7 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface MatchingService {
-    ApiResponse<Void> createMatching(MatchingRequest.MatchingRequestCreate reqDto, AuthUser authUser);
+    ApiResponse<Void> toggleMatching(MatchingRequest.MatchingRequestCreate reqDto, AuthUser authUser);
     ApiResponse<Void> updateMatching(Long matchingId, MatchingRequest.MatchingRequestUpdate updateReqDto, AuthUser authUser);
     ApiResponse<Void> deleteMatching(Long matchingId, AuthUser authUser);
     ApiResponse<Page<MatchingResponse>> getAllMatching(AuthUser authUser, Pageable pageable, MathingStatusType status);
