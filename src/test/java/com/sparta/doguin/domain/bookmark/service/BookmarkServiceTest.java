@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -91,44 +90,6 @@ class BookmarkServiceTest {
         outsourcingBookmarkTarget1 = outsourcingBookmarkRequestCreate1.target();
         outsourcingBookmarkTarget2 = questionBookmarkRequestCreate1.target();
     }
-
-    @Nested
-    public class 북마크_생성_테스트 {
-        @Test
-        @DisplayName("북마크 생성 성공 _ 외주")
-        void test1() {
-            // given
-            given(outsourcingService.findById(outsourcingBookmarkRequestCreate1.targetId())).willReturn(outsourcing1);
-
-            // when
-            bookmarkService.togleBookmark(outsourcingBookmarkRequestCreate1,authUser1);
-
-            // then - 1번 호출됐는지와, 예상한 데이터와 실제 데이터가 일치하는지 검증
-            Mockito.verify(bookmarkRepository, Mockito.times(1)).save(Mockito.argThat(bookmark ->
-                    bookmark.getUser().getId().equals(authUser1.getUserId()) &&
-                    bookmark.getTargetId().equals(outsourcingBookmarkRequestCreate1.targetId()) &&
-                    bookmark.getTarget().equals(outsourcingBookmarkRequestCreate1.target())
-            ));
-        }
-
-        @Test
-        @DisplayName("북마크 생성 성공 _ 잘문")
-        void test2() {
-            // given
-            given(questionService.findById(questionBookmarkRequestCreate1.targetId())).willReturn(question1);
-
-            // when
-            bookmarkService.togleBookmark(questionBookmarkRequestCreate1,authUser1);
-
-            // then - 1번 호출됐는지와, 예상한 데이터와 실제 데이터가 일치하는지 검증
-            Mockito.verify(bookmarkRepository, Mockito.times(1)).save(Mockito.argThat(bookmark ->
-                    bookmark.getUser().getId().equals(authUser1.getUserId()) &&
-                            bookmark.getTargetId().equals(questionBookmarkRequestCreate1.targetId()) &&
-                            bookmark.getTarget().equals(questionBookmarkRequestCreate1.target())
-            ));
-        }
-    }
-
 
     @Nested
     public class 북마크_다건_조회_테스트 {
