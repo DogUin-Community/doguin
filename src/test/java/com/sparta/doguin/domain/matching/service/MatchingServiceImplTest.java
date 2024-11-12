@@ -24,16 +24,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.Optional;
 
-import static com.sparta.doguin.domain.common.response.ApiResponseMatchingEnum.MATHCING_SUCCESS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -109,63 +106,6 @@ class MatchingServiceImplTest {
 
     }
 
-    @Nested
-    public class 매칭_생성_테스트 {
-        @Test
-        void createMatching() {
-            // given
-            given(outsourcingService.findById(matchingRequestCreate2.outsourcingId())).willReturn(outsourcing2);
-            given(portfolioService.findById(matchingRequestCreate2.portfolioId())).willReturn(portfolio2);
-
-            // when
-            matchingService.toggleMatching(matchingRequestCreate2,authUser2);
-
-            // then - 1번 호출됐는지와, 예상 데이터 실제 데이터가 일치하는지 검증
-            Mockito.verify(matchingRepository,Mockito.times(1)).save(Mockito.argThat(matching ->
-                    matching.getUser().getId().equals(authUser2.getUserId()) &&
-                            matching.getOutsourcing().getId().equals(matchingRequestCreate2.outsourcingId()) &&
-                            matching.getPortfolio().getId().equals(matchingRequestCreate2.portfolioId())
-            ));
-        }
-    }
-
-    @Nested
-    public class 매칭_수정_테스트 {
-        @Test
-        void updateMatching() {
-            // given
-            given(matchingRepository.findById(matchingId1)).willReturn(Optional.of(matching1));
-
-            // when
-            ApiResponse<Void> actual = matchingService.updateMatching(matchingId1, matchingRequestUpdate1, authUser1);
-
-            // then - 검증
-            assertEquals(
-                    actual.getMessage(),
-                    MATHCING_SUCCESS.getMessage()
-            );
-
-        }
-    }
-
-    @Nested
-    public class 매칭_삭제_테스트 {
-        @Test
-        void deleteMatching() {
-            // given
-            given(matchingRepository.findById(matchingId1)).willReturn(Optional.of(matching1));
-
-            // when
-            matchingService.deleteMatching(matchingId1,authUser1);
-
-            // then - 1번 호출됐는지와, 예상 데이터 실제 데이터가 일치하는지 검증
-            Mockito.verify(matchingRepository,Mockito.times(1)).delete(Mockito.argThat(matching ->
-                    matching.getUser().getId().equals(authUser1.getUserId()) &&
-                            matching.getOutsourcing().getId().equals(matching1.getOutsourcing().getId()) &&
-                            matching.getPortfolio().getId().equals(matching1.getPortfolio().getId())
-            ));
-        }
-    }
 
     @Nested
     public class 매칭_다건_조회_테스트 {

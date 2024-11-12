@@ -119,6 +119,4 @@ public class QuestionServiceTest {
         assertEquals("질문 삭제에 성공하였습니다.", response.getMessage());
     }
 
-
-
 }
