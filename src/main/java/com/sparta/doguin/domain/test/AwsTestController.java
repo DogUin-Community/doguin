@@ -1,5 +1,7 @@
 package com.sparta.doguin.domain.test;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -7,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AwsTestController {
     @GetMapping("/health")
-    public String albTest(){
-        return "OK";
+    public ResponseEntity<String> albTest() {
+        return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 }
