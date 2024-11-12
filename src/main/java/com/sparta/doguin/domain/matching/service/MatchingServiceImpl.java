@@ -140,6 +140,7 @@ public class MatchingServiceImpl implements MatchingService {
         return ApiResponse.of(MATHCING_SUCCESS,matchings);
     }
 
+    // TEST
     @Transactional(readOnly = true)
     public Matching findById(Long matchingId){
         return matchingRepository.findById(matchingId).orElseThrow(() -> new MatchingException(ApiResponseMatchingEnum.MATCHING_NOT_FOUND));
