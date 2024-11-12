@@ -135,8 +135,8 @@ public class ApplyAnswerService implements AnswerService {
             throw new AnswerException(ApiResponseAnswerEnum.ANSWER_BELONG_TO_QUESTION);
         }
 
-        // 대댓글 삭제
-        answerRepository.delete(answer);
+        // 답변 상태 DELETED로 변경
+        answer.markAsDeleted();
 
         // 성공 응답 반환
         return ApiResponse.of(ApiResponseAnswerEnum.APPLY_ANSWER_DELETE_SUCCESS);

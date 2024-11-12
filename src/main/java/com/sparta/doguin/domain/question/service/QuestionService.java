@@ -233,6 +233,7 @@ public class QuestionService {
      * @return 삭제 성공 ApiResponse 객체
      * @author 유태이
      */
+    @Transactional
     public ApiResponse<Void> deleteQuestion(AuthUser authUser, long questionId) {
 
         // 사용자가 로그인 했는지 검증

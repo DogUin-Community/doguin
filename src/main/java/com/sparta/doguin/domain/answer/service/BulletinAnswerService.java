@@ -159,8 +159,8 @@ public class BulletinAnswerService implements AnswerService {
             throw new AnswerException(ApiResponseAnswerEnum.UPDATE_ACCESS_DENIED);
         }
 
-        // 삭제
-        answerRepository.delete(answer);
+        // 답변 상태 DELETED로 변경
+        answer.markAsDeleted();
 
         // 성공 응답 반환
         return ApiResponse.of(ApiResponseAnswerEnum.COMMENT_ANSWER_DELETE_SUCCESS);
