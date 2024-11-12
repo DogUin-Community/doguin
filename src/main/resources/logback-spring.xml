@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Spring Profile 기반 설정, 우리가 지금 yml 파일을 하나로 해서 이렇게 해야함 -->
+
+    <property name="LOG_PATH" value="logs/dev-log" />
+    <property name="LOG_LEVEL" value="ERROR" />
+
+    <springProfile name="prod">
+        <property name="LOG_PATH" value="logs/prod-log" />
+        <property name="LOG_LEVEL" value="ERROR" />
+    </springProfile>
+
+    <!-- 콘솔 로그 설정 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%d{HH:mm:ss.SSS}] [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <!-- 파일 로그 설정 및 압축 옵션 -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/application.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 파일 이름과 날짜 포맷 설정 및 압축 옵션 -->
+            <fileNamePattern>${LOG_PATH}/application.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>30</maxHistory> <!-- 30일간의 로그 파일 보관 -->
+            <totalSizeCap>1GB</totalSizeCap> <!-- 총 로그 파일 최대 용량 제한 -->
+        </rollingPolicy>
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 루트 로거 설정 -->
+    <root level="${LOG_LEVEL}">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </root>
+
+    <!-- 특정 패키지별 로그 레벨 설정 (예: com.example 패키지) -->
+    <logger name="com.example" level="DEBUG" additivity="false">
+        <appender-ref ref="FILE" />
+    </logger>
+
+</configuration>
