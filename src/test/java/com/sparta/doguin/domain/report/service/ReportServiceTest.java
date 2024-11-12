@@ -34,8 +34,7 @@ import java.util.Optional;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -71,10 +70,10 @@ class ReportServiceTest {
     @Test
     @DisplayName("신고 등록 성공 테스트")
     void report() {
-        ReportRequest.Report reportRequest = new ReportRequest.Report("신고합니다.", "아주 무시무시합니다.", 2L);
+        ReportRequest.Report reportRequest = new ReportRequest.Report("신고합니다.", "아주 무시무시합니다.", "딸기");
 
-        given(userService.findById(anyLong())).willReturn(reporter);
-        given(reportRepository.findByReporterIdAndReporteeNickname(anyLong(), anyLong())).willReturn(Optional.empty());
+//        given(userService.findById(anyLong())).willReturn(reporter);
+        given(reportRepository.findByReporterIdAndReporteeNickname(anyLong(), anyString())).willReturn(Optional.empty());
         given(reportRepository.save(any(Report.class))).willReturn(report);
 
         reportService.report(reporter, reportRequest);
@@ -92,10 +91,10 @@ class ReportServiceTest {
     @Test
     @DisplayName("신고 등록 실패 테스트(이미 존재)")
     void report_이미_신고해서_실패() {
-        ReportRequest.Report reportRequest = new ReportRequest.Report("신고합니다.", "아주 무시무시합니다.", 2L);
+        ReportRequest.Report reportRequest = new ReportRequest.Report("신고합니다.", "아주 무시무시합니다.", "딸기");
 
-        given(userService.findById(anyLong())).willReturn(reporter);
-        given(reportRepository.findByReporterIdAndReporteeNickname(anyLong(), anyLong())).willReturn(Optional.of(report));
+//        given(userService.findById(anyLong())).willReturn(reporter);
+        given(reportRepository.findByReporterIdAndReporteeNickname(anyLong(), anyString())).willReturn(Optional.of(report));
 
 
         InvalidRequestException exception = assertThrows(InvalidRequestException.class, () -> reportService.report(reporter, reportRequest));
@@ -176,17 +175,17 @@ class ReportServiceTest {
     @Test
     @DisplayName("특정인 신고 결과 조회")
     void reportSearch() {
-        given(reportRepository.findByReporterIdAndReporteeNickname(1L, 2L)).willReturn(Optional.of(report));
+        given(reportRepository.findByReporterIdAndReporteeNickname(1L, "딸기")).willReturn(Optional.of(report));
 
-        ReportResponse.ReportView response = reportService.reportSearch(reporter, 2L);
+        ReportResponse.ReportView response = reportService.reportSearch(reporter, "딸기");
         assertEquals(response.nickName(), reportee.getNickname());
     }
     @Test
     @DisplayName("특정인 신고 결과 조회 실패 (내역없음)")
     void reportSearch_내역없음() {
-        given(reportRepository.findByReporterIdAndReporteeNickname(1L, 2L)).willReturn(Optional.empty());
+        given(reportRepository.findByReporterIdAndReporteeNickname(1L, "딸기")).willReturn(Optional.empty());
 
-        HandleNotFound exception = assertThrows(HandleNotFound.class, () -> reportService.reportSearch(reporter, 2L));
+        HandleNotFound exception = assertThrows(HandleNotFound.class, () -> reportService.reportSearch(reporter, "딸기"));
 
         assertEquals(exception.getApiResponseEnum().getMessage(), ApiResponseReportEnum.REPORT_NOT_FOUND.getMessage());
 
@@ -196,9 +195,9 @@ class ReportServiceTest {
     @DisplayName("특정인 신고당한 수 조회")
     void reportTotal() {
         ReportResponse.ReportTotalView reportTotalView = new ReportResponse.ReportTotalView(reportee.getNickname(), 1L);
-        given(reportRepository.findCountByReporteeId(2L)).willReturn(Optional.of(reportTotalView));
+        given(reportRepository.findCountByReporteeNickname("딸기")).willReturn(Optional.of(reportTotalView));
 
-        ReportResponse.ReportTotalView response = reportService.reportTotal(2L);
+        ReportResponse.ReportTotalView response = reportService.reportTotal("딸기");
 
         assertEquals(response.nickName(), reportee.getNickname());
 
@@ -207,9 +206,9 @@ class ReportServiceTest {
     @DisplayName("특정인 신고당한 수 조회 실패 (내역없음)")
     void reportTotal_내역없어서_실패() {
         ReportResponse.ReportTotalView reportTotalView = new ReportResponse.ReportTotalView(reportee.getNickname(), 1L);
-        given(reportRepository.findCountByReporteeId(2L)).willReturn(Optional.empty());
+        given(reportRepository.findCountByReporteeNickname("딸기")).willReturn(Optional.empty());
 
-        HandleNotFound exception = assertThrows(HandleNotFound.class, () -> reportService.reportTotal(2L));
+        HandleNotFound exception = assertThrows(HandleNotFound.class, () -> reportService.reportTotal("딸기"));
 
         assertEquals(exception.getApiResponseEnum().getMessage(), ApiResponseReportEnum.REPORT_NOT_FOUND.getMessage());
 
