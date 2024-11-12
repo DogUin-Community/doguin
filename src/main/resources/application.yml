@@ -24,11 +24,9 @@ spring:
     redis:
       port: ${REDIS_PORT}
       host: ${REDIS_HOST}
-      password: ${REDIS_PASSWORD}
     mongodb:
       host: ${MONGO_HOST}
       port: ${MONGO_PORT}
-      database: ${MONGO_DB_NAME}
 
   cache:
     jcache:

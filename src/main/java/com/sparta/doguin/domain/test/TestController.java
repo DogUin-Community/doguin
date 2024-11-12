@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/test")
 public class TestController {
     private final TestService testService;
+    private final RedisTemplate<String,Object> redisTemplate;
 
     @Operation(summary = "응답 테스트 1 - 데이터")
     @GetMapping("/data")
@@ -39,7 +41,7 @@ public class TestController {
         }
     }
 
-    @GetMapping("ip")
+    @GetMapping("/ip")
     public String test3(HttpServletRequest request) {
         String ipAddress = request.getHeader("X-Forwarded-For");
         if (ipAddress != null && !ipAddress.isEmpty()) {
@@ -48,6 +50,12 @@ public class TestController {
             ipAddress = request.getRemoteAddr();
         }
         return ipAddress;
+    }
+
+    @GetMapping("/redis")
+    public String test4() {
+        redisTemplate.opsForValue().set("hello","world");
+        return (String) redisTemplate.opsForValue().get("hello");
     }
 
 }
