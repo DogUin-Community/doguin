@@ -32,6 +32,7 @@ public class PopularService {
     public void trackUserView(Long boardId, Long userId) {
         String hourKey = "hourView:" + boardId;
         redisTemplate.opsForSet().add(hourKey, userId.toString());
+        log.info("Tracking view for boardId: {}, userId: {}", boardId, userId);
     }
 
     /**
@@ -152,3 +153,4 @@ public class PopularService {
         log.info("인기 게시글 업데이트 완료");
     }
 }
+

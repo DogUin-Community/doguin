@@ -11,6 +11,7 @@ import com.sparta.doguin.domain.board.dto.BoardRequest.BoardCommonRequest;
 import com.sparta.doguin.domain.board.dto.BoardResponse;
 import com.sparta.doguin.domain.board.dto.BoardResponse.BoardCommonResponse;
 import com.sparta.doguin.domain.board.entity.Board;
+import com.sparta.doguin.domain.board.event.ViewEvent;
 import com.sparta.doguin.domain.board.repository.BoardRepository;
 import com.sparta.doguin.domain.common.exception.HandleNotFound;
 import com.sparta.doguin.domain.common.exception.InvalidRequestException;
@@ -72,8 +73,6 @@ public class BulletinService implements BoardService {
             attachmentUploadService.upload(files,user,board.getId(), BULLETIN);
             attachmentGetService.getFileIds(user.getId(),board.getId(), BULLETIN);
         }
-
-        log.info(user.getNickname());
         publisher.publishEvent(new SlackEventClass(user.getId(), user.getNickname(), "(이)가 새 게시물을 등록했습니다."));
     }
 
@@ -87,7 +86,6 @@ public class BulletinService implements BoardService {
      * @throws HandleNotFound 일반 게시물 조회 시 데이터가 없을 경우 발생
      * @throws InvalidRequestException 게시물 제작자와 로그인한 유저가 다를 경우 발생
      * @throws InvalidRequestException 게시물 타입이 일반 게시물이 아닐 경우 발생
-     * @return 수정된 일반 게시물 객체
      * @author 김창민
      */
     @Override
@@ -118,7 +116,6 @@ public class BulletinService implements BoardService {
      * @since 1.0
      */
     @Override
-    @Cacheable(value = "PopularBoard",key = "'게시글번호'+#boardId")
     public BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId, User user) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.BULLETIN_NOT_FOUND));
@@ -130,9 +127,7 @@ public class BulletinService implements BoardService {
 
         Page<AnswerResponse.Response> responses = bulletinAnswerService.findByBoardId(boardId,PageRequest.of(0,10));
 
-        if(user!=null){
-            popularService.trackUserView(boardId, user.getId()); // 한시간 조회수 누적
-        }
+        publisher.publishEvent(new ViewEvent(boardId, user != null ? user.getId() : null));
 
         Long viewCount = popularService.getHourUniqueViewCount(boardId)+board.getView(); // 한시간 조회수 + 누적 조회수 로 토탈 조회수
 
@@ -243,11 +238,6 @@ public class BulletinService implements BoardService {
         int end = Math.min(start + size, popularBoardIdList.size());
         List<Long> paginatedBoardIds = popularBoardIdList.subList(start, end);
 
-
         return new PageImpl<>(paginatedBoardIds,pageable, popularBoardIdList.size());
     }
-
-
-
-
 }

@@ -49,9 +49,9 @@ public class SecurityConfig {
                         .requestMatchers("/test/**").permitAll()
                         .requestMatchers("/health").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/boards/*/*").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/boards/*").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/boards/*/search").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/boards/*/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/boards/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/boards/*/search").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/outsourcings").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/outsourcings/search").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/portfolios/my").authenticated()
@@ -59,7 +59,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/portfolios/{id}").permitAll()
 
 
-                                .requestMatchers(HttpMethod.POST, "/boards/events").hasAuthority(UserRole.Authority.ADMIN)
+                        .requestMatchers(HttpMethod.POST, "/boards/events").hasAuthority(UserRole.Authority.ADMIN)
                         .requestMatchers(HttpMethod.POST, "/boards/notices").hasAuthority(UserRole.Authority.ADMIN)
                         .requestMatchers(HttpMethod.POST, "/boards/inquiries").hasAuthority(UserRole.Authority.USER)
                         .requestMatchers(HttpMethod.PUT, "/reports/*/accept").hasAuthority(UserRole.Authority.ADMIN)
