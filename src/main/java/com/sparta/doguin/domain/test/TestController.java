@@ -54,6 +54,7 @@ public class TestController {
         return ipAddress;
     }
 
+    // CICD TEST
     @GetMapping("/redis")
     public String test4() {
         redisTemplate.opsForValue().set("hello","world");
