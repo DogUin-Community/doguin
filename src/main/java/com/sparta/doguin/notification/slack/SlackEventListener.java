@@ -1,20 +1,12 @@
 package com.sparta.doguin.notification.slack;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.sparta.doguin.domain.follow.dto.FollowResponse;
 import com.sparta.doguin.domain.follow.service.FollowService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
