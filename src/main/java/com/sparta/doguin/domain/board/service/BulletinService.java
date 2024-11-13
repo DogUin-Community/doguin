@@ -11,6 +11,7 @@ import com.sparta.doguin.domain.board.dto.BoardRequest.BoardCommonRequest;
 import com.sparta.doguin.domain.board.dto.BoardResponse;
 import com.sparta.doguin.domain.board.dto.BoardResponse.BoardCommonResponse;
 import com.sparta.doguin.domain.board.entity.Board;
+import com.sparta.doguin.domain.board.event.ViewEvent;
 import com.sparta.doguin.domain.board.repository.BoardRepository;
 import com.sparta.doguin.domain.common.exception.HandleNotFound;
 import com.sparta.doguin.domain.common.exception.InvalidRequestException;
@@ -115,7 +116,6 @@ public class BulletinService implements BoardService {
      * @since 1.0
      */
     @Override
-    @Cacheable(value = "PopularBoard", key = "'게시글번호'+#boardId", unless = "#user == null")
     public BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId, User user) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.BULLETIN_NOT_FOUND));
@@ -127,9 +127,7 @@ public class BulletinService implements BoardService {
 
         Page<AnswerResponse.Response> responses = bulletinAnswerService.findByBoardId(boardId,PageRequest.of(0,10));
 
-        if(user!=null){
-            popularService.trackUserView(boardId, user.getId()); // 한시간 조회수 누적
-        }
+        publisher.publishEvent(new ViewEvent(boardId, user != null ? user.getId() : null));
 
         Long viewCount = popularService.getHourUniqueViewCount(boardId)+board.getView(); // 한시간 조회수 + 누적 조회수 로 토탈 조회수
 
