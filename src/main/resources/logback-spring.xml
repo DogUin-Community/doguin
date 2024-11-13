@@ -3,7 +3,7 @@
     <!-- Spring Profile 기반 설정, 우리가 지금 yml 파일을 하나로 해서 이렇게 해야함 -->
 
     <property name="LOG_PATH" value="logs/dev-log" />
-    <property name="LOG_LEVEL" value="ERROR" />
+    <property name="LOG_LEVEL" value="INFO" />
 
     <springProfile name="prod">
         <property name="LOG_PATH" value="logs/prod-log" />
