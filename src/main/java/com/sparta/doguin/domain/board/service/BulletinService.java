@@ -115,7 +115,7 @@ public class BulletinService implements BoardService {
      * @since 1.0
      */
     @Override
-    @Cacheable(value = "PopularBoard",key = "'게시글번호'+#boardId")
+    @Cacheable(value = "PopularBoard", key = "'게시글번호'+#boardId", unless = "#user == null")
     public BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId, User user) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.BULLETIN_NOT_FOUND));

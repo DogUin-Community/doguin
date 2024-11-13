@@ -53,7 +53,6 @@ public class BulletinController{
 
     @GetMapping("{boardId}")
     public ResponseEntity<ApiResponse<BoardResponse.BoardWithAnswer>> viewOne(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long boardId) {
-        log.info("호출됨");
         User user = authUser != null ? User.fromAuthUser(authUser) : null;
         BoardResponse.BoardWithAnswer response = boardService.viewOneWithUser(boardId,user);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.BULLETIN_FIND_ONE_SUCCESS, response));
