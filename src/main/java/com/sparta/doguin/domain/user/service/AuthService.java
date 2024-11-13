@@ -1,5 +1,6 @@
 package com.sparta.doguin.domain.user.service;
 
+import com.sparta.doguin.domain.attachment.constans.AttachmentTargetType;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
 import com.sparta.doguin.domain.common.exception.UserException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
@@ -10,6 +11,7 @@ import com.sparta.doguin.domain.user.entity.User;
 import com.sparta.doguin.domain.user.enums.UserRole;
 import com.sparta.doguin.domain.user.enums.UserType;
 import com.sparta.doguin.domain.user.repository.UserRepository;
+import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.security.JwtUtil;
 import com.sparta.doguin.security.dto.JwtUtilRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -43,7 +45,12 @@ public class AuthService {
     public ApiResponse<String> signup(UserRequest.Signup signupRequest, List<MultipartFile> files) {
         // 중복 이메일 체크
         if (userRepository.findByEmail(signupRequest.email()).isPresent()) {
-            throw new UserException(ApiResponseUserEnum.USER_ALREADY_EXISTS); // 중복 회원가입 예외 처리
+            throw new UserException(ApiResponseUserEnum.USER_ALREADY_EXISTS);
+        }
+
+        // 중복 닉네임 체크
+        if (userRepository.findByNickname(signupRequest.nickname()).isPresent()) {
+            throw new UserException(ApiResponseUserEnum.USER_NICKNAME_ALREADY_EXISTS);
         }
 
         // 비밀번호를 암호화
@@ -64,8 +71,17 @@ public class AuthService {
         );
 
         User saveduser = userRepository.save(newUser);
-//        AuthUser authUser = new AuthUser(saveduser.getId(),saveduser.getEmail(), saveduser.getNickname(), saveduser.getUserType(), saveduser.getUserRole());
-//        attachmentUploadService.upload(files, authUser, authUser.getUserId(), AttachmentTargetType.PROFILE);
+        AuthUser authUser = new AuthUser(saveduser.getId(),saveduser.getEmail(), saveduser.getNickname(), saveduser.getUserType(), saveduser.getUserRole());
+
+        try {
+            // 파일 업로드 시도
+            attachmentUploadService.upload(files, authUser, authUser.getUserId(), AttachmentTargetType.PROFILE);
+        } catch (Exception e) {
+            // 파일 업로드 실패 시 예외 처리
+            System.err.println("파일 업로드 실패: " + e.getMessage());
+            // 필요 시 사용자에게 알림 또는 로그에 추가적인 정보를 기록할 수 있음
+        }
+
         ApiResponseEnum apiResponse = ApiResponseUserEnum.USER_CREATE_SUCCESS;
 
         return ApiResponse.of(apiResponse);

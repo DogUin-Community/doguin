@@ -15,8 +15,8 @@
             <ttl unit="minutes">1</ttl>
         </expiry>
         <resources>
-            <heap unit="entries">5</heap>
-            <offheap unit="MB">50</offheap>
+            <heap unit="entries">50</heap>
+            <offheap unit="MB">25</offheap>
         </resources>
     </cache>
 
@@ -27,8 +27,8 @@
             <ttl unit="minutes">5</ttl>
         </expiry>
         <resources>
-            <heap unit="entries">100</heap>
-            <offheap unit="MB">50</offheap>
+            <heap unit="entries">50</heap>
+            <offheap unit="MB">25</offheap>
         </resources>
     </cache>
 
@@ -39,8 +39,8 @@
             <ttl unit="minutes">5</ttl>
         </expiry>
         <resources>
-            <heap unit="entries">100</heap>
-            <offheap unit="MB">50</offheap>
+            <heap unit="entries">50</heap>
+            <offheap unit="MB">25</offheap>
         </resources>
     </cache>
 
@@ -52,7 +52,7 @@
         </expiry>
         <resources>
             <heap unit="entries">50</heap>
-            <offheap unit="MB">50</offheap>
+            <offheap unit="MB">25</offheap>
         </resources>
     </cache>
 
@@ -63,8 +63,8 @@
             <ttl unit="minutes">5</ttl>
         </expiry>
         <resources>
-            <heap unit="entries">100</heap>
-            <offheap unit="MB">50</offheap>
+            <heap unit="entries">50</heap>
+            <offheap unit="MB">25</offheap>
         </resources>
     </cache>
 
@@ -75,8 +75,8 @@
             <ttl unit="minutes">5</ttl>
         </expiry>
         <resources>
-            <heap unit="entries">100</heap>
-            <offheap unit="MB">50</offheap>
+            <heap unit="entries">50</heap>
+            <offheap unit="MB">25</offheap>
         </resources>
     </cache>
 
@@ -87,8 +87,8 @@
             <ttl unit="minutes">10</ttl>
         </expiry>
         <resources>
-            <heap unit="entries">200</heap>
-            <offheap unit="MB">100</offheap>
+            <heap unit="entries">50</heap>
+            <offheap unit="MB">25</offheap>
         </resources>
     </cache>
 </config>

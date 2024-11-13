@@ -176,8 +176,14 @@ public class QuestionAnswerService implements AnswerService {
             throw new AnswerException(ApiResponseAnswerEnum.QUESTION_ANSWER_NOT_FOUND);
         }
 
-        // 답변 삭제
-        answerRepository.delete(answer);
+        // 답변 상태 DELETED로 변경
+        answer.markAsDeleted();
+
+        // 해당 답변의 대댓글 상태 DELETED로 변경
+        List<Answer> childAnswers = answerRepository.findByParentId(answer.getId());
+        for (Answer childAnswer : childAnswers) {
+            childAnswer.markAsDeleted();
+        }
 
         // 성공 응답 반환
         return ApiResponse.of(ApiResponseAnswerEnum.QUESTION_ANSWER_DELETE_SUCCESS);

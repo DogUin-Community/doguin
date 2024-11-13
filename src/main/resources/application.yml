@@ -24,11 +24,12 @@ spring:
     redis:
       port: ${REDIS_PORT}
       host: ${REDIS_HOST}
-      password: ${REDIS_PASSWORD}
     mongodb:
+      username: ${MONGO_NAME}
+      password: ${MONGO_PASSWORD}
       host: ${MONGO_HOST}
       port: ${MONGO_PORT}
-      database: ${MONGO_DB_NAME}
+
 
   cache:
     jcache:
