@@ -162,7 +162,7 @@ MSA 구조를 통해 시스템의 확장성과 안정성을 확보하고자 한 
 
 
  # 인프라
-
+![두구인_아키텍처.png](src%2Fmain%2Fresources%2Fimage%2F%EB%91%90%EA%B5%AC%EC%9D%B8_%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98.png)
 ---
 
 # 성능 개선 : 트러블 슈팅
