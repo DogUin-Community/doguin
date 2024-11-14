@@ -67,9 +67,18 @@ public class PopularService {
      * @return 일일 조회수
      */
     public Long getHourUniqueViewCount(Long boardId) {
+        // 시간별 조회수 조회
         String hourKey = "hourView:" + boardId;
-        Long count = (long) redisTemplate.opsForSet().members(hourKey).size();
-        return count != null ? count : 0L;
+        Long hourViewCount = redisTemplate.opsForSet().size(hourKey);
+        hourViewCount = hourViewCount != null ? hourViewCount : 0L;
+
+        // 일일 조회수 조회
+        String todayKey = "todayView:" + boardId;
+        String todayViewStr = (String) redisTemplate.opsForValue().get(todayKey);
+        Long todayViewCount = (todayViewStr != null) ? Long.parseLong(todayViewStr) : 0L;
+
+        // 합산 후 반환
+        return hourViewCount + todayViewCount;
     }
 
     /**
