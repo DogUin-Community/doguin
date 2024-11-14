@@ -208,7 +208,10 @@ public class QuestionService {
                 })
                 .toList();
 
-        List<Long> files = attachmentGetServiceImpl.getFileIds(user.getId(), questionId, AttachmentTargetType.QUESTION);
+        // 파일 조회 시 user가 null인지 확인
+        List<Long> files = (user != null)
+                ? attachmentGetServiceImpl.getFileIds(user.getId(), questionId, AttachmentTargetType.QUESTION)
+                : new ArrayList<>();
 
         return new QuestionResponse.GetQuestion(
                 question.getId(),
