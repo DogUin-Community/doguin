@@ -45,15 +45,11 @@ public class TestController {
 
     @GetMapping("/ip")
     public String test3(HttpServletRequest request) {
-        String ipAddress = request.getHeader("X-Forwarded-For");
-        if (ipAddress != null && !ipAddress.isEmpty()) {
-            ipAddress = ipAddress.split(",")[0].trim();  // 첫 번째 IP만 가져옴
-        } else {
-            ipAddress = request.getRemoteAddr();
-        }
-        return ipAddress;
+        return request.getHeader("X-Forwarded-For");
+
     }
 
+    // CICD TEST
     @GetMapping("/redis")
     public String test4() {
         redisTemplate.opsForValue().set("hello","world");
