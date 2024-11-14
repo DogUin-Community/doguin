@@ -7,6 +7,7 @@ import com.sparta.doguin.domain.attachment.repository.AttachmentRepository;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteService;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentGetService;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
+import com.sparta.doguin.domain.bookmark.constans.BookmarkTargetType;
 import com.sparta.doguin.domain.bookmark.model.BookmarkRequest;
 import com.sparta.doguin.domain.bookmark.service.BookmarkService;
 import com.sparta.doguin.domain.common.exception.DiscussionException;
@@ -46,6 +47,7 @@ public class DiscussionService {
     private final UserService userService;
     private final AttachmentUploadService attachmentUploadService;
     private final AttachmentDeleteService attachmentDeleteService;
+    private final BookmarkService bookmarkService;
     private final AttachmentRepository attachmentRepository;
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -253,6 +255,17 @@ public class DiscussionService {
         if (!discussion.getUser().getId().equals(authUser.getUserId())) {
             throw new DiscussionException(ApiResponseDiscussionEnum.NOT_DISCUSSION_OWNER);
         }
+    }
+
+    /**
+     * 토론을 북마크하거나 북마크를 제거하는 메서드
+     *
+     * @param discussionId / 북마크할 토론의 ID
+     * @param authUser     / 사용자 정보
+     */
+    public void toggleBookmark(Long discussionId, AuthUser authUser) {
+        BookmarkRequest.BookmarkRequestCreate reqDto = new BookmarkRequest.BookmarkRequestCreate(discussionId, BookmarkTargetType.DISCUSSION);
+        bookmarkService.togleBookmark(reqDto, authUser);
     }
 
     private List<DiscussionAttachmentResponse> getAttachmentResponses(Long targetId, AttachmentTargetType targetType) {

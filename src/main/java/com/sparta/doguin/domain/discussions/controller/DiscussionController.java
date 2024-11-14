@@ -92,8 +92,7 @@ public class DiscussionController {
     public ResponseEntity<ApiResponse<Void>> bookmarkDiscussion(
             @PathVariable Long discussionId,
             @AuthenticationPrincipal AuthUser authUser) {
-        BookmarkRequest.BookmarkRequestCreate reqDto = new BookmarkRequest.BookmarkRequestCreate(discussionId, BookmarkTargetType.DISCUSSION);
-        bookmarkService.togleBookmark(reqDto, authUser);
+        discussionService.toggleBookmark(discussionId, authUser);
         ApiResponse<Void> response = ApiResponse.of(ApiResponseBookmarkEnum.BOOKMARK_OK);
         return ResponseEntity.status(ApiResponseBookmarkEnum.BOOKMARK_OK.getHttpStatus()).body(response);
     }
