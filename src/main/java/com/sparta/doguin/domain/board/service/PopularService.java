@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -114,6 +115,9 @@ public class PopularService {
      */
     public Set<Long> viewPopularBoardList() {
         Set<Object> popularBoardIds = redisTemplate.opsForZSet().reverseRange("popularBoard", 0, 2);
+        if(popularBoardIds==null || popularBoardIds.isEmpty()){
+           throw new HandleNotFound(ApiResponseBoardEnum.POPULAR_NOT_FOUND);
+        }
         return popularBoardIds.stream()
                 .map(id -> Long.parseLong(id.toString()))
                 .collect(Collectors.toSet());
