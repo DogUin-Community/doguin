@@ -22,6 +22,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -71,6 +72,7 @@ public class SocialLoginService {
      * @author 황윤서
      * @since 1.0
      */
+    @Transactional
     public ApiResponse<String> socialLogin(String provider, String code, HttpServletResponse response) throws JsonProcessingException {
         String accessToken = getAccessToken(provider, code);
 
@@ -161,27 +163,39 @@ public class SocialLoginService {
      * @author 황윤서
      * @since 1.0
      */
+    @Transactional
     public ApiResponse<String> handleUserLogin(User userFromSocial, HttpServletResponse response, String rawPassword) {
         // 같은 이메일이 있는지 확인
         Optional<User> existingUserOpt = userRepository.findByEmail(userFromSocial.getEmail());
-
+        String jwt;
         if (existingUserOpt.isPresent()) {
-            // 동일 이메일이 있는 경우에만 비밀번호 입력 여부 확인 후 같은 사용자일 경우 기존 계정과 연동
-            if (rawPassword == null || rawPassword.isEmpty()) {
-                // 비밀번호가 입력되지 않았다면, 비밀번호 입력을 요구하는 메시지 반환
-                return ApiResponse.of(ApiResponseUserEnum.PASSWORD_REQUIRED);
-            }
-
-            // 비밀번호 확인 로직
-            if (!passwordEncoder.matches(rawPassword, existingUserOpt.get().getPassword())) {
-                // 비밀번호가 일치하지 않으면 오류 메시지 반환
-                return ApiResponse.of(ApiResponseUserEnum.INVALID_PASSWORD);
+            switch ((existingUserOpt.get().getEmail())) {
+                case "kakao.com":
+                    // 카카오 처리 로직
+                    User savedUser1 = userRepository.save(existingUserOpt.get());
+                    jwt = addJwtToResponse(savedUser1, response);
+                    return ApiResponse.of(ApiResponseUserEnum.USER_SOCIALOGIN_SUCCESS,jwt);
+                case "naver.com":
+                    // 네이버 처리 로직
+                    User savedUser2 = userRepository.save(existingUserOpt.get());
+                    jwt = addJwtToResponse(savedUser2, response);
+                    return ApiResponse.of(ApiResponseUserEnum.USER_SOCIALOGIN_SUCCESS,jwt);
+                case "google.com":
+                    // 구글 처리 로직
+                    User savedUser3 = userRepository.save(existingUserOpt.get());
+                    jwt = addJwtToResponse(savedUser3, response);
+                    return ApiResponse.of(ApiResponseUserEnum.USER_SOCIALOGIN_SUCCESS,jwt);
+                case "github.com":
+                    // 깃허브 처리 로직
+                    User savedUser4 = userRepository.save(existingUserOpt.get());
+                    jwt = addJwtToResponse(savedUser4, response);
+                    return ApiResponse.of(ApiResponseUserEnum.USER_SOCIALOGIN_SUCCESS,jwt);
             }
 
             // 비밀번호가 일치하는 경우, 기존 계정과 연동하여 소셜 로그인 진행
             User existingUser = existingUserOpt.get();
-            addJwtToResponse(existingUser, response);
-            return ApiResponse.of(ApiResponseUserEnum.USER_SOCIALOGIN_SUCCESS);
+            jwt = addJwtToResponse(existingUser, response);
+            return ApiResponse.of(ApiResponseUserEnum.USER_SOCIALOGIN_SUCCESS,jwt);
         } else {
             // 기존 사용자가 없는 경우 신규 사용자로 등록
             User newUser = User.builder()
@@ -192,11 +206,12 @@ public class SocialLoginService {
                     .userRole(UserRole.ROLE_USER)
                     .build();
 
-            userRepository.save(newUser);
+            User savedUser = userRepository.save(newUser);
 
             // JWT 생성 및 헤더 추가
-            addJwtToResponse(newUser, response);
-            return ApiResponse.of(ApiResponseUserEnum.USER_SOCIALOGIN_SUCCESS);
+
+            String savedJwt = addJwtToResponse(savedUser, response);
+            return ApiResponse.of(ApiResponseUserEnum.USER_SOCIALOGIN_SUCCESS,savedJwt);
         }
     }
 
@@ -206,7 +221,7 @@ public class SocialLoginService {
      * @param user     토큰을 생성할 사용자 정보
      * @param response HTTP 응답 객체로, JWT 토큰을 포함하여 반환합니다.
      */
-    private void addJwtToResponse(User user, HttpServletResponse response) {
+    private String addJwtToResponse(User user, HttpServletResponse response) {
         JwtUtilRequest.CreateToken createToken = new JwtUtilRequest.CreateToken(
                 user.getId(),
                 user.getEmail(),
@@ -217,6 +232,7 @@ public class SocialLoginService {
 
         String jwt = jwtUtil.createToken(createToken);
         jwtUtil.addTokenToResponseHeader(jwt, response);
+        return jwt;
     }
 
     /**
@@ -355,8 +371,8 @@ public class SocialLoginService {
         }
 
         JsonNode jsonNode = new ObjectMapper().readTree(responseBody);
-        String email = jsonNode.has("email") ? jsonNode.get("email").asText() : null;
         String nickname = jsonNode.get("login").asText();
+        String email = nickname + "@github.com";
 
         User user = new User();
         user.socialLogin(email, nickname);
