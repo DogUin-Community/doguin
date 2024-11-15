@@ -68,5 +68,6 @@ public class JwtUtil {
     // 토큰을 헤더에 저장하는 메서드
     public void addTokenToResponseHeader(String token, HttpServletResponse response) {
         response.addHeader("Authorization", token);
+        response.setHeader("Access-Control-Expose-Headers", "Authorization");
     }
 }

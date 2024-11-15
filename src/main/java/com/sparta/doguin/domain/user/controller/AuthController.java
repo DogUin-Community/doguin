@@ -1,6 +1,5 @@
 package com.sparta.doguin.domain.user.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.user.dto.UserRequest;
 import com.sparta.doguin.domain.user.service.AuthService;
@@ -8,10 +7,12 @@ import com.sparta.doguin.domain.user.service.SocialLoginService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -20,6 +21,8 @@ import java.util.List;
 public class AuthController {
     private final AuthService authService;
     private final SocialLoginService socialLoginService;
+    @Value("${host.front-host}")
+    public String frontHost;
 
     /**
      * 회원가입 요청을 처리하는 메서드
@@ -57,8 +60,9 @@ public class AuthController {
     @GetMapping("/oauth2/authorize/{provider}")
     public ResponseEntity<ApiResponse<String>> socialLogin(
             @PathVariable("provider") String provider,
-            @RequestParam("code") String code, HttpServletResponse response) throws JsonProcessingException {
+            @RequestParam("code") String code, HttpServletResponse response) throws IOException {
         ApiResponse<String> apiResponse = socialLoginService.socialLogin(provider, code, response);
+        response.sendRedirect( frontHost +"/callback?token=" + apiResponse.getData());
         return ApiResponse.of(apiResponse);
     }
 }
