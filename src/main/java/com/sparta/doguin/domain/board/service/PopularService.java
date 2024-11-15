@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -67,9 +68,18 @@ public class PopularService {
      * @return 일일 조회수
      */
     public Long getHourUniqueViewCount(Long boardId) {
+        // 시간별 조회수 조회
         String hourKey = "hourView:" + boardId;
-        Long count = (long) redisTemplate.opsForSet().members(hourKey).size();
-        return count != null ? count : 0L;
+        Long hourViewCount = redisTemplate.opsForSet().size(hourKey);
+        hourViewCount = hourViewCount != null ? hourViewCount : 0L;
+
+        // 일일 조회수 조회
+        String todayKey = "todayView:" + boardId;
+        String todayViewStr = (String) redisTemplate.opsForValue().get(todayKey);
+        Long todayViewCount = (todayViewStr != null) ? Long.parseLong(todayViewStr) : 0L;
+
+        // 합산 후 반환
+        return hourViewCount + todayViewCount;
     }
 
     /**
@@ -105,6 +115,9 @@ public class PopularService {
      */
     public Set<Long> viewPopularBoardList() {
         Set<Object> popularBoardIds = redisTemplate.opsForZSet().reverseRange("popularBoard", 0, 2);
+        if(popularBoardIds==null || popularBoardIds.isEmpty()){
+           throw new HandleNotFound(ApiResponseBoardEnum.POPULAR_NOT_FOUND);
+        }
         return popularBoardIds.stream()
                 .map(id -> Long.parseLong(id.toString()))
                 .collect(Collectors.toSet());

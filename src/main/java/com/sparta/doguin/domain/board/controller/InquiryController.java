@@ -1,15 +1,14 @@
 package com.sparta.doguin.domain.board.controller;
 
-import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.board.dto.BoardRequest.BoardCommonRequest;
 import com.sparta.doguin.domain.board.dto.BoardResponse;
 import com.sparta.doguin.domain.board.dto.BoardResponse.BoardCommonResponse;
-import com.sparta.doguin.domain.board.entity.Board;
 import com.sparta.doguin.domain.board.service.BoardService;
 import com.sparta.doguin.domain.board.service.InquiryService;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseBoardEnum;
 import com.sparta.doguin.domain.user.entity.User;
+import com.sparta.doguin.security.AuthUser;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;

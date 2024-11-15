@@ -218,6 +218,7 @@ public class BulletinService implements BoardService {
      * @since 1.0
      * @author 김창민
      */
+    @Override
     public Page<Long> viewPopular(int page, int size){
         Pageable pageable = PageRequest.of(page - 1, size);
         Set<Long> popularBoardIds = popularService.viewPopularBoardList();
@@ -228,8 +229,7 @@ public class BulletinService implements BoardService {
         }
 
         // 인기 게시물 ID를 리스트로 변환
-        List<Long> popularBoardIdList = popularBoardIds.stream().collect(Collectors.toList());
-        log.info(String.valueOf(popularBoardIdList.size()));
+        List<Long> popularBoardIdList = popularBoardIds.stream().toList();
 
         // 페이지 처리
         int start = Math.min((page-1) * size, popularBoardIdList.size());
