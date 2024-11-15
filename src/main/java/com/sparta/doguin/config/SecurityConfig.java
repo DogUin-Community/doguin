@@ -15,6 +15,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -32,6 +36,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                .cors(c -> {
+                    CorsConfigurationSource source = request -> {
+                        CorsConfiguration config = new CorsConfiguration();
+                        config.setAllowedOrigins(List.of("http://localhost:3000"));
+                        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+                        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
+                        config.setAllowCredentials(true); // 자격 증명 허용
+                        return config;
+                    };
+                    c.configurationSource(source);
+                })
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -43,7 +58,7 @@ public class SecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/signup", "/api/v1/auth/signin").permitAll()
-                        .requestMatchers("/auth/oauth2/authorize/**").permitAll()
+                        .requestMatchers("/api/v1/auth/oauth2/authorize/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/api-docs/**").permitAll()
                         .requestMatchers("/test/**").permitAll()
@@ -73,5 +88,7 @@ public class SecurityConfig {
                 )
                 .build();
     }
+
+
 
 }

@@ -18,7 +18,7 @@
 ## 배포 주소
 
 ---
-> [도구인 웹 사이트](여기 주소)
+> [도구인 웹 사이트](https://dogu-in.com)
 
 ## 팀원 소개
 
@@ -164,6 +164,7 @@ MSA 구조를 통해 시스템의 확장성과 안정성을 확보하고자 한 
  # 인프라
 
 ---
+![doguin.jpg](src%2Fmain%2Fresources%2Fimage%2Fdoguin.jpg)
 
 # 성능 개선 : 트러블 슈팅
 
