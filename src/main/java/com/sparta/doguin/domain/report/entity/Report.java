@@ -24,7 +24,7 @@ public class Report extends Timestamped {
 
     private String title;
 
-    private String report_description;
+    private String reportDescription;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reporter_id")
@@ -39,9 +39,9 @@ public class Report extends Timestamped {
     private ReportType reportType;
 
 
-    public Report(String title, String report_description, User reporter, User reportee, ReportType reportType) {
+    public Report(String title, String reportDescription, User reporter, User reportee, ReportType reportType) {
         this.title = title;
-        this.report_description = report_description;
+        this.reportDescription = reportDescription;
         this.reporter = reporter;
         this.reportee = reportee;
         this.reportType = reportType;

@@ -44,7 +44,7 @@ public class NoticeService implements BoardService{
 
 
     private final BoardType boardType = BoardType.BOARD_NOTICE;
-    private final static String NOTICE_CACHE = "boardNotice";
+    private static final String NOTICE_CACHE = "boardNotice";
 
     /**
      * 공지 게시물 생성

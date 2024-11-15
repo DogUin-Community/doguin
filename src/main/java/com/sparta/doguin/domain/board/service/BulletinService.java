@@ -21,7 +21,6 @@ import com.sparta.doguin.notification.slack.SlackEventClass;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -36,7 +35,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.sparta.doguin.domain.attachment.constans.AttachmentTargetType.BULLETIN;
-import static com.sparta.doguin.domain.attachment.constans.AttachmentTargetType.OUTSOURCING;
 
 @Service
 @RequiredArgsConstructor
@@ -220,6 +218,7 @@ public class BulletinService implements BoardService {
      * @since 1.0
      * @author 김창민
      */
+    @Override
     public Page<Long> viewPopular(int page, int size){
         Pageable pageable = PageRequest.of(page - 1, size);
         Set<Long> popularBoardIds = popularService.viewPopularBoardList();
@@ -230,8 +229,7 @@ public class BulletinService implements BoardService {
         }
 
         // 인기 게시물 ID를 리스트로 변환
-        List<Long> popularBoardIdList = popularBoardIds.stream().collect(Collectors.toList());
-        log.info(String.valueOf(popularBoardIdList.size()));
+        List<Long> popularBoardIdList = popularBoardIds.stream().toList();
 
         // 페이지 처리
         int start = Math.min((page-1) * size, popularBoardIdList.size());
