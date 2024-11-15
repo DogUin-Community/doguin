@@ -21,7 +21,6 @@ import com.sparta.doguin.notification.slack.SlackEventClass;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -36,7 +35,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.sparta.doguin.domain.attachment.constans.AttachmentTargetType.BULLETIN;
-import static com.sparta.doguin.domain.attachment.constans.AttachmentTargetType.OUTSOURCING;
 
 @Service
 @RequiredArgsConstructor
