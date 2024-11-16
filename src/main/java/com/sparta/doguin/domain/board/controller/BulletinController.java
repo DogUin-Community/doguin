@@ -10,8 +10,6 @@ import com.sparta.doguin.domain.common.response.ApiResponseBoardEnum;
 import com.sparta.doguin.domain.user.entity.User;
 import com.sparta.doguin.security.AuthUser;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

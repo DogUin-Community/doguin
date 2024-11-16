@@ -16,6 +16,7 @@ public class AttachmentValidator {
      * @param targetId 삭제,수정 하려는 첨부파일에 저장되있는 유저
      */
     public static void isMe(Long userId, Long targetId) {
+        System.out.println("userId = " + userId + ", targetId = " + targetId);
         if (!userId.equals(targetId) ) {
             throw new FileException(FILE_IS_NOT_ME);
         }

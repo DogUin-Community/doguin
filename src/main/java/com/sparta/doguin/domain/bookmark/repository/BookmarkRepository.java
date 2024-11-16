@@ -16,7 +16,10 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 
     @Query("SELECT b FROM Bookmark b" +
             " WHERE b.targetId = :targetId" +
+            " AND b.user.id = :userId" +
             " AND b.target = :targetType"
     )
-    Optional<Bookmark> findBookmarkByTargetIdAndBookmarkTargetType(Long targetId, BookmarkTargetType targetType);
+    Optional<Bookmark> findBookmarkByTargetIdAndBookmarkTargetTypeAndUserId(Long userId, Long targetId, BookmarkTargetType targetType);
+
+    boolean existsByUserIdAndTargetIdAndTarget(Long userId, Long targetId, BookmarkTargetType targetType);
 }

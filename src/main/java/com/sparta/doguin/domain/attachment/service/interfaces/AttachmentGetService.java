@@ -11,6 +11,7 @@ public interface AttachmentGetService {
     List<String> getAllAttachmentPath(List<Long> attachmentIds);
 
     List<Long> getFileIds(Long userId, Long targetId, AttachmentTargetType targetType);
+    List<Long> getFileIds(List<String> filePaths);
 
     List<Attachment> getFiles(List<Long> attachmentIds);
 
