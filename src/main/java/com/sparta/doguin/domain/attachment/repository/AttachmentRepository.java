@@ -96,4 +96,7 @@ public interface AttachmentRepository extends JpaRepository<Attachment, Long> {
             "AND a.target = :target")
     List<Long> findAllAttachmentIdByTagertIdAndTarget(Long targetId, AttachmentTargetType target);
 
+    @Query("SELECT a.id FROM Attachment a WHERE a.attachment_absolute_path IN :filePaths")
+    List<Long> findAllAttachmentByFilePaths(List<String> filePaths);
+
 }

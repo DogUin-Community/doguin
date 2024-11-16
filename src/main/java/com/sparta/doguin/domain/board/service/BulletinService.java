@@ -32,7 +32,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.sparta.doguin.domain.attachment.constans.AttachmentTargetType.BULLETIN;
 
@@ -89,6 +88,11 @@ public class BulletinService implements BoardService {
     @Override
     @Transactional
     public void update(User user,Long boardId, BoardCommonRequest boardRequest,List<MultipartFile> files) {
+        System.out.println(boardId);
+        System.out.println(boardRequest.content());
+        for ( Long filePath : boardRequest.fileIds() ) {
+            System.out.println(filePath);
+        }
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.BULLETIN_NOT_FOUND));
 
@@ -98,6 +102,7 @@ public class BulletinService implements BoardService {
         if (board.getBoardType() != boardType) {
             throw new InvalidRequestException(ApiResponseBoardEnum.BULLETIN_WRONG);
         }
+        attachmentUpdateService.update(files,boardRequest.fileIds(),user);
         board.update(boardRequest.title(), boardRequest.content()); // 업데이트 정보 null 처리
 
     }
