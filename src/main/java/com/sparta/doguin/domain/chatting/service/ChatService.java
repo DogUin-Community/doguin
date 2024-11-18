@@ -15,6 +15,7 @@ import com.sparta.doguin.domain.user.enums.UserType;
 import com.sparta.doguin.security.AuthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -28,17 +29,19 @@ public class ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final MatchingRepository matchingRepository;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final SimpMessagingTemplate messagingTemplate;
 
 
     // 메시지 전송 처리
     public ChatResponse.MessageResponse processSendMessage(Long userId, ChatRequest.MessageSendRequest messageDto) {
-        ChatRoom chatRoom = validateUserInRoom(userId, messageDto.roomId());
-        ChatMessage savedMessage = saveMessage(chatRoom.getRoomId(), userId, messageDto.content());
+        ChatMessage savedMessage = saveMessage(messageDto.roomId(), userId, messageDto.content());
 
-        redisTemplate.convertAndSend("/topic/chat/" + chatRoom.getRoomId(), savedMessage);
+        redisTemplate.convertAndSend("/topic/chat/" + messageDto.roomId(), savedMessage);
+
+        messagingTemplate.convertAndSend("/topic/chat/" + messageDto.roomId(), savedMessage);
 
         return new ChatResponse.MessageResponse(
-                savedMessage.getId(), savedMessage.getRoomId(), userId, savedMessage.getContent(), savedMessage.getTimestamp()
+                savedMessage.getId(), savedMessage.getRoomId(), userId, savedMessage.getContent()
         );
     }
 
@@ -101,14 +104,26 @@ public class ChatService {
         );
     }
 
+    public int generateSenderId(AuthUser authUser) {
+        // 예: AuthUser의 ID를 기반으로 senderId 생성 (고유값 생성)
+        int senderId = authUser.getUserId().hashCode(); // 또는 authUser.getUserId() 사용
+
+        // 클라이언트가 자신에게만 해당하는지 확인할 수 있도록 추가 정보 포함
+        ChatResponse.SenderIdResponse response = new ChatResponse.SenderIdResponse(senderId);
+
+        messagingTemplate.convertAndSend("/topic/senderId", response);
+        return senderId;
+    }
+
+
     // 유저가 방에 있는지 검증
     private ChatRoom validateUserInRoom(Long userId, String roomId) {
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+        ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId)
                 .orElseThrow(() -> new ChatException(ApiResponseChatEnum.CHATROOM_NOT_FOUND));
-
-        if (!chatRoom.getActiveUsers().contains(userId)) {
-            throw new ChatException(ApiResponseChatEnum.USER_NOT_IN_ROOM);
-        }
+//
+//        if (!chatRoom.getActiveUsers().contains(userId)) {
+//            throw new ChatException(ApiResponseChatEnum.USER_NOT_IN_ROOM);
+//        }
 
         return chatRoom;
     }

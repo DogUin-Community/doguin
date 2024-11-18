@@ -16,6 +16,7 @@ import com.sparta.doguin.security.JwtUtil;
 import com.sparta.doguin.security.dto.JwtUtilRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
@@ -79,7 +81,7 @@ public class AuthService {
                 attachmentUploadService.upload(files, authUser, authUser.getUserId(), AttachmentTargetType.PROFILE);
             } catch (Exception e) {
                 // 파일 업로드 실패 시 예외 처리
-                System.err.println("파일 업로드 실패: " + e.getMessage());
+                log.error("파일 업로드 실패", e);
                 // 필요 시 사용자에게 알림 또는 로그에 추가적인 정보를 기록할 수 있음
             }
         }

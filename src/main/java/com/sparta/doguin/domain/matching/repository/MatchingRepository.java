@@ -24,4 +24,7 @@ public interface MatchingRepository extends JpaRepository<Matching, Long> {
     Optional<Matching> findByUserIdAndOutsourcingIdAndPortfolioId(Long userId, Long outsourcingId, Long portfolioId);
 
 
+    Page<Matching> findAllByCompanyIdAndStatus(Long id, Pageable pageable, MathingStatusType status);
+
+    Page<Matching> findAllByCompanyId(Long id, Pageable pageable);
 }

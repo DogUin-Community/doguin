@@ -12,4 +12,7 @@ public interface ChatRoomRepository extends MongoRepository<ChatRoom, String> {
     Optional<ChatRoom> findByCreatorIdAndApplicantId(Long creatorId, Long applicantId);
     void deleteByRoomId(String roomId);
     void deleteByCreatedAtBefore(LocalDateTime expirationTime);
+
+    Optional<ChatRoom> findByRoomId(String roomId);
+
 }
