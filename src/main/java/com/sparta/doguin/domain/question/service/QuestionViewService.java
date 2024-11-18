@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -27,9 +28,6 @@ public class QuestionViewService {
     public void trackUserView(Long questionId, Long userId) {
         String key = "hourView:" + questionId;
         redisTemplate.opsForSet().add(key, userId.toString());
-
-        // Sorted Set에 조회수 증가 적용 (쓰기 캐싱)
-        redisTemplate.opsForZSet().incrementScore("questionRank", questionId.toString(), 1);
     }
 
     @Scheduled(cron = "0 0 * * * ?")
@@ -66,9 +64,9 @@ public class QuestionViewService {
 
     public Long getHourUniqueViewCount (Long questionId) {
         String hourKey = "hourView:" + questionId;
-        Long count = (long) redisTemplate.opsForSet().members(hourKey).size();
-        // count가 null이면 0L 반환
-        return count != null ? count : 0L;
+        Set<Object> members = redisTemplate.opsForSet().members(hourKey);
+
+        return (members != null) ? (long) members.size() : 0L;
     }
 
     @Scheduled(cron = "0 0 0 * * ?")
@@ -87,8 +85,17 @@ public class QuestionViewService {
 
                 Long totalView = question.getView();
                 question.changeTotalViewCount(totalView, todayView);
+
+                redisTemplate.delete(val);
             }
         }
+    }
+
+    public Set<Long> viewPopularQuestionList() {
+        Set<Object> popularQuestionIds = redisTemplate.opsForZSet().reverseRange("popularQuestion", 0, 2);
+        return popularQuestionIds.stream()
+                .map(id -> Long.parseLong(id.toString()))
+                .collect(Collectors.toSet());
     }
 
     @Scheduled(cron = "0 0 * * * ?")
@@ -97,99 +104,32 @@ public class QuestionViewService {
         PriorityQueue<Long[]> views = new PriorityQueue<>((a, b) -> Long.compare(a[1], b[1]));
         String popularQuestion = "popularQuestion";
 
-        Set<String> popularQuestions = redisTemplate.keys(popularQuestion);
         Set<String> keysToUpdate = redisTemplate.keys("hourView:*");
+        Set<Object> currentPopularQuestion = redisTemplate.opsForZSet().range(popularQuestion, 0, -1);
 
         if (keysToUpdate != null && !keysToUpdate.isEmpty()) {
-            for (String val : keysToUpdate) {
-                String[] keys = val.split(":");
-                Long questionId = Long.parseLong(keys[1]);
+            for (String key : keysToUpdate) {
+                String[] keys = key.split(":");
+                Long boardId = Long.parseLong(keys[1]);
 
-                if (popularQuestions != null && popularQuestions.contains(popularQuestion + questionId)) {
-                    continue;
+                // 기존 인기글에 포함되지 않은 게시글만 고려
+                if (currentPopularQuestion == null || !currentPopularQuestion.contains(boardId.toString())) {
+                    long hourView = redisTemplate.opsForSet().size(key);
+                    views.offer(new Long[]{boardId, hourView});
+
+                    // 상위 3개의 게시글만 유지
+                    if (views.size() > 3) {
+                        views.poll();
+                    }
                 }
 
-                Long hourView = redisTemplate.opsForSet().size(val);
-                views.offer(new Long[]{questionId, hourView});
-
-                if (views.size() > 5) {
-                    views.poll();
-                }
+                // 수집한 hourView 데이터를 삭제
+                redisTemplate.delete(key);
             }
         }
 
         for (Long[] val : views) {
-            redisTemplate.opsForSet().add(popularQuestion, val[0]);
+            redisTemplate.opsForZSet().add(popularQuestion, val[0].toString(), val[1]);
         }
     }
-
-    public Set viewPopularQuestionList() {
-        return redisTemplate.opsForSet().members("popularQuestion");
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//    public void popularQuestion() {
-//        String questionBoard = "questionBoard";
-//
-//        // 기존의 인기 게시글 삭제
-//        redisTemplate.delete(questionBoard);
-//
-//        // 상위 5개의 게시글 조회
-//        Set<Object> questionRankId = redisTemplate.opsForZSet().reverseRange("questionRank", 0, 4);
-//
-//        if (questionRankId != null && !questionRankId.isEmpty()) {
-//            // 상위 5개 게시글이 있을 때 실행
-//            for (Object questionId : questionRankId) {
-//                // questionId의 조회수를 가져옴
-//                Double score = redisTemplate.opsForZSet().score("questionRank", questionId);
-//
-//                // 조회수가 null이 아니면 questionBoard에 저장
-//                if (score != null) {
-//                    redisTemplate.opsForZSet().add("questionBoard", questionId, score);
-//                }
-//            }
-//        }
-//    }
-//
-//    public Set viewPopularQuestionList() {
-//        return redisTemplate.opsForZSet().reverseRange("questionBoard", 0, 4);
-//    }
-
-
-
-
 }
