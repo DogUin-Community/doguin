@@ -107,7 +107,7 @@ public class NoticeService implements BoardService{
      */
     @Override
     @Cacheable(value = NOTICE_CACHE,key = "'단건조회'+#boardId")
-    public BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId, User user) {
+    public BoardResponse.BoardWithAnswerWithUserId viewOneWithUser(Long boardId, User user) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.NOTICE_NOT_FOUND));
         if (board.getBoardType() != boardType) {
@@ -122,7 +122,7 @@ public class NoticeService implements BoardService{
         }
 
         Long viewCount = popularService.getHourUniqueViewCount(boardId)+board.getView();
-        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(),viewCount, responses,filePaths);
+        return new BoardResponse.BoardWithAnswerWithUserId (board.getId(),board.getUser().getId() ,board.getTitle(),board.getContent(),viewCount, responses,filePaths);
     }
 
     /**
