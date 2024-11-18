@@ -18,12 +18,12 @@ public class ChatRoom {
     @Id
     private String roomId;
 
-    private Long creatorId;         // 채팅방 생성한 기업 사용자 ID
-    private Long applicantId;       // 채팅방에 참여하는 지원자 ID
-    private Long outsourcingId;     // 외주 공고 ID
+    private Long creatorId;
+    private Long applicantId;
+    private Long outsourcingId;
 
     private LocalDateTime createdAt;
-    private Set<Long> activeUsers = new HashSet<>(); // 현재 접속 중인 사용자 ID 관리
+    private Set<Long> activeUsers = new HashSet<>();
 
     public boolean removeUser(Long userId) {
         return activeUsers.remove(userId);
