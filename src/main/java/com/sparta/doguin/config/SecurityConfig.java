@@ -65,14 +65,12 @@ public class SecurityConfig {
                         .requestMatchers("/api-docs/**").permitAll()
                         .requestMatchers("/test/**").permitAll()
                         .requestMatchers("/health").permitAll()
-<<<<<<< HEAD
                         .requestMatchers("/actuator/**").permitAll()
-=======
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/v1/chat/**").authenticated()
                         .requestMatchers("/error").permitAll() // 에러 핸들링 경로 허용
 
->>>>>>> dev
+
 
                         .requestMatchers(HttpMethod.GET, "/api/v1/discussions/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/discussions/search").permitAll()
