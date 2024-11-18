@@ -16,8 +16,6 @@ import com.sparta.doguin.domain.portfolio.validate.PortfolioValidator;
 import com.sparta.doguin.domain.user.entity.User;
 import com.sparta.doguin.security.AuthUser;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -47,7 +45,6 @@ public class PortfolioServiceImpl implements PortfolioService {
      * @since 1.0
      * @author 김경민
      */
-    @Cacheable(value = "portfolioCache",key = "'portfolioId'+#portfolioId")
     @Transactional(readOnly = true)
     @Override
     public PortfolioResponse getPortfolio(Long portfolioId) {
@@ -99,7 +96,6 @@ public class PortfolioServiceImpl implements PortfolioService {
      * @since 1.0
      * @author 김경민
      */
-    @CacheEvict(value = "portfolioCache",key = "'portfolioId'+#portfolioId")
     @Transactional
     @Override
     public ApiResponse<Void> updatePortfolio(Long portfolioId, PortfolioRequest.PortfolioRequestUpdate portfolioRequestUpdate, AuthUser authUser, List<MultipartFile> updateFiles) {
@@ -144,7 +140,6 @@ public class PortfolioServiceImpl implements PortfolioService {
         return ApiResponse.of(PORTFOLIO_OK);
     }
 
-    @Cacheable(value = "portfolioCache",key = "'portfolioPage'+#pageable.pageNumber")
     @Transactional(readOnly = true)
     @Override
     public Page<PortfolioResponse> getAllMyPortfolio(Pageable pageable, AreaType area,AuthUser authUser) {
@@ -163,7 +158,6 @@ public class PortfolioServiceImpl implements PortfolioService {
         });
     }
 
-    @Cacheable(value = "portfolioCache",key = "'portfolioPage'+#pageable.pageNumber")
     @Transactional(readOnly = true)
     @Override
     public Page<PortfolioResponse> getAllOtherPortfolio(Pageable pageable, AreaType area) {

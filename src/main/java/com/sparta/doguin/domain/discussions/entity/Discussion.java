@@ -15,6 +15,14 @@ import java.util.Set;
 @Getter
 @Entity
 @NoArgsConstructor
+@Table(
+        name = "discussion",
+        indexes = {
+                @Index(name = "idx_title", columnList = "title"),
+                @Index(name = "idx_content", columnList = "content"),
+                @Index(name = "idx_nickname", columnList = "nickname")
+        }
+)
 public class Discussion extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

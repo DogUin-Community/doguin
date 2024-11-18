@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ApplyAnswerService implements AnswerService {
 
     private final AnswerRepository answerRepository;
-    private final AnswerType answerType = AnswerType.QUESTION;
+    private static final AnswerType answerType = AnswerType.QUESTION;
     private final QuestionService questionService;
 
     @Override

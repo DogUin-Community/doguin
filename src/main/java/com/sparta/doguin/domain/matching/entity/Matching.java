@@ -25,6 +25,8 @@ public class Matching extends Timestamped {
     @JoinColumn(name = "user_id")
     private User user;
 
+    private Long companyId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "portfolio_id")
     private Portfolio portfolio;

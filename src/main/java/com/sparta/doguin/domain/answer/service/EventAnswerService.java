@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class EventAnswerService implements AnswerService {
 
     private final AnswerRepository answerRepository;
-    private final AnswerType answerType = AnswerType.BOARD;
+    private static final AnswerType answerType = AnswerType.BOARD;
 
     private final BoardRepository boardRepository;
 

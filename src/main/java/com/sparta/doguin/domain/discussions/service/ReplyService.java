@@ -114,23 +114,27 @@ public class ReplyService {
      * @author 최욱연
      */
     public ApiResponse<ReplyResponse.SingleResponse> updateReply(Long replyId, List<MultipartFile> newAttachments, List<Long> attachmentIdsToDelete, ReplyRequest.UpdateRequest request, AuthUser authUser) {
-        // 1. 답변 조회 및 소유권 검증
         Reply reply = findReplyById(replyId);
         validateOwnership(reply, authUser);
 
-        // 2. 첨부 파일 처리 (삭제 및 업로드)
         handleAttachments(replyId, authUser, attachmentIdsToDelete, newAttachments);
 
-        // 3. 답변 내용 업데이트
         reply.updateContent(request.content());
         replyRepository.save(reply);
 
-        // 4. 수정된 답변에 대한 응답 생성 및 반환
         return createUpdateReplyResponse(reply);
     }
 
+    /**
+     * 첨부파일을 처리하는 메서드
+     *
+     * @param replyId                / 답변 ID
+     * @param authUser               / 현재 사용자
+     * @param attachmentIdsToDelete  / 삭제할 첨부파일 ID 목록
+     * @param newAttachments         / 새로 추가할 첨부파일 목록
+     * @since 1.0
+     */
     private void handleAttachments(Long replyId, AuthUser authUser, List<Long> attachmentIdsToDelete, List<MultipartFile> newAttachments) {
-        // 첨부 파일 삭제 처리
         if (attachmentIdsToDelete != null && !attachmentIdsToDelete.isEmpty()) {
             List<Long> validAttachmentIds = attachmentRepository.findAllAttachmentIdByUserIdAndTagertIdAndTarget(
                     authUser.getUserId(), replyId, AttachmentTargetType.REPLY);
@@ -144,20 +148,23 @@ public class ReplyService {
             }
         }
 
-        // 새 첨부 파일 업로드 처리
         if (newAttachments != null && !newAttachments.isEmpty()) {
             attachmentUploadService.upload(newAttachments, authUser, replyId, AttachmentTargetType.REPLY);
         }
     }
 
+    /**
+     * 특정 대상의 첨부 파일 응답 리스트를 가져오는 메서드
+     *
+     * @param targetId   / 첨부 파일을 가져올 대상의 ID
+     * @param targetType / 대상 타입
+     * @return List<DiscussionAttachmentResponse> / 첨부 파일 응답 리스트
+     * @since 1.0
+     */
     private List<DiscussionAttachmentResponse> getAttachmentResponses(Long targetId, AttachmentTargetType targetType) {
-        // targetId와 targetType에 따라 첨부 파일 ID를 가져옴
         List<Long> attachmentIds = attachmentRepository.findAllAttachmentIdByTagertIdAndTarget(targetId, targetType);
-
-        // 가져온 ID 리스트로 실제 첨부 파일 객체를 조회
         List<Attachment> attachments = attachmentRepository.findAllByAttachment(attachmentIds);
 
-        // 첨부 파일 객체를 `DiscussionAttachmentResponse` 객체로 변환하여 반환
         return attachments.stream()
                 .map(attachment -> new DiscussionAttachmentResponse(
                         attachment.getId(),
@@ -225,7 +232,6 @@ public class ReplyService {
      * @since 1.0
      */
     private ApiResponse<ReplyResponse.SingleResponse> createUpdateReplyResponse(Reply reply) {
-        // targetType을 추가로 전달
         List<DiscussionAttachmentResponse> attachmentResponses = getAttachmentResponses(reply.getId(), AttachmentTargetType.REPLY);
 
         return ApiResponse.of(ApiResponseDiscussionEnum.REPLY_UPDATE_SUCCESS,

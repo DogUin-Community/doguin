@@ -28,7 +28,7 @@ import java.util.List;
 public class QuestionAnswerService implements AnswerService {
 
     private final AnswerRepository answerRepository;
-    private final AnswerType answerType = AnswerType.QUESTION;
+    private static final AnswerType answerType = AnswerType.QUESTION;
     private final QuestionRepository questionRepository;
     private final QuestionService questionService;
 

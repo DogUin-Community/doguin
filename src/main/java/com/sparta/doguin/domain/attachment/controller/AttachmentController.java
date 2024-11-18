@@ -1,10 +1,10 @@
 package com.sparta.doguin.domain.attachment.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.doguin.domain.attachment.constans.AttachmentTargetType;
-import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteService;
-import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDownloadService;
-import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUpdateService;
-import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
+import com.sparta.doguin.domain.attachment.service.interfaces.*;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseFileEnum;
 import com.sparta.doguin.security.AuthUser;
@@ -16,6 +16,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 
 @Tag(name = "파일 API",description = "파일 관련된 API를 확인 할 수 있습니다")
@@ -25,6 +27,7 @@ import java.util.List;
 public class AttachmentController {
     private final AttachmentUploadService attachmentUploadService;
     private final AttachmentDownloadService attachmentDownloadService;
+    private final AttachmentGetService attachmentGetService;
     private final AttachmentUpdateService attachmentUpdateService;
     private final AttachmentDeleteService attachmentDeleteService;
 
@@ -69,5 +72,17 @@ public class AttachmentController {
         attachmentDeleteService.delete(authUser,fileIds);
     }
 
+    @GetMapping
+    public List<Long> getAttachments(@RequestParam String filePaths) throws UnsupportedEncodingException, JsonProcessingException {
+        // URL 디코딩
+        String decodedFilePaths = URLDecoder.decode(filePaths, "UTF-8");
+
+        // JSON 파싱
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<String> parsedFilePaths = objectMapper.readValue(decodedFilePaths, new TypeReference<List<String>>() {});
+
+        // Service 호출
+        return attachmentGetService.getFileIds(parsedFilePaths);
+    }
 
 }

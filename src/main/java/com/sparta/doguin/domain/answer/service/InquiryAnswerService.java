@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class InquiryAnswerService implements AnswerService {
 
     private final AnswerRepository answerRepository;
-    private final AnswerType answerType = AnswerType.BOARD;
+    private static final AnswerType answerType = AnswerType.BOARD;
 
     private final BoardRepository boardRepository;
 
@@ -175,10 +175,7 @@ public class InquiryAnswerService implements AnswerService {
 
 
     public Page<AnswerResponse.Response> findByBoardId(long boardId, Pageable pageable) {
-        Page<Answer> answers = answerRepository.findByBoardId(boardId, pageable);
-        Page<AnswerResponse.Response> response = answers
+        return answerRepository.findByBoardId(boardId, pageable)
                 .map(answer -> new AnswerResponse.Response(answer.getId(), answer.getContent()));
-
-        return response;
     }
 }

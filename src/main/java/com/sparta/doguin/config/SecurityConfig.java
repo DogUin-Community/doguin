@@ -64,17 +64,20 @@ public class SecurityConfig {
                         .requestMatchers("/test/**").permitAll()
                         .requestMatchers("/health").permitAll()
 
+                        .requestMatchers(HttpMethod.GET, "/api/v1/discussions/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/discussions/search").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/boards/*/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/boards/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/boards/*/search").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/question/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/question/search").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/question/rank").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/outsourcings").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/outsourcings/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/outsourcings/search").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/portfolios/my").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/v1/portfolios/other").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/portfolios/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/attachments").permitAll()
 
 
                         .requestMatchers(HttpMethod.POST, "/boards/events").hasAuthority(UserRole.Authority.ADMIN)
