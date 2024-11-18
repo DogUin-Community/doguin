@@ -1,0 +1,123 @@
+server:
+  port: ${SERVER_PORT}
+  forward-headers-strategy: framework
+  tomcat:
+    mbeanregistry:
+      enabled: true
+# DB config
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DB_NAME}?serverTimezone=Asia/Seoul
+    username: ${MYSQL_NAME}
+    password: ${MYSQL_PASSWORD}
+  # DB update
+    # sql
+  jpa:
+    hibernate:
+      ddl-auto: update
+    # sql
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+  data:
+    redis:
+      port: ${REDIS_PORT}
+      host: ${REDIS_HOST}
+    mongodb:
+      uri: ${MONGO_URI}
+
+
+  cache:
+    jcache:
+      config: classpath:ehcache.xml
+jwt:
+  secret:
+    key: ${JWT_SECRET_KEY}
+
+# AWS S3 config
+cloud:
+  aws:
+    s3:
+      bucket: ${BUCKET}
+    stack.auto: false
+    region.static: ${REGION_STATIC}
+    credentials:
+      accessKey: ${ACCESS_KEY}
+      secretKey: ${SECRET_KEY}
+slack:
+  bot-token: ${SLACK_BOT_TOKEN}
+  postMessageUrl: "https://slack.com/api/chat.postMessage"
+
+discord:
+  report_url: ${DISCORD_URL_REPORT}
+  error_url: ${DISCORD_URL_ERROR}
+
+
+logging:
+  level:
+    org.springframework.cache: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+
+
+# Social Login config
+social:
+  kakao:
+    client-id: ${KAKAO_CLIENT_ID}
+    redirect-uri: http://localhost:8080/api/v1/auth/oauth2/authorize/kakao
+    scope:
+      - profile_nickname
+      - account_email
+  naver:
+    client-id: ${NAVER_CLIENT_ID}
+    client-secret: ${NAVER_CLIENT_SECRET}
+    redirect-uri: http://localhost:8080/api/v1/auth/oauth2/authorize/naver
+    scope: "profile"
+  google:
+    client-id: ${GOOGLE_CLIENT_ID}
+    client-secret: ${GOOGLE_CLIENT_SECRET}
+    redirect-uri: http://localhost:8080/api/v1/auth/oauth2/authorize/google
+    scope:
+      - email
+      - profile
+  github:
+    client-id: ${GITHUB_CLIENT_ID}
+    client-secret: ${GITHUB_CLIENT_SECRET}
+    redirect-uri: http://localhost:8080/api/v1/auth/oauth2/authorize/github
+    scope: "user:email"
+
+springdoc:
+  swagger-ui:
+    groups-order: DESC
+    tags-sorter: alpha
+    operations-sorter: method
+    disable-swagger-default-url: true
+    display-request-duration: true
+    defaultModelsExpandDepth: 2
+    defaultModelExpandDepth: 2
+  api-docs:
+    path: /api-docs
+  show-actuator: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  writer-with-default-pretty-printer: true
+  model-and-view-allowed: true
+  paths-to-match:
+    - /api/**
+host:
+  front-host: ${FRONT_HOST}
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+

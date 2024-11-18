@@ -36,6 +36,14 @@ dependencies {
     // Spring Security
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
+    // OAuth2
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+
+    // JWT
+    compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
+
     // Thymeleaf
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
@@ -52,11 +60,77 @@ dependencies {
 
     // MySQL
     runtimeOnly 'com.mysql:mysql-connector-j'
+    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+
+    // Jakarta Validation API (Bean Validation)
+    implementation 'jakarta.validation:jakarta.validation-api:3.0.2' // 추가된 부분
+
+    // Hibernate Validator (Jakarta Bean Validation 구현체)
+    implementation 'org.hibernate.validator:hibernate-validator:8.0.0.Final' // 추가된 부분
 
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // SockJS
+    implementation 'org.webjars:sockjs-client:1.5.1'
+
+    // STOMP
+    implementation 'org.webjars:stomp-websocket:2.3.4'
+    implementation 'io.projectreactor.netty:reactor-netty:1.0.24'
+
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // Kafka
+    implementation 'org.springframework.kafka:spring-kafka'
+
+    // S3
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
+    implementation 'com.sun.activation:javax.activation:1.2.0'
+
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+    implementation 'org.webjars:stomp-websocket:2.3.4'
+    implementation 'io.projectreactor.netty:reactor-netty:1.0.24'
+    implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
+
+    // Encache
+    implementation 'org.ehcache:ehcache:3.10.0'
+    implementation 'javax.cache:cache-api:1.1.1'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+
+    // 슬랙봇
+    implementation("com.slack.api:bolt:1.31.0")
+    implementation("com.slack.api:bolt-servlet:1.31.0")
+    implementation("com.slack.api:bolt-jetty:1.31.0")
+    implementation("org.slf4j:slf4j-simple:1.7.36")
+
+    // 데이터를 JSON으로 바꾸거나 json을 String으로 추출해주는 라이브러리
+    implementation 'com.google.code.gson:gson:2.8.9'
+
+    // AOP
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+    // Swager
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+
+    // WebFlux
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // actuator가 제공하는 프로덕션 준비를 사용하기 위함
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // 프로메테우스 설정
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2'
+
 }
 
 tasks.named('test') {
