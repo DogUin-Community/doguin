@@ -90,6 +90,7 @@ public class NoticeService implements BoardService{
         if(board.getBoardType()!=boardType){
             throw new InvalidRequestException(ApiResponseBoardEnum.NOTICE_WRONG);
         }
+        attachmentUpdateService.update(files,boardRequest.fileIds(),user);
         board.update(boardRequest.title(),boardRequest.content());
     }
 
