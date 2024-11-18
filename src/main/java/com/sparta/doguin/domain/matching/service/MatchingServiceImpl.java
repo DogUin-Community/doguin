@@ -14,6 +14,7 @@ import com.sparta.doguin.domain.outsourcing.service.OutsourcingServiceImpl;
 import com.sparta.doguin.domain.portfolio.entity.Portfolio;
 import com.sparta.doguin.domain.portfolio.service.PortfolioServiceImpl;
 import com.sparta.doguin.domain.user.entity.User;
+import com.sparta.doguin.domain.user.enums.UserType;
 import com.sparta.doguin.security.AuthUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -129,10 +130,15 @@ public class MatchingServiceImpl implements MatchingService {
     @Override
     public ApiResponse<Page<MatchingResponse>> getAllMatching(AuthUser authUser, Pageable pageable, MathingStatusType status) {
         User user = User.fromAuthUser(authUser);
-        Page<Matching> pageableMatchings;
-        if (status == null) {
+        Page<Matching> pageableMatchings = null;
+        if (authUser.getUserType() == UserType.COMPANY && status == null) {
+            pageableMatchings = matchingRepository.findAllByCompanyId(user.getId(), pageable);
+        } else if (authUser.getUserType() == UserType.COMPANY && status != null){
+            pageableMatchings = matchingRepository.findAllByCompanyIdAndStatus(user.getId(), pageable, status);
+        }
+        if (authUser.getUserType() == UserType.INDIVIDUAL && status == null) {
             pageableMatchings = matchingRepository.findAllByUser(user, pageable);
-        } else {
+        } else if (authUser.getUserType() == UserType.INDIVIDUAL && status != null){
             pageableMatchings = matchingRepository.findAllByUserAndStatus(user,pageable,status);
         }
 
@@ -162,6 +168,7 @@ public class MatchingServiceImpl implements MatchingService {
         Long userId = Long.valueOf(parts[0]);
         Long outsourcingId = Long.valueOf(parts[1]);
         Long portfolioId = Long.valueOf(parts[2]);
+        Outsourcing outsourcing = outsourcingService.findById(outsourcingId);
 
         // 기존 toggleMatching 로직을 여기에 넣어줍니다.
         // 예시: matchingRepository.findByUserIdAndOutsourcingIdAndPortfolioId 등을 이용하여 로직 수행
@@ -171,6 +178,7 @@ public class MatchingServiceImpl implements MatchingService {
         } else {
             Matching matching = Matching.builder()
                     .user(User.builder().id(userId).build()) // 필요한 유저 객체 생성
+                    .companyId(outsourcing.getUser().getId())
                     .outsourcing(Outsourcing.builder().id(outsourcingId).build()) // 필요한 아웃소싱 객체 생성
                     .portfolio(Portfolio.builder().id(portfolioId).build()) // 필요한 포트폴리오 객체 생성
                     .status(MathingStatusType.READY)

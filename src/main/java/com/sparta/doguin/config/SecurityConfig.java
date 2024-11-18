@@ -39,8 +39,8 @@ public class SecurityConfig {
                 .cors(c -> {
                     CorsConfigurationSource source = request -> {
                         CorsConfiguration config = new CorsConfiguration();
-                        config.setAllowedOrigins(List.of("http://localhost:3000"));
-                        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+                        config.setAllowedOrigins(List.of("http://localhost:3000","http://localhost:3001"));
+                        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
                         config.setAllowCredentials(true); // 자격 증명 허용
                         return config;
@@ -57,12 +57,18 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/ws/**").permitAll()
+                        .requestMatchers("/api/v1/chat/**").authenticated() // 인증 필요
                         .requestMatchers("/api/v1/auth/signup", "/api/v1/auth/signin").permitAll()
                         .requestMatchers("/api/v1/auth/oauth2/authorize/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/api-docs/**").permitAll()
                         .requestMatchers("/test/**").permitAll()
                         .requestMatchers("/health").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/api/v1/chat/**").authenticated()
+                        .requestMatchers("/error").permitAll() // 에러 핸들링 경로 허용
+
 
                         .requestMatchers(HttpMethod.GET, "/api/v1/discussions/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/discussions/search").permitAll()

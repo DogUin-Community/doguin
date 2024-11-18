@@ -4,7 +4,6 @@ import com.sparta.doguin.domain.common.exception.BaseException;
 import com.sparta.doguin.domain.report.dto.ReportRequest;
 import com.sparta.doguin.domain.user.entity.User;
 import com.sparta.doguin.notification.discord.DiscordMessageService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -13,8 +12,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Aspect
 @Slf4j(topic = "AspectModule")
@@ -43,18 +40,17 @@ public class AspectModule {
      */
     @AfterThrowing(value = "execution(public * com.sparta.doguin.domain..service..*(..))", throwing = "e")
     public void around(JoinPoint jp, BaseException e) {
-        String clientIp = getClientIp();
-        sendErrorNotification(jp,e,clientIp);
+        sendErrorNotification(jp,e);
     }
 
     @Async
-    public void sendErrorNotification(JoinPoint jp,BaseException e, String clientIp) {
+    public void sendErrorNotification(JoinPoint jp,BaseException e) {
         String className = jp.getSignature().getDeclaringTypeName();
         String methodName = jp.getSignature().getName();
         dms.sendMsgErrorChannel(
                 e.getApiResponseEnum().getMessage(),
                 e.getApiResponseEnum().getCode(),
-                clientIp,
+                "0",
                 className,
                 methodName
         );
@@ -64,15 +60,6 @@ public class AspectModule {
         return jp.getArgs()[order];
     }
 
-    // 클라이언트 IP를 가져오는 유틸리티 메서드
-    private String getClientIp() {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        String ip = request.getHeader("X-Forwarded-For");
-        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getRemoteAddr();
-        }
-        return ip;
-    }
 
 
 }
