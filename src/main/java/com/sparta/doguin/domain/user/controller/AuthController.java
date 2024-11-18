@@ -7,7 +7,6 @@ import com.sparta.doguin.domain.user.service.SocialLoginService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,8 +20,6 @@ import java.util.List;
 public class AuthController {
     private final AuthService authService;
     private final SocialLoginService socialLoginService;
-    @Value("${host.front-host}")
-    public String frontHost;
 
     /**
      * 회원가입 요청을 처리하는 메서드
@@ -56,13 +53,18 @@ public class AuthController {
         return ApiResponse.of(apiResponse);
     }
 
-    // 소셜로그인
     @GetMapping("/oauth2/authorize/{provider}")
     public ResponseEntity<ApiResponse<String>> socialLogin(
             @PathVariable("provider") String provider,
-            @RequestParam("code") String code, HttpServletResponse response) throws IOException {
+            @RequestParam("code") String code,           // OAuth 인증 코드
+            @RequestParam("state") String frontHost,     // 원래의 프론트엔드 호스트 정보
+            HttpServletResponse response) throws IOException {
+
+        // 소셜 로그인 처리 후 토큰 생성
         ApiResponse<String> apiResponse = socialLoginService.socialLogin(provider, code, response);
-        response.sendRedirect( frontHost +"/callback?token=" + apiResponse.getData());
+
+        // 프론트엔드로 리다이렉트
+        response.sendRedirect(frontHost + "/callback?token=" + apiResponse.getData());
         return ApiResponse.of(apiResponse);
     }
 }

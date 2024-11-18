@@ -90,6 +90,7 @@ public class EventService implements BoardService{
         if(board.getBoardType()!=boardType){
             throw new InvalidRequestException(ApiResponseBoardEnum.EVENT_WRONG);
         }
+        attachmentUpdateService.update(files,boardRequest.fileIds(),user);
         board.update(boardRequest.title(),boardRequest.content());
 
     }

@@ -107,7 +107,6 @@ public class AttachmentUpdateServiceImpl implements AttachmentUpdateService {
         List<Attachment> attachments = new ArrayList<>();
         for (int i = 0; i < prvAattachments.size(); i++) {
             Attachment originAttachment = prvAattachments.get(i);
-            System.out.println("originAttachment.getUser().getId()" + originAttachment.getUser().getId());
             MultipartFile updateFile = updateAttachments.get(i);
             AttachmentValidator.isInExtension(updateFile);
             AttachmentValidator.isMe(user.getId(), originAttachment.getUser().getId());
