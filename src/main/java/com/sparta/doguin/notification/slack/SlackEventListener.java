@@ -22,7 +22,7 @@ public class SlackEventListener {
 
 
     @EventListener
-    public void scrollFollower(SlackEventClass slackEventClass) throws InterruptedException {
+    public void scrollFollower(SlackEventClass slackEventClass){
 
         Long userId = slackEventClass.getUserId();
         String nickName = slackEventClass.getNickName();

@@ -16,8 +16,6 @@ import com.sparta.doguin.domain.user.entity.User;
 import com.sparta.doguin.notification.slack.SlackSendPush;
 import com.sparta.doguin.security.AuthUser;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -50,7 +48,6 @@ public class OutsourcingServiceImpl implements OutsourcingService {
      * @since  1.0
      * @author 김경민
      */
-    @Cacheable(value = "outsourcingCache",key = "'outsourcingId'+#outsourcingId")
     @Transactional(readOnly = true)
     @Override
     public OutsourcingResponse getOutsourcing(Long outsourcingId) {
@@ -109,7 +106,6 @@ public class OutsourcingServiceImpl implements OutsourcingService {
      * @since 1.0
      * @author 김경민
      */
-    @CacheEvict(value = "outsourcingCache",key = "'outsourcingId'+#outsourcingId")
     @Transactional
     @Override
     public ApiResponse<Void> updateOutsourcing(Long outsourcingId, OutsourcingRequest.OutsourcingRequestUpdate reqDto, AuthUser authUser,List<MultipartFile> files) {
@@ -170,7 +166,6 @@ public class OutsourcingServiceImpl implements OutsourcingService {
      * @since 1.0
      * @author 김경민
      */
-    @Cacheable(value = "outsourcingCache",key = "'outsourcingPage'+#pageable.pageNumber")
     @Transactional(readOnly = true)
     @Override
     public Page<OutsourcingResponse> getAllOutsourcing(Pageable pageable, AreaType area) {
@@ -198,7 +193,6 @@ public class OutsourcingServiceImpl implements OutsourcingService {
      * @since 1.0
      * @author 김경민
      */
-    @Cacheable(value = "outsourcingCache",key = "'outsourcingPage'+#pageable.pageNumber")
     @Transactional(readOnly = true)
     @Override
     public Page<OutsourcingResponse> search(Pageable pageable, String title, String nickname, String content) {

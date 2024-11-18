@@ -104,8 +104,10 @@ public class AttachmentUpdateServiceImpl implements AttachmentUpdateService {
     protected void updateAttachmentsWithNewFiles(List<Attachment> prvAattachments,List<MultipartFile> updateAttachments,User user) {
         List<byte[]> fileBytesList = new ArrayList<>();
         List<String> paths = new ArrayList<>();
+        List<Attachment> attachments = new ArrayList<>();
         for (int i = 0; i < prvAattachments.size(); i++) {
             Attachment originAttachment = prvAattachments.get(i);
+            System.out.println("originAttachment.getUser().getId()" + originAttachment.getUser().getId());
             MultipartFile updateFile = updateAttachments.get(i);
             AttachmentValidator.isInExtension(updateFile);
             AttachmentValidator.isMe(user.getId(), originAttachment.getUser().getId());
@@ -128,8 +130,9 @@ public class AttachmentUpdateServiceImpl implements AttachmentUpdateService {
             } catch (Exception e){
                 throw new FileException(FILE_IO_ERROR);
             }
-            attachmentRepository.save(attachment);
+            attachments.add(attachment);
         }
+        attachmentRepository.saveAll(attachments);
         s3Service.uploadAllAsync(paths,fileBytesList);
         s3Service.deleteAllAsync(prvAattachments);
     }

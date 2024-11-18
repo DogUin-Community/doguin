@@ -26,7 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-import static com.sparta.doguin.domain.attachment.constans.AttachmentTargetType.BULLETIN;
 import static com.sparta.doguin.domain.attachment.constans.AttachmentTargetType.EVENT;
 
 @Service

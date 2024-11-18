@@ -10,8 +10,6 @@ import com.sparta.doguin.domain.common.response.ApiResponseBoardEnum;
 import com.sparta.doguin.domain.user.entity.User;
 import com.sparta.doguin.security.AuthUser;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,7 +22,6 @@ import java.util.List;
 @RequestMapping("/api/v1/boards/bulletins")
 public class BulletinController{
 
-    private static final Logger log = LoggerFactory.getLogger(BulletinController.class);
     private final BoardService boardService;
 
     public BulletinController(BulletinService boardService) {
@@ -87,7 +84,7 @@ public class BulletinController{
                                                                               @RequestParam(defaultValue = "3") int size){
 
         Page<Long> responses = boardService.viewPopular(page, size);
-        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.BULLETIN_POPULAR__FIND_ALL_SUCCESS, responses));
+        return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.BULLETIN_POPULAR_FIND_ALL_SUCCESS, responses));
     }
 
 }

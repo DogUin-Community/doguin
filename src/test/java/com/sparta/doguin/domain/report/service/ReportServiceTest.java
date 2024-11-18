@@ -85,7 +85,7 @@ class ReportServiceTest {
         // 저장된 Report 객체를 검증
         Report savedReport = reportCaptor.getValue();
         assertEquals("신고합니다.", savedReport.getTitle());
-        assertEquals("아주 무시무시합니다.", savedReport.getReport_description());
+        assertEquals("아주 무시무시합니다.", savedReport.getReportDescription());
     }
 
     @Test
