@@ -43,7 +43,7 @@ public class SecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/signup", "/api/v1/auth/signin").permitAll()
-                        .requestMatchers("/auth/oauth2/authorize/**").permitAll()
+                        .requestMatchers("/api/v1/auth/oauth2/authorize/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/api-docs/**").permitAll()
                         .requestMatchers("/test/**").permitAll()

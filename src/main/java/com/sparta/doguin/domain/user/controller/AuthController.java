@@ -59,6 +59,6 @@ public class AuthController {
             @PathVariable("provider") String provider,
             @RequestParam("code") String code, HttpServletResponse response) throws JsonProcessingException {
         ApiResponse<String> apiResponse = socialLoginService.socialLogin(provider, code, response);
-        return ApiResponse.of(apiResponse);
+        return ResponseEntity.ok(apiResponse);
     }
 }
