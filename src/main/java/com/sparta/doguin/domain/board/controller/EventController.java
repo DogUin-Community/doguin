@@ -42,6 +42,7 @@ public class EventController{
                                                     @PathVariable Long boardId,
                                                     @RequestPart(name = "boardRequest") @Valid BoardCommonRequest boardRequest,
                                                     @RequestPart(name = "files", required = false) List<MultipartFile> files) {
+
         User user = User.fromAuthUser(authUser);
         boardService.update(user, boardId, boardRequest,files);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.EVENT_UPDATE_SUCCESS));
@@ -59,7 +60,6 @@ public class EventController{
                                                                     @RequestParam(defaultValue = "10") int size) {
         Page<BoardCommonResponse> responses = boardService.viewAll(page, size);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.EVENT_FIND_ALL_SUCCESS, responses));
-
     }
 
     @GetMapping("/search")
