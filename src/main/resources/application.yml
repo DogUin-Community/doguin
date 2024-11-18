@@ -1,5 +1,6 @@
 server:
   port: ${SERVER_PORT}
+  forward-headers-strategy: framework
 # DB config
 spring:
   config:
@@ -25,10 +26,7 @@ spring:
       port: ${REDIS_PORT}
       host: ${REDIS_HOST}
     mongodb:
-      username: ${MONGO_NAME}
-      password: ${MONGO_PASSWORD}
-      host: ${MONGO_HOST}
-      port: ${MONGO_PORT}
+      uri: ${MONGO_URI}
 
 
   cache:
@@ -60,6 +58,8 @@ discord:
 logging:
   level:
     org.springframework.cache: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
 
 # Social Login config
 social:
@@ -105,3 +105,5 @@ springdoc:
   model-and-view-allowed: true
   paths-to-match:
     - /api/**
+host:
+  front-host: ${FRONT_HOST}

@@ -91,8 +91,7 @@ public class ReportService {
      */
     public Page<ReportResponse.ReportView> reportViewAll(User user, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<ReportResponse.ReportView> reports = reportRepository.findAllByReporterId(pageable,user.getId());
-        return reports;
+        return reportRepository.findAllByReporterId(pageable,user.getId());
     }
 
     /**
@@ -105,8 +104,7 @@ public class ReportService {
      */
     public Page<ReportResponse.ReportView> reportViewAllAdmin(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<ReportResponse.ReportView> reports = reportRepository.findAllReports(pageable);
-        return reports;
+        return reportRepository.findAllReports(pageable);
     }
 
     /**
@@ -136,11 +134,9 @@ public class ReportService {
      */
     public ReportResponse.ReportTotalView reportTotal(String reporteeNickname) {
 
-        ReportResponse.ReportTotalView response = reportRepository.findCountByReporteeNickname(reporteeNickname).orElseThrow(
+        return reportRepository.findCountByReporteeNickname(reporteeNickname).orElseThrow(
                 () -> new HandleNotFound(ApiResponseReportEnum.REPORT_NOT_FOUND)
         );
-
-        return response;
     }
 
 }

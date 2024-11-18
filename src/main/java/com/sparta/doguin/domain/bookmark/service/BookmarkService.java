@@ -11,4 +11,5 @@ import org.springframework.data.domain.Pageable;
 public interface BookmarkService {
     ApiResponse<Void> togleBookmark(BookmarkRequest.BookmarkRequestCreate reqDto, AuthUser authUser);
     ApiResponse<Page<BookmarkResponse>> getAllBookmarksByUser(Pageable pageable, AuthUser authUser, BookmarkTargetType target);
+    boolean isBookmarked(Long targetId, BookmarkTargetType target, AuthUser authUser);
 }

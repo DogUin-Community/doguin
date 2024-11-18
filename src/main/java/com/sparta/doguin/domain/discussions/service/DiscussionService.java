@@ -2,11 +2,10 @@ package com.sparta.doguin.domain.discussions.service;
 
 import com.sparta.doguin.domain.attachment.constans.AttachmentTargetType;
 import com.sparta.doguin.domain.attachment.entity.Attachment;
-import com.sparta.doguin.domain.attachment.model.AttachmentResponse;
 import com.sparta.doguin.domain.attachment.repository.AttachmentRepository;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteService;
-import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentGetService;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
+import com.sparta.doguin.domain.bookmark.constans.BookmarkTargetType;
 import com.sparta.doguin.domain.bookmark.model.BookmarkRequest;
 import com.sparta.doguin.domain.bookmark.service.BookmarkService;
 import com.sparta.doguin.domain.common.exception.DiscussionException;
@@ -46,6 +45,7 @@ public class DiscussionService {
     private final UserService userService;
     private final AttachmentUploadService attachmentUploadService;
     private final AttachmentDeleteService attachmentDeleteService;
+    private final BookmarkService bookmarkService;
     private final AttachmentRepository attachmentRepository;
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -185,6 +185,8 @@ public class DiscussionService {
      * @param authUser              / 현재 사용자
      * @param attachmentIdsToDelete / 삭제할 첨부파일 ID 목록
      * @param newAttachments        / 새로 추가할 첨부파일 목록
+     * @since 1.0
+     * @author 최욱연
      */
     private void handleAttachments(
             Long discussionId,
@@ -255,6 +257,28 @@ public class DiscussionService {
         }
     }
 
+    /**
+     * 토론을 북마크하거나 북마크를 제거하는 메서드
+     *
+     * @param discussionId / 북마크할 토론의 ID
+     * @param authUser     / 사용자 정보
+     * @since 1.0
+     * @author 최욱연
+     */
+    public void toggleBookmark(Long discussionId, AuthUser authUser) {
+        BookmarkRequest.BookmarkRequestCreate reqDto = new BookmarkRequest.BookmarkRequestCreate(discussionId, BookmarkTargetType.DISCUSSION);
+        bookmarkService.togleBookmark(reqDto, authUser);
+    }
+
+    /**
+     * 특정 대상의 첨부 파일 응답 리스트를 가져오는 메서드
+     *
+     * @param targetId   / 첨부 파일을 가져올 대상의 ID
+     * @param targetType / 대상 타입
+     * @return List<DiscussionAttachmentResponse> / 첨부 파일 응답 리스트
+     * @since 1.0
+     * @author 최욱연
+     */
     private List<DiscussionAttachmentResponse> getAttachmentResponses(Long targetId, AttachmentTargetType targetType) {
         List<Long> attachmentIds = attachmentRepository.findAllAttachmentIdByTagertIdAndTarget(targetId, targetType);
         List<Attachment> attachments = attachmentRepository.findAllByAttachment(attachmentIds);
@@ -274,6 +298,7 @@ public class DiscussionService {
      * @param discussion / 변환할 토론 객체
      * @return DiscussionResponse.SingleResponse / 변환된 응답 DTO
      * @since 1.0
+     * @author 최욱연
      */
     private DiscussionResponse.SingleResponse toSingleResponse(Discussion discussion) {
         List<DiscussionAttachmentResponse> attachmentResponses = getAttachmentResponses(discussion.getId(), AttachmentTargetType.DISCUSSION);
@@ -309,6 +334,7 @@ public class DiscussionService {
      * @param discussion / 변환할 토론 객체
      * @return DiscussionResponse.ListResponse / 변환된 응답 DTO
      * @since 1.0
+     * @author 최욱연
      */
     private DiscussionResponse.ListResponse toListResponse(Discussion discussion) {
         List<DiscussionAttachmentResponse> attachmentResponses = getAttachmentResponses(discussion.getId(), AttachmentTargetType.DISCUSSION);

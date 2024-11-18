@@ -86,6 +86,7 @@ class BulletinServiceTest {
 
         bulletinService.create(user, boardCommonRequest,null);
 
+        verify(boardRepository, times(1)).save(any(Board.class));
     }
 
     @Test
@@ -97,7 +98,12 @@ class BulletinServiceTest {
         bulletinService.update(user, 1L,boardCommonRequest,null);
 
 
+        // Then: findById 호출 검증
+        verify(boardRepository, times(1)).findById(1L);
 
+        // Then: 수정된 Board 값 검증
+        assertEquals("수정된 일반 게시물", board.getTitle());
+        assertEquals("수정된 일반 게시물", board.getContent());
     }
     @Test
     @DisplayName("일반 게시물 수정 실패 테스트(등록자 다름)")
@@ -252,7 +258,9 @@ class BulletinServiceTest {
                 () -> bulletinService.delete(user1, boardId));
 
         // Then
-        assertEquals(exception.getApiResponseEnum().getMessage(), ApiResponseBoardEnum.USER_WRONG.getMessage());
+        assertThat(exception.getApiResponseEnum().getMessage())
+                .isEqualTo(ApiResponseBoardEnum.USER_WRONG.getMessage());
+
 
     }
 

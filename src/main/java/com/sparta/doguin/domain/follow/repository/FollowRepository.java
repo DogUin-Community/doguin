@@ -13,7 +13,7 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
     List<Follow> findByFollowedId(Long followedId);
 
     // 내가 팔로우한 사람들의 목록 조회
-    List<Follow> findByFollowerId(Long followedId);
+    List<Follow> findByFollowerId(Long followerId);
 
     // 팔로우 해제
     void deleteByFollowerIdAndFollowedId(Long followerId, Long followedId);

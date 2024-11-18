@@ -86,6 +86,7 @@ class InquiryServiceTest {
 
         inquiryService.create(user, boardCommonRequest,null);
 
+        verify(boardRepository, times(1)).save(any(Board.class));
     }
 
     @Test
@@ -96,6 +97,12 @@ class InquiryServiceTest {
 
         inquiryService.update(user, 1L,boardCommonRequest,null);
 
+        // Then: findById 호출 검증
+        verify(boardRepository, times(1)).findById(1L);
+
+        // Then: 수정된 Board 값 검증
+        assertEquals("수정된 문의 게시물", board.getTitle());
+        assertEquals("수정된 문의 게시물", board.getContent());
 
     }
     @Test

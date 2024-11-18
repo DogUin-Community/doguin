@@ -1,5 +1,6 @@
 package com.sparta.doguin.domain.bookmark.controller;
 
+import com.sparta.doguin.domain.bookmark.constans.BookmarkTargetType;
 import com.sparta.doguin.domain.bookmark.model.BookmarkRequest;
 import com.sparta.doguin.domain.bookmark.model.BookmarkRequestSearch;
 import com.sparta.doguin.domain.bookmark.model.BookmarkResponse;
@@ -50,6 +51,20 @@ public class BookmarkController {
         ApiResponse<Void> apiResponse = bookmarkService.togleBookmark(reqDto,authUser);
         return ApiResponse.of(apiResponse);
     }
+
+    @Operation(summary = "북마크 상태 확인", description = "특정 대상이 북마크되어 있는지 확인하는 API")
+    @GetMapping("/status")
+    public boolean isBookmarked(
+            @RequestParam Long targetId,
+            @RequestParam BookmarkTargetType target,
+            @AuthenticationPrincipal AuthUser authUser
+    ) {
+        boolean bookmarked = bookmarkService.isBookmarked(targetId, target, authUser);
+        System.out.println("bookmarked" + bookmarked);
+        return bookmarked;
+    }
+
+
 
 
 }

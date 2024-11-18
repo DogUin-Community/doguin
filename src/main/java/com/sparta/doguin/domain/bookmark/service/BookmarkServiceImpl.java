@@ -39,7 +39,7 @@ public class BookmarkServiceImpl implements BookmarkService {
     @Override
     public ApiResponse<Void> togleBookmark(BookmarkRequest.BookmarkRequestCreate reqDto, AuthUser authUser) {
         User user = User.fromAuthUser(authUser);
-        Optional<Bookmark> findBookmark = bookmarkRepository.findBookmarkByTargetIdAndBookmarkTargetType(reqDto.targetId(), reqDto.target());
+        Optional<Bookmark> findBookmark = bookmarkRepository.findBookmarkByTargetIdAndBookmarkTargetTypeAndUserId(authUser.getUserId(),reqDto.targetId(), reqDto.target());
         // 값이 존재한다면
         if (findBookmark.isPresent()) {
             BookmarkValidator.isMe(findBookmark.get().getUser().getId(), user.getId());
@@ -79,6 +79,14 @@ public class BookmarkServiceImpl implements BookmarkService {
         Page<BookmarkResponse> bookmarks = pageableBookmarks.map(BookmarkResponse.BookmarkResponseGet::of);
         return ApiResponse.of(BOOKMARK_OK, bookmarks);
     }
+
+
+    public boolean isBookmarked(Long targetId, BookmarkTargetType target, AuthUser authUser) {
+        // Repository를 사용하여 북마크 상태 확인
+        return bookmarkRepository.existsByUserIdAndTargetIdAndTarget(authUser.getUserId(), targetId, target);
+    }
+
+
 
     /**
      * ID로 북마크 찾는 메서드

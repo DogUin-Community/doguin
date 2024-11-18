@@ -90,7 +90,7 @@ class EventServiceTest {
 
         eventService.create(admin, boardCommonRequest,null);
 
-
+        verify(boardRepository, times(1)).save(any(Board.class));
     }
 
     @Test
@@ -101,7 +101,12 @@ class EventServiceTest {
 
         eventService.update(admin, 1L,boardCommonRequest,null);
 
+        // Then: findById 호출 검증
+        verify(boardRepository, times(1)).findById(1L);
 
+        // Then: 수정된 Board 값 검증
+        assertEquals("수정된 이벤트 게시물", board.getTitle());
+        assertEquals("수정된 이벤트 게시물", board.getContent());
 
     }
     @Test

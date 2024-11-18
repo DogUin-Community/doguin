@@ -73,13 +73,15 @@ public class AuthService {
         User saveduser = userRepository.save(newUser);
         AuthUser authUser = new AuthUser(saveduser.getId(),saveduser.getEmail(), saveduser.getNickname(), saveduser.getUserType(), saveduser.getUserRole());
 
-        try {
-            // 파일 업로드 시도
-            attachmentUploadService.upload(files, authUser, authUser.getUserId(), AttachmentTargetType.PROFILE);
-        } catch (Exception e) {
-            // 파일 업로드 실패 시 예외 처리
-            System.err.println("파일 업로드 실패: " + e.getMessage());
-            // 필요 시 사용자에게 알림 또는 로그에 추가적인 정보를 기록할 수 있음
+        if (files != null && !files.isEmpty()) {
+            try {
+                // 파일 업로드 시도
+                attachmentUploadService.upload(files, authUser, authUser.getUserId(), AttachmentTargetType.PROFILE);
+            } catch (Exception e) {
+                // 파일 업로드 실패 시 예외 처리
+                System.err.println("파일 업로드 실패: " + e.getMessage());
+                // 필요 시 사용자에게 알림 또는 로그에 추가적인 정보를 기록할 수 있음
+            }
         }
 
         ApiResponseEnum apiResponse = ApiResponseUserEnum.USER_CREATE_SUCCESS;

@@ -1,16 +1,15 @@
 package com.sparta.doguin.domain.report.controller;
 
-import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseReportEnum;
 import com.sparta.doguin.domain.report.dto.ReportRequest;
 import com.sparta.doguin.domain.report.dto.ReportResponse;
 import com.sparta.doguin.domain.report.service.ReportService;
 import com.sparta.doguin.domain.user.entity.User;
+import com.sparta.doguin.security.AuthUser;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -60,7 +59,7 @@ public class ReportController {
     public ResponseEntity<ApiResponse<Page<ReportResponse.ReportView>>> reportViewAllAdmin(@AuthenticationPrincipal AuthUser authUser,
                                                                                       @RequestParam(defaultValue = "1") int page,
                                                                                       @RequestParam(defaultValue = "10") int size) {
-        User user = User.fromAuthUser(authUser);
+
         Page<ReportResponse.ReportView> responses = reportService.reportViewAllAdmin(page,size);
         return ApiResponse.of(ApiResponse.of(ApiResponseReportEnum.REPORT_VIEW_SUCCESS, responses));
     }

@@ -9,6 +9,8 @@ import com.sparta.doguin.domain.follow.repository.FollowRepository;
 import com.sparta.doguin.domain.user.entity.User;
 import com.sparta.doguin.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class FollowService {
+    private static final Logger log = LoggerFactory.getLogger(FollowService.class);
     private final FollowRepository followRepository;
     private final UserService userService;
 
@@ -125,12 +128,11 @@ public class FollowService {
 
     @Transactional(readOnly = true)
     public List<FollowResponse.Follow> getFollowerList(Long userId) {
+        log.info("냥");
         // 나를 팔로우한 사용자 ID 목록 조회
-        List<FollowResponse.Follow> followerUserIds = followRepository.findByFollowedId(userId)
+        return followRepository.findByFollowedId(userId)
                 .stream()
                 .map(follow -> new FollowResponse.Follow(follow.getFollower().getId(), follow.getFollower().getEmail()))
                 .collect(Collectors.toList());
-
-        return followerUserIds;
     }
 }

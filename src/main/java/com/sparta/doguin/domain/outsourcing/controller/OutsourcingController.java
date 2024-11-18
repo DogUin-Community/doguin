@@ -67,7 +67,6 @@ public class OutsourcingController {
             @RequestPart OutsourcingRequest.OutsourcingRequestUpdate outsourcingRequestUpdate,
             @RequestPart(required = false) List<MultipartFile> files,
             @AuthenticationPrincipal AuthUser authUser
-
     ){
         ApiResponse<Void> apiResponse = outsourcingService.updateOutsourcing(outsourcingId,outsourcingRequestUpdate,authUser,files);
         return ApiResponse.of(apiResponse);

@@ -27,7 +27,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 @ExtendWith(MockitoExtension.class)
-public class BulletinAnswerServiceTest {
+class BulletinAnswerServiceTest {
     @Mock
     private AnswerRepository answerRepository;
 

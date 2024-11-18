@@ -76,6 +76,16 @@ public class AttachmentGetServiceImpl implements AttachmentGetService {
         return attachmentRepository.findAllAttachmentIdByUserIdAndTagertIdAndTarget(userId,targetId,target);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<Long> getFileIds(List<String> filePaths) {
+        List<Long> allAttachmentByFilePaths = attachmentRepository.findAllAttachmentByFilePaths(filePaths);
+        for (Long attachmentId : allAttachmentByFilePaths) {
+            System.out.println("attachmentId" + attachmentId);
+        }
+        return allAttachmentByFilePaths;
+    }
+
     /**
      * @title 파일 ID의 값들로 파일을 찾고, 파일들을 반환
      *
@@ -85,6 +95,6 @@ public class AttachmentGetServiceImpl implements AttachmentGetService {
      * @author 김경민
      */
     public List<Attachment> getFiles(List<Long> attachmentIds) {
-        return attachmentRepository.findAllByAttachment(attachmentIds);
+       return attachmentRepository.findAllByAttachment(attachmentIds);
     }
 }

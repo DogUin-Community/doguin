@@ -26,7 +26,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,7 +33,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,9 +41,8 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
 
     private final QuestionViewService questionViewService;
-    private final static String QUESTION_CACHE = "questionBoard";
-    private final static String QUESTION_POPULAR = "questionPopular";
-    private final RedisTemplate redisTemplate;
+    private static final String QUESTION_CACHE = "questionBoard";
+    private static final String QUESTION_POPULAR = "questionPopular";
     private final AttachmentUploadServiceImpl attachmentUploadServiceImpl;
     private final AttachmentGetServiceImpl attachmentGetServiceImpl;
     private final AttachmentUpdateService attachmentUpdateService;
@@ -208,7 +205,10 @@ public class QuestionService {
                 })
                 .toList();
 
-        List<Long> files = attachmentGetServiceImpl.getFileIds(user.getId(), questionId, AttachmentTargetType.QUESTION);
+        // 파일 조회 시 user가 null인지 확인
+        List<Long> files = (user != null)
+                ? attachmentGetServiceImpl.getFileIds(user.getId(), questionId, AttachmentTargetType.QUESTION)
+                : new ArrayList<>();
 
         return new QuestionResponse.GetQuestion(
                 question.getId(),
@@ -290,7 +290,7 @@ public class QuestionService {
             return new PageImpl<>(List.of(), pageable, 0);
         }
 
-        List<Long> popularQuestionIdList = popularQuestionIds.stream().collect(Collectors.toList());
+        List<Long> popularQuestionIdList = popularQuestionIds.stream().toList();
 
         int start = Math.min((page-1) * size, popularQuestionIdList.size());
         int end = Math.min(start + size, popularQuestionIdList.size());
