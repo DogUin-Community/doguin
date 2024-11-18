@@ -2,10 +2,8 @@ package com.sparta.doguin.domain.discussions.service;
 
 import com.sparta.doguin.domain.attachment.constans.AttachmentTargetType;
 import com.sparta.doguin.domain.attachment.entity.Attachment;
-import com.sparta.doguin.domain.attachment.model.AttachmentResponse;
 import com.sparta.doguin.domain.attachment.repository.AttachmentRepository;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteService;
-import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentGetService;
 import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
 import com.sparta.doguin.domain.bookmark.constans.BookmarkTargetType;
 import com.sparta.doguin.domain.bookmark.model.BookmarkRequest;

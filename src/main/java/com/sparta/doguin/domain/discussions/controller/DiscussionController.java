@@ -1,9 +1,5 @@
 package com.sparta.doguin.domain.discussions.controller;
 
-import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentDeleteService;
-import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
-import com.sparta.doguin.domain.bookmark.constans.BookmarkTargetType;
-import com.sparta.doguin.domain.bookmark.model.BookmarkRequest;
 import com.sparta.doguin.domain.bookmark.service.BookmarkService;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseBookmarkEnum;
