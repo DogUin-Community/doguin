@@ -39,4 +39,10 @@ public class UserController {
         ApiResponse<Void> response = userService.deleteUser(authUser);
         return ApiResponse.of(response);
     }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<ApiResponse<UserResponse.Check>> getUser(@PathVariable Long userId) {
+        ApiResponse<UserResponse.Check> response = userService.getUser(userId);
+        return ApiResponse.of(response);
+    }
 }

@@ -49,9 +49,10 @@ public class BulletinController{
 
 
     @GetMapping("{boardId}")
-    public ResponseEntity<ApiResponse<BoardResponse.BoardWithAnswer>> viewOne(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long boardId) {
+    public ResponseEntity<ApiResponse<BoardResponse.BoardWithAnswerWithUserId>> viewOne(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long boardId) {
         User user = authUser != null ? User.fromAuthUser(authUser) : null;
-        BoardResponse.BoardWithAnswer response = boardService.viewOneWithUser(boardId,user);
+        BoardResponse.BoardWithAnswerWithUserId response = boardService.viewOneWithUser(boardId,user);
+        System.out.println("response.userId(): " + response.userId());
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.BULLETIN_FIND_ONE_SUCCESS, response));
     }
 

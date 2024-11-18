@@ -48,9 +48,9 @@ public class InquiryController{
     }
 
     @GetMapping("{boardId}")
-    public ResponseEntity<ApiResponse<BoardResponse.BoardWithAnswer>> viewOne(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long boardId) {
+    public ResponseEntity<ApiResponse<BoardResponse.BoardWithAnswerWithUserId>> viewOne(@AuthenticationPrincipal AuthUser authUser, @PathVariable Long boardId) {
         User user = User.fromAuthUser(authUser);
-        BoardResponse.BoardWithAnswer response = boardService.viewOneWithUser(boardId, user);
+        BoardResponse.BoardWithAnswerWithUserId response = boardService.viewOneWithUser(boardId, user);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.INQUIRY_FIND_ONE_SUCCESS, response));
     }
 

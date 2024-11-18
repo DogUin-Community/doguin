@@ -19,7 +19,7 @@ public interface BoardService {
     void update(User user, Long boardId, BoardCommonRequest boardRequest,List<MultipartFile> files);
 
     // 게시글 단일 조회
-    BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId,User user);
+    BoardResponse.BoardWithAnswerWithUserId viewOneWithUser(Long boardId,User user);
 
     // 게시글 전체 조회
     default Page<BoardCommonResponse> viewAll(int page, int size) {
