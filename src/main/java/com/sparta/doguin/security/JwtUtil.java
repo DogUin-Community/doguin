@@ -1,5 +1,7 @@
 package com.sparta.doguin.security;
 
+import com.sparta.doguin.domain.user.enums.UserRole;
+import com.sparta.doguin.domain.user.enums.UserType;
 import com.sparta.doguin.security.dto.JwtUtilRequest;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -63,6 +65,16 @@ public class JwtUtil {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public AuthUser extractAuthUser(String token) {
+        Claims claims = extractClaims(token);
+        Long userId = claims.get("sub", Long.class);
+        String nickname = claims.get("nickname", String.class);
+        String email = claims.get("email", String.class);
+        UserRole role = claims.get("userRole", UserRole.class);
+        UserType type = claims.get("userType", UserType.class);
+        return new AuthUser(userId, email,nickname,type ,role);
     }
 
     // 토큰을 헤더에 저장하는 메서드
