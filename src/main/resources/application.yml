@@ -29,10 +29,7 @@ spring:
       port: ${REDIS_PORT}
       host: ${REDIS_HOST}
     mongodb:
-      username: ${MONGO_NAME}
-      password: ${MONGO_PASSWORD}
-      host: ${MONGO_HOST}
-      port: ${MONGO_PORT}
+      uri: ${MONGO_URI}
 
 
   cache:
@@ -63,7 +60,13 @@ discord:
 
 logging:
   level:
+<<<<<<< HEAD
     org.springframework.cache: INFO
+=======
+    org.springframework.cache: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+>>>>>>> dev
 
 # Social Login config
 social:

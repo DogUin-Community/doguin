@@ -115,11 +115,4 @@ public class User extends Timestamped {
     public void updatePassword(String encodedPassword) {
         this.password = encodedPassword;
     }
-
-    // 소셜 로그인 메서드
-    public void socialLogin(String email, String nickname) {
-        this.email = email;
-        this.nickname = nickname;
-        this.userRole = UserRole.ROLE_USER;
-    }
 }
