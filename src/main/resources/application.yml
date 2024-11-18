@@ -1,6 +1,9 @@
 server:
   port: ${SERVER_PORT}
   forward-headers-strategy: framework
+  tomcat:
+    mbeanregistry:
+      enabled: true
 # DB config
 spring:
   config:
@@ -60,7 +63,7 @@ discord:
 
 logging:
   level:
-    org.springframework.cache: DEBUG
+    org.springframework.cache: INFO
 
 # Social Login config
 social:
@@ -108,3 +111,13 @@ springdoc:
     - /api/**
 host:
   front-host: ${FRONT_HOST}
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+

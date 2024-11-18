@@ -1,8 +1,10 @@
 package com.sparta.doguin;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -21,5 +23,6 @@ public class DoguinApplication {
     public static void main(String[] args) {
         SpringApplication.run(DoguinApplication.class, args);
     }
+
 
 }
