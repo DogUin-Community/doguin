@@ -60,9 +60,9 @@ discord:
 
 logging:
   level:
-    org.springframework.cache: DEBUG
-    org.springframework.security: DEBUG
-    org.springframework.web: DEBUG
+    org.springframework.cache: INFO
+    org.springframework.security: INFO
+    org.springframework.web: INFO
 
 
 # Social Login config

@@ -106,8 +106,8 @@ public class PopularService {
     @Scheduled(cron = "0 0 * * * ?")
     @Transactional
     public void updateViewCountsAndPopularBoards() {
-        updateTodayView();       // 1. 시간별 조회수를 일일 조회수에 반영
-        updatePopularBoard();    // 2. 인기 게시글 업데이트
+        updatePopularBoard();    // 1. 인기 게시글 업데이트
+        updateTodayView();       // 2. 시간별 조회수를 일일 조회수에 반영
         log.info("정각 작업 완료: 일일 조회수 및 인기 게시글 업데이트");
     }
 
