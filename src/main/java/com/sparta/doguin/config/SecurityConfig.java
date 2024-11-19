@@ -41,7 +41,7 @@ public class SecurityConfig {
                         CorsConfiguration config = new CorsConfiguration();
                         config.setAllowedOrigins(List.of("http://localhost:3000","http://localhost:3001","http://doguin-alb-1242367005.ap-northeast-2.elb.amazonaws.com"));
                         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
+                        config.setAllowedHeaders(List.of("*"));
                         config.setAllowCredentials(true); // 자격 증명 허용
                         return config;
                     };
