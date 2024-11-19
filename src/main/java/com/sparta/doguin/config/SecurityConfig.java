@@ -57,6 +57,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/api/v1/chat/**").authenticated() // 인증 필요
                         .requestMatchers("/api/v1/auth/signup", "/api/v1/auth/signin").permitAll()
