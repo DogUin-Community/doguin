@@ -12,6 +12,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins("http://localhost:3000")
                 .allowedOrigins("http://localhost:3001")
+                .allowedOrigins("http://doguin-alb-1242367005.ap-northeast-2.elb.amazonaws.com")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);

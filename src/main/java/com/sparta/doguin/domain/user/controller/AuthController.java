@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -54,7 +56,7 @@ public class AuthController {
     }
 
     @GetMapping("/oauth2/authorize/{provider}")
-    public ResponseEntity<ApiResponse<String>> socialLogin(
+    public void socialLogin(
             @PathVariable("provider") String provider,
             @RequestParam("code") String code,           // OAuth 인증 코드
             @RequestParam("state") String frontHost,     // 원래의 프론트엔드 호스트 정보
@@ -62,9 +64,11 @@ public class AuthController {
 
         // 소셜 로그인 처리 후 토큰 생성
         ApiResponse<String> apiResponse = socialLoginService.socialLogin(provider, code, response);
+        System.out.println("frontHost: "+ frontHost);
 
         // 프론트엔드로 리다이렉트
+        String decodedFrontHost = URLDecoder.decode(frontHost, StandardCharsets.UTF_8.name());
+        System.out.println(decodedFrontHost);
         response.sendRedirect(frontHost + "/callback?token=" + apiResponse.getData());
-        return ApiResponse.of(apiResponse);
     }
 }
