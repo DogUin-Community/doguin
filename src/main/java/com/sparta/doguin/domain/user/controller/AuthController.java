@@ -50,6 +50,9 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<ApiResponse<String>> signin(@RequestBody UserRequest.Signin signinRequest, HttpServletResponse response) {
         ApiResponse<String> apiResponse = authService.signin(signinRequest, response);
+        System.out.println(apiResponse.getData());
+        System.out.println(apiResponse.getCode());
+        System.out.println(apiResponse.getMessage());
         return ApiResponse.of(apiResponse);
     }
 
