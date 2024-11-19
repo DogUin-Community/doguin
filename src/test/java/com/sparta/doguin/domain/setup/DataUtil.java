@@ -407,22 +407,18 @@ public class DataUtil {
 
     public static Matching matching1() {
         return new Matching(
-                one(),
                 user1(),
                 portfolio1(),
                 outsourcing1(),
-                1,
                 MathingStatusType.READY
         );
     }
 
     public static Matching matching2() {
         return new Matching(
-                two(),
                 user2(),
                 portfolio2(),
                 outsourcing2(),
-                1,
                 MathingStatusType.READY
         );
     }
