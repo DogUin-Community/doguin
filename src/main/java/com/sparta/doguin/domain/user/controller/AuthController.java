@@ -62,6 +62,7 @@ public class AuthController {
 
         // 소셜 로그인 처리 후 토큰 생성
         ApiResponse<String> apiResponse = socialLoginService.socialLogin(provider, code, response);
+        System.out.println("frontHost: " + frontHost);
 
         // 프론트엔드로 리다이렉트
         response.sendRedirect(frontHost + "/callback?token=" + apiResponse.getData());

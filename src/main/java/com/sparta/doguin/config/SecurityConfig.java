@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .cors(c -> {
                     CorsConfigurationSource source = request -> {
                         CorsConfiguration config = new CorsConfiguration();
-                        config.setAllowedOrigins(List.of("http://localhost:3000","http://localhost:3001"));
+                        config.setAllowedOrigins(List.of("http://localhost:3000","http://localhost:3001","http://doguin-alb-1242367005.ap-northeast-2.elb.amazonaws.com"));
                         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
                         config.setAllowCredentials(true); // 자격 증명 허용
