@@ -70,8 +70,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/chat/**").authenticated()
                         .requestMatchers("/error").permitAll() // 에러 핸들링 경로 허용
 
-
-
                         .requestMatchers(HttpMethod.GET, "/api/v1/discussions/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/discussions/search").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/boards/bulletins/*").permitAll()
