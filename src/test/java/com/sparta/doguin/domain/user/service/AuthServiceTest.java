@@ -163,7 +163,7 @@ public class AuthServiceTest {
             // then
             assertEquals(ApiResponseUserEnum.USER_LOGIN_SUCCESS.getCode(), actual.getCode());
             assertEquals(ApiResponseUserEnum.USER_LOGIN_SUCCESS.getMessage(), actual.getMessage());
-            assertEquals(null, actual.getData());
+            assertEquals(expectedToken, actual.getData());
             Mockito.verify(jwtUtil).addTokenToResponseHeader(expectedToken, response); // JWT가 헤더에 추가되었는지 확인
         }
 
