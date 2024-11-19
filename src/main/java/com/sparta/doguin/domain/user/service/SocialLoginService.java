@@ -124,6 +124,6 @@ public class SocialLoginService {
      * @return Redirect URI
      */
     private String buildRedirectUri(SocialProvider provider) {
-        return "http://localhost:8080/api/v1/auth/oauth2/authorize/" + provider.getProviderName();
+        return "http://doguin-alb-1242367005.ap-northeast-2.elb.amazonaws.com/api/v1/auth/oauth2/authorize/" + provider.getProviderName();
     }
 }
