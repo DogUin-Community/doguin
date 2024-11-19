@@ -81,7 +81,7 @@ class InquiryServiceTest {
     @Test
     @DisplayName("문의 게시물 등록 성공 테스트")
     void create() {
-        BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("문의 게시물","문의 게시물",null);
+        BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("문의 게시물","문의 게시물");
         given(boardRepository.save(any(Board.class))).willReturn(board);
 
         inquiryService.create(user, boardCommonRequest,null);
@@ -92,7 +92,7 @@ class InquiryServiceTest {
     @Test
     @DisplayName("문의 게시물 수정 성공 테스트")
     void update() {
-        BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("수정된 문의 게시물","수정된 문의 게시물",null);
+        BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("수정된 문의 게시물","수정된 문의 게시물");
         given(boardRepository.findById(anyLong())).willReturn(Optional.of(board));
 
         inquiryService.update(user, 1L,boardCommonRequest,null);
@@ -109,7 +109,7 @@ class InquiryServiceTest {
     @DisplayName("문의 게시물 수정 실패 테스트(등록자 다름)")
     void update_등록자_다름() {
         User user1 = new User(2L, "user1@gmail.com", "AAAaaa111!!!", "다른 유저 입니다.", UserType.INDIVIDUAL, UserRole.ROLE_USER,"","","","","");
-        BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("수정된 문의 게시물","수정된 문의 게시물",null);
+        BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("수정된 문의 게시물","수정된 문의 게시물");
         given(boardRepository.findById(anyLong())).willReturn(Optional.of(board));
 
         // When
@@ -124,7 +124,7 @@ class InquiryServiceTest {
     @Test
     @DisplayName("문의 게시물 수정 실패 테스트(게시물 타입 다름)")
     void update_게시물_타입_다름() {
-        BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("수정된 문의 게시물","수정된 문의 게시물",null);
+        BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("수정된 문의 게시물","수정된 문의 게시물");
         Board board1 = new Board("이벤트 게시물", "이벤트 게시물", BoardType.BOARD_EVENT,user);
         ReflectionTestUtils.setField(board1,"id",2L);
         given(boardRepository.findById(anyLong())).willReturn(Optional.of(board1));
@@ -153,7 +153,7 @@ class InquiryServiceTest {
         given(boardRepository.findById(anyLong())).willReturn(Optional.of(board));
         given(inquiryAnswerService.findByBoardId(1L, pageable)).willReturn(responsePage);
 
-        BoardResponse.BoardWithAnswerWithUserId result = inquiryService.viewOneWithUser( 1L,user);
+        BoardResponse.BoardWithAnswer result = inquiryService.viewOneWithUser( 1L,user);
         assertThat(result.title()).isEqualTo("문의 게시물");
         assertThat(responsePage.getContent().get(0).content()).isEqualTo("답글1");
     }

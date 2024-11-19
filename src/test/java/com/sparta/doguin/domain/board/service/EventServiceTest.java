@@ -85,7 +85,7 @@ class EventServiceTest {
     @Test
     @DisplayName("이벤트 게시물 등록 성공 테스트")
     void create() {
-        BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("이벤트 게시물","이벤트 게시물",null);
+        BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("이벤트 게시물","이벤트 게시물");
         given(boardRepository.save(any(Board.class))).willReturn(board);
 
         eventService.create(admin, boardCommonRequest,null);
@@ -96,7 +96,7 @@ class EventServiceTest {
     @Test
     @DisplayName("이벤트 게시물 수정 성공 테스트")
     void update() {
-        BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("수정된 이벤트 게시물","수정된 이벤트 게시물",null);
+        BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("수정된 이벤트 게시물","수정된 이벤트 게시물");
         given(boardRepository.findById(anyLong())).willReturn(Optional.of(board));
 
         eventService.update(admin, 1L,boardCommonRequest,null);
@@ -113,7 +113,7 @@ class EventServiceTest {
     @DisplayName("일반 게시물 수정 실패 테스트(등록자 다름)")
     void update_등록자_다름() {
         User user1 = new User(2L, "user1@gmail.com", "AAAaaa111!!!", "다른 유저 입니다.", UserType.INDIVIDUAL, UserRole.ROLE_ADMIN,"","","","","");
-        BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("수정된 이벤트 게시물","수정된 이벤트 게시물",null);
+        BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("수정된 이벤트 게시물","수정된 이벤트 게시물");
         given(boardRepository.findById(anyLong())).willReturn(Optional.of(board));
 
         // When
@@ -128,7 +128,7 @@ class EventServiceTest {
     @Test
     @DisplayName("일반 게시물 수정 실패 테스트(게시물 타입 다름)")
     void update_게시물_타입_다름() {
-        BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("수정된 이벤트 게시물","수정된 이벤트 게시물",null);
+        BoardRequest.BoardCommonRequest boardCommonRequest = new BoardRequest.BoardCommonRequest("수정된 이벤트 게시물","수정된 이벤트 게시물");
         Board board1 = new Board("일반 게시물", "일반 게시물", BoardType.BOARD_BULLETIN,admin);
         given(boardRepository.findById(anyLong())).willReturn(Optional.of(board1));
 
@@ -156,7 +156,7 @@ class EventServiceTest {
         given(boardRepository.findById(anyLong())).willReturn(Optional.of(board));
         given(noticeAnswerService.findByBoardId(1L, pageable)).willReturn(responsePage);
 
-        BoardResponse.BoardWithAnswerWithUserId result = eventService.viewOneWithUser( 1L,user);
+        BoardResponse.BoardWithAnswer result = eventService.viewOneWithUser( 1L,user);
         assertThat(result.title()).isEqualTo("이벤트 게시물");
         assertThat(responsePage.getContent().get(0).content()).isEqualTo("답글1");
     }
