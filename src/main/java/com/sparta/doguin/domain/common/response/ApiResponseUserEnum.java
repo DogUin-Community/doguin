@@ -21,7 +21,7 @@ public enum ApiResponseUserEnum implements ApiResponseEnum {
     USER_TYPE_INVALID(HttpStatus.BAD_REQUEST, "유효하지 않은 UserType입니다."),
     USER_GRADE_INVALID(HttpStatus.BAD_REQUEST, "유효하지 않은 UserGrade입니다."),
     USER_PROVIDER_TYPE_INVALID(HttpStatus.BAD_REQUEST, "유효하지 않은 ProviderType입니다."),
-    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
+    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다 !!!"),
     PASSWORD_REQUIRED(HttpStatus.BAD_REQUEST, "비밀번호가 필요합니다. 기존 계정과 연동하려면 비밀번호를 입력하세요."),
     INVALID_SOCIAL_PROVIDER(HttpStatus.BAD_REQUEST, "제공하지 않는 소셜 로그인 방식입니다."),
     FAILED_TO_FETCH_SOCIAL_ACCESS_TOKEN(HttpStatus.BAD_REQUEST, "소셜 로그인 액세스 토큰을 가져오는데 실패했습니다."),
