@@ -36,7 +36,7 @@ public class ChatService {
     public ChatResponse.MessageResponse processSendMessage(Long userId, ChatRequest.MessageSendRequest messageDto) {
         ChatMessage savedMessage = saveMessage(messageDto.roomId(), userId, messageDto.content());
 
-        redisTemplate.convertAndSend("/topic/chat/" + messageDto.roomId(), savedMessage);
+//        redisTemplate.convertAndSend("/topic/chat/" + messageDto.roomId(), savedMessage);
 
         messagingTemplate.convertAndSend("/topic/chat/" + messageDto.roomId(), savedMessage);
 
