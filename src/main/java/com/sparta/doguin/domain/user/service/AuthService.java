@@ -124,8 +124,8 @@ public class AuthService {
         String token = jwtUtil.createToken(createToken);
 
         // JWT를 Bearer 접두사 없이 응답 헤더에 추가
-        jwtUtil.addTokenToResponseHeader(token, response);
+//        jwtUtil.addTokenToResponseHeader(token, response);
 
-        return ApiResponse.of(apiResponse);
+        return ApiResponse.of(apiResponse,token);
     }
 }

@@ -61,6 +61,7 @@ public class S3Service {
      */
     @Async
     public CompletableFuture<Void> uploadAllAsync(List<String> paths, List<byte[]> fileBytesList) {
+        System.out.println("bucket:" + bucket);
         try {
             for (int i = 0; i < paths.size(); i++) {
                 String path = paths.get(i);

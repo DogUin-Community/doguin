@@ -42,15 +42,16 @@ public class EventController{
                                                     @PathVariable Long boardId,
                                                     @RequestPart(name = "boardRequest") @Valid BoardCommonRequest boardRequest,
                                                     @RequestPart(name = "files", required = false) List<MultipartFile> files) {
+
         User user = User.fromAuthUser(authUser);
         boardService.update(user, boardId, boardRequest,files);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.EVENT_UPDATE_SUCCESS));
     }
 
     @GetMapping("{boardId}")
-    public ResponseEntity<ApiResponse<BoardResponse.BoardWithAnswer>> viewOne(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long boardId) {
+    public ResponseEntity<ApiResponse<BoardResponse.BoardWithAnswerWithUserId>> viewOne(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long boardId) {
         User user = authUser != null ? User.fromAuthUser(authUser) : null;
-        BoardResponse.BoardWithAnswer response = boardService.viewOneWithUser(boardId,user);
+        BoardResponse.BoardWithAnswerWithUserId response = boardService.viewOneWithUser(boardId,user);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.EVENT_FIND_ONE_SUCCESS, response));
     }
 
@@ -59,7 +60,6 @@ public class EventController{
                                                                     @RequestParam(defaultValue = "10") int size) {
         Page<BoardCommonResponse> responses = boardService.viewAll(page, size);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.EVENT_FIND_ALL_SUCCESS, responses));
-
     }
 
     @GetMapping("/search")

@@ -20,6 +20,7 @@ import com.sparta.doguin.domain.question.enums.QuestionStatus;
 import com.sparta.doguin.domain.question.repository.QuestionRepository;
 import com.sparta.doguin.domain.user.entity.User;
 import com.sparta.doguin.security.AuthUser;
+import io.micrometer.core.annotation.Counted;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -56,6 +57,7 @@ public class QuestionService {
      * @return 생성된 질문의 정보를 포함하는 ApiResponse 객체
      * @author 유태이
      */
+    @Counted("created-question")
     @Transactional
     public ApiResponse<QuestionResponse> createdQuestion(AuthUser authUser, QuestionRequestCreate request, List<MultipartFile> files) {
 
@@ -123,6 +125,7 @@ public class QuestionService {
      * @param questionId
      * @return
      */
+    @Counted("accept-question")
     @Transactional
     public ApiResponse<Void> acceptQuestion(AuthUser authUser, long questionId) {
 

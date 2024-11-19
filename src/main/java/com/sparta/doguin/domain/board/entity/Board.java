@@ -1,11 +1,15 @@
 package com.sparta.doguin.domain.board.entity;
 
+import com.sparta.doguin.domain.answer.entity.Answer;
 import com.sparta.doguin.domain.board.BoardType;
 import com.sparta.doguin.domain.common.Timestamped;
 import com.sparta.doguin.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -26,6 +30,9 @@ public class Board extends Timestamped {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Answer> answerList = new ArrayList<>();
 
     private Long view;
 

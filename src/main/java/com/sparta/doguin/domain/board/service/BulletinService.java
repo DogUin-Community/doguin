@@ -88,11 +88,6 @@ public class BulletinService implements BoardService {
     @Override
     @Transactional
     public void update(User user,Long boardId, BoardCommonRequest boardRequest,List<MultipartFile> files) {
-        System.out.println(boardId);
-        System.out.println(boardRequest.content());
-        for ( Long filePath : boardRequest.fileIds() ) {
-            System.out.println(filePath);
-        }
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.BULLETIN_NOT_FOUND));
 
@@ -119,7 +114,7 @@ public class BulletinService implements BoardService {
      * @since 1.0
      */
     @Override
-    public BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId, User user) {
+    public BoardResponse.BoardWithAnswerWithUserId viewOneWithUser(Long boardId, User user) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.BULLETIN_NOT_FOUND));
         if (board.getBoardType() != boardType) {
@@ -134,7 +129,8 @@ public class BulletinService implements BoardService {
 
         Long viewCount = popularService.getHourUniqueViewCount(boardId)+board.getView(); // 한시간 조회수 + 누적 조회수 로 토탈 조회수
 
-        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(),viewCount, responses,filePaths);
+
+        return new BoardResponse.BoardWithAnswerWithUserId (board.getId(),board.getUser().getId() ,board.getTitle(),board.getContent(),viewCount, responses,filePaths);
     }
 
     /**

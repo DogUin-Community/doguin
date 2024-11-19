@@ -11,7 +11,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,30 +35,7 @@ public class PopularService {
         log.info("Tracking view for boardId: {}, userId: {}", boardId, userId);
     }
 
-    /**
-     * 지난 1시간의 누적 조회인을 하루 조회인에 업로드하고 리셋
-     */
-    @Scheduled(cron = "0 0 * * * ?")
-    @Transactional
-    public void updateTodayView() {
-        Set<String> keysToUpdate = redisTemplate.keys("hourView:*");
-        if (keysToUpdate != null && !keysToUpdate.isEmpty()) {
-            for (String val : keysToUpdate) {
-                String[] keys = val.split(":");
-                String todayKey = "todayView:" + keys[1];
 
-                String todayViewStr = (String) redisTemplate.opsForValue().get(todayKey);
-                Long todayView = (todayViewStr != null) ? Long.parseLong(todayViewStr) : 0L;
-
-                long hourView = redisTemplate.opsForSet().size(val);
-
-                Long totalView = todayView + hourView;
-
-                redisTemplate.opsForValue().set(todayKey, Long.toString(totalView));
-                redisTemplate.delete(val);
-            }
-        }
-    }
 
     /**
      * 일일 조회수 반환기
@@ -125,11 +101,44 @@ public class PopularService {
 
 
     /**
-     * 한 시간마다 상위 3개의 인기 게시글을 업데이트
+     * 정각에 Redis에 저장된 조회수를 업데이트하고 인기 게시글을 갱신
      */
     @Scheduled(cron = "0 0 * * * ?")
     @Transactional
-    public void updatePopularBoard() {
+    public void updateViewCountsAndPopularBoards() {
+        updatePopularBoard();    // 1. 인기 게시글 업데이트
+        updateTodayView();       // 2. 시간별 조회수를 일일 조회수에 반영
+        log.info("정각 작업 완료: 일일 조회수 및 인기 게시글 업데이트");
+    }
+
+    /**
+     * 지난 1시간의 누적 조회수를 하루 조회수에 업로드하고 리셋
+     */
+    private void updateTodayView() {
+        Set<String> keysToUpdate = redisTemplate.keys("hourView:*");
+        if (keysToUpdate != null && !keysToUpdate.isEmpty()) {
+            for (String val : keysToUpdate) {
+                String[] keys = val.split(":");
+                String todayKey = "todayView:" + keys[1];
+
+                String todayViewStr = (String) redisTemplate.opsForValue().get(todayKey);
+                Long todayView = (todayViewStr != null) ? Long.parseLong(todayViewStr) : 0L;
+
+                long hourView = redisTemplate.opsForSet().size(val);
+
+                Long totalView = todayView + hourView;
+
+                redisTemplate.opsForValue().set(todayKey, Long.toString(totalView));
+                redisTemplate.delete(val);
+            }
+        }
+        log.info("오늘의 조회수 업데이트 완료");
+    }
+
+    /**
+     * 한 시간마다 상위 3개의 인기 게시글을 업데이트
+     */
+    private void updatePopularBoard() {
         PriorityQueue<Long[]> views = new PriorityQueue<>((a, b) -> Long.compare(a[1], b[1]));
         String popularBoard = "popularBoard";
 
@@ -165,5 +174,7 @@ public class PopularService {
 
         log.info("인기 게시글 업데이트 완료");
     }
+
+
 }
 

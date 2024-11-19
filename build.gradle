@@ -123,6 +123,13 @@ dependencies {
     // WebFlux
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
+    // actuator가 제공하는 프로덕션 준비를 사용하기 위함
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // 프로메테우스 설정
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2'
 
 }
 

@@ -49,8 +49,8 @@ public class GitHubStrategy extends AbstractSocialLoginStrategy {
         }
 
         JsonNode jsonNode = objectMapper.readTree(responseBody);
-        String email = jsonNode.has("email") ? jsonNode.get("email").asText() : null;
         String nickname = jsonNode.get("login").asText();
+        String email = nickname + "@github.com";
 
         return User.builder()
                 .email(email)
