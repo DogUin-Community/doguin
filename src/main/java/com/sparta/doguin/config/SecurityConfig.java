@@ -89,7 +89,8 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of(
                 "http://localhost:3000",
                 "http://localhost:3001",
-                "http://doguin-alb-1242367005.ap-northeast-2.elb.amazonaws.com"
+                "http://doguin-alb-1242367005.ap-northeast-2.elb.amazonaws.com",
+                "https://doguin-f.vercel.app"
         )); // 허용할 Origin
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용할 HTTP 메서드
         config.setAllowedHeaders(List.of("*")); // 모든 헤더 허용
