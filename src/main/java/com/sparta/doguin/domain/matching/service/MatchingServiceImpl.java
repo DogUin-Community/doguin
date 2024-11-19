@@ -16,6 +16,7 @@ import com.sparta.doguin.domain.portfolio.service.PortfolioServiceImpl;
 import com.sparta.doguin.domain.user.entity.User;
 import com.sparta.doguin.domain.user.enums.UserType;
 import com.sparta.doguin.security.AuthUser;
+import io.micrometer.core.annotation.Counted;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
@@ -58,6 +59,7 @@ public class MatchingServiceImpl implements MatchingService {
      * @since 1.0
      * @author 김경민
      */
+    @Override
     public ApiResponse<Void> toggleMatching(MatchingRequest.MatchingRequestCreate reqDto, AuthUser authUser) {
         MatchingValidator.isIndividual(authUser);
         Outsourcing outsourcing = outsourcingService.findById(reqDto.outsourcingId());

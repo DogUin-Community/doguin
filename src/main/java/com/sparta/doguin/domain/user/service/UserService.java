@@ -101,6 +101,25 @@ public class UserService {
         return ApiResponse.of(ApiResponseUserEnum.USER_DELETE_SUCCESS);
     }
 
+    @Transactional(readOnly = true)
+    public ApiResponse<UserResponse.Check> getUser(Long userId) {
+        User user = findById(userId);
+        UserResponse.Check check = new UserResponse.Check(
+                user.getId(),
+                user.getEmail(),
+                user.getNickname(),
+                user.getUserType(),
+                user.getUserRole(),
+                user.getProfileImage(),
+                user.getIntroduce(),
+                user.getHomeAddress(),
+                user.getGitAddress(),
+                user.getBlogAddress(),
+                user.getUserGrade()
+        );
+        return ApiResponse.of(ApiResponseUserEnum.USER_CHECK_SUCCESS, check);
+    }
+
     /**
      * 유저 ID로 유저를 찾는 메서드
      *
@@ -141,4 +160,6 @@ public class UserService {
         return userRepository.findByNickname(nickName)
                 .orElseThrow(() -> new UserException(ApiResponseUserEnum.USER_NOT_FOUND));
     }
+
+
 }

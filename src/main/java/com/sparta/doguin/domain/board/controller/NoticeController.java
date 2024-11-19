@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+
 @RestController
 @RequestMapping("/api/v1/boards/notices")
 public class NoticeController {
@@ -48,9 +49,9 @@ public class NoticeController {
     }
 
     @GetMapping("{boardId}")
-    public ResponseEntity<ApiResponse<BoardResponse.BoardWithAnswer>> viewOne(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long boardId) {
+    public ResponseEntity<ApiResponse<BoardResponse.BoardWithAnswerWithUserId>> viewOne(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long boardId) {
         User user = authUser != null ? User.fromAuthUser(authUser) : null;
-        BoardResponse.BoardWithAnswer response = boardService.viewOneWithUser(boardId,user);
+        BoardResponse.BoardWithAnswerWithUserId response = boardService.viewOneWithUser(boardId,user);
         return ApiResponse.of(ApiResponse.of(ApiResponseBoardEnum.NOTICE_FIND_ONE_SUCCESS, response));
     }
 
