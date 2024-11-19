@@ -120,10 +120,6 @@ public class ChatService {
     private ChatRoom validateUserInRoom(Long userId, String roomId) {
         ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId)
                 .orElseThrow(() -> new ChatException(ApiResponseChatEnum.CHATROOM_NOT_FOUND));
-//
-//        if (!chatRoom.getActiveUsers().contains(userId)) {
-//            throw new ChatException(ApiResponseChatEnum.USER_NOT_IN_ROOM);
-//        }
 
         return chatRoom;
     }

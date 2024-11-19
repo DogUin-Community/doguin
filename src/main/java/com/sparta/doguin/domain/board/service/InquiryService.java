@@ -99,7 +99,7 @@ public class InquiryService implements BoardService{
      * @author 김창민
      */
     @Override
-    public BoardResponse.BoardWithAnswer viewOneWithUser(Long boardId, User user) {
+    public BoardResponse.BoardWithAnswerWithUserId viewOneWithUser(Long boardId, User user) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new HandleNotFound(ApiResponseBoardEnum.INQUIRY_NOT_FOUND));
         if(!board.getUser().getId().equals(user.getId())){
@@ -113,7 +113,7 @@ public class InquiryService implements BoardService{
         popularService.trackUserView(boardId, user.getId());
         Long viewCount = popularService.getHourUniqueViewCount(boardId)+board.getView();
 
-        return new BoardResponse.BoardWithAnswer(board.getId(),board.getTitle(),board.getContent(),viewCount, responses,filePaths);
+        return new BoardResponse.BoardWithAnswerWithUserId (board.getId(),board.getUser().getId() ,board.getTitle(),board.getContent(),viewCount, responses,filePaths);
     }
 
     /**

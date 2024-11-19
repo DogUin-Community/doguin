@@ -28,7 +28,7 @@ public class BookmarkController {
     private final BookmarkService bookmarkService;
 
     /**
-     * 로그인 되있는 자신의 북마크들 목록 확인
+     * 로그인 되있는 자신의 북마크들 목록 확인 하기
      */
     @Operation(summary = "자신의 모든 북마크들 가져오기", description = "자신의 북마크 다건 조회 API")
     @GetMapping
