@@ -17,6 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
@@ -36,70 +37,65 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .cors(c -> {
-                    CorsConfigurationSource source = request -> {
-                        CorsConfiguration config = new CorsConfiguration();
-                        config.setAllowedOrigins(List.of("http://localhost:3000","http://localhost:3001","http://doguin-alb-1242367005.ap-northeast-2.elb.amazonaws.com"));
-                        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                        config.setAllowedHeaders(List.of("*"));
-                        config.setAllowCredentials(true); // 자격 증명 허용
-                        return config;
-                    };
-                    c.configurationSource(source);
-                })
-                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정
+                .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(jwtSecurityFilter, SecurityContextHolderAwareRequestFilter.class)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .anonymous(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
-                .logout(AbstractHttpConfigurer::disable)
+                .addFilterBefore(jwtSecurityFilter, SecurityContextHolderAwareRequestFilter.class) // JWT 필터
+                .formLogin(AbstractHttpConfigurer::disable) // Form Login 비활성화
+                .httpBasic(AbstractHttpConfigurer::disable) // HTTP Basic 인증 비활성화
+                .logout(AbstractHttpConfigurer::disable) // Logout 비활성화
                 .authorizeHttpRequests(auth -> auth
+                        // OPTIONS 메서드는 모든 요청 허용
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/ws/**").permitAll()
-                        .requestMatchers("/api/v1/chat/**").authenticated() // 인증 필요
-                        .requestMatchers("/api/v1/auth/signup", "/api/v1/auth/signin").permitAll()
-                        .requestMatchers("/api/v1/auth/oauth2/authorize/**").permitAll()
-                        .requestMatchers("/swagger-ui/**").permitAll()
-                        .requestMatchers("/api-docs/**").permitAll()
-                        .requestMatchers("/test/**").permitAll()
-                        .requestMatchers("/health").permitAll()
-                        .requestMatchers("/actuator/**").permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // 인증이 필요 없는 공개 엔드포인트
+                        .requestMatchers(
+                                "/ws/**",
+                                "/api/v1/auth/signup",
+                                "/api/v1/auth/signin",
+                                "/api/v1/auth/oauth2/authorize/**",
+                                "/swagger-ui/**",
+                                "/api-docs/**",
+                                "/test/**",
+                                "/health",
+                                "/actuator/**",
+                                "/error"
+                        ).permitAll()
+                        // GET 요청에 대한 공개 엔드포인트
+                        .requestMatchers(HttpMethod.GET, "/api/v1/**").permitAll()
+
+                        // 인증이 필요한 특정 엔드포인트
                         .requestMatchers("/api/v1/chat/**").authenticated()
-                        .requestMatchers("/error").permitAll() // 에러 핸들링 경로 허용
-
-                        .requestMatchers(HttpMethod.GET, "/api/v1/discussions/*").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/discussions/search").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/boards/bulletins/*").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/boards/*/*").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/boards/*").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/boards/*/search").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/question/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/question/search").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/question/rank").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/outsourcings/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/outsourcings/search").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/portfolios/my").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/portfolios/other").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/portfolios/{id}").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/attachments").permitAll()
 
-
+                        // 관리자 전용 엔드포인트
                         .requestMatchers(HttpMethod.POST, "/boards/events").hasAuthority(UserRole.Authority.ADMIN)
                         .requestMatchers(HttpMethod.POST, "/boards/notices").hasAuthority(UserRole.Authority.ADMIN)
-                        .requestMatchers(HttpMethod.POST, "/boards/inquiries").hasAuthority(UserRole.Authority.USER)
                         .requestMatchers(HttpMethod.PUT, "/reports/*/accept").hasAuthority(UserRole.Authority.ADMIN)
                         .requestMatchers(HttpMethod.PUT, "/reports/*/inject").hasAuthority(UserRole.Authority.ADMIN)
                         .requestMatchers(HttpMethod.GET, "/reports/total/*").hasAuthority(UserRole.Authority.ADMIN)
 
+                        // 인증이 필요한 모든 나머지 요청
                         .anyRequest().authenticated()
                 )
                 .build();
     }
 
-
-
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of(
+                "http://localhost:3000",
+                "http://localhost:3001",
+                "http://doguin-alb-1242367005.ap-northeast-2.elb.amazonaws.com"
+        )); // 허용할 Origin
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용할 HTTP 메서드
+        config.setAllowedHeaders(List.of("*")); // 모든 헤더 허용
+        config.setAllowCredentials(true); // 인증 정보 허용
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config); // 모든 경로에 대해 적용
+        return source;
+    }
 }
