@@ -1,193 +1,182 @@
 package com.sparta.doguin.domain.user.service;
 
-import com.sparta.doguin.domain.attachment.constans.AttachmentTargetType;
-import com.sparta.doguin.domain.attachment.service.interfaces.AttachmentUploadService;
 import com.sparta.doguin.domain.common.exception.UserException;
 import com.sparta.doguin.domain.common.response.ApiResponse;
 import com.sparta.doguin.domain.common.response.ApiResponseUserEnum;
-import com.sparta.doguin.domain.setup.DataUtil;
 import com.sparta.doguin.domain.user.dto.UserRequest;
 import com.sparta.doguin.domain.user.entity.User;
+import com.sparta.doguin.domain.user.enums.UserRole;
+import com.sparta.doguin.domain.user.enums.UserType;
 import com.sparta.doguin.domain.user.repository.UserRepository;
-import com.sparta.doguin.security.AuthUser;
 import com.sparta.doguin.security.JwtUtil;
 import com.sparta.doguin.security.dto.JwtUtilRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.BDDMockito.given;
-
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class AuthServiceTest {
+class AuthServiceTest {
 
     @Mock
-    UserRepository userRepository;
+    private PasswordEncoder passwordEncoder;
 
     @Mock
-    PasswordEncoder passwordEncoder;
+    private UserRepository userRepository;
 
     @Mock
-    JwtUtil jwtUtil;
+    private JwtUtil jwtUtil;
 
     @Mock
-    HttpServletResponse response;
-
-    @Mock
-    AttachmentUploadService attachmentUploadService;
+    private HttpServletResponse response;
 
     @InjectMocks
-    AuthService authService;
+    private AuthService authService;
 
-    User user1;
+    private User mockUser;
 
     @BeforeEach
     void setUp() {
-        user1 = DataUtil.user1();
+        mockUser = new User(
+                1L,
+                "test@example.com",
+                "encodedPassword",
+                "TestUser",
+                UserType.INDIVIDUAL,
+                UserRole.ROLE_USER,
+                null,
+                "Introduce",
+                "HomeAddress",
+                "GitAddress",
+                "BlogAddress"
+        );
     }
-
-    @Nested
-    class SignupTest {
-        @Test
-        @DisplayName("회원가입 성공")
-        void signup_success() {
-            // given
-            UserRequest.Signup signupRequest = new UserRequest.Signup(
-                    user1.getEmail(),
-                    "newPassword12!",
-                    user1.getNickname(),
-                    user1.getUserType().name(),
-                    user1.getUserRole().name(),
-                    user1.getProfileImage(),
-                    user1.getIntroduce(),
-                    user1.getHomeAddress(),
-                    user1.getGitAddress(),
-                    user1.getBlogAddress()
-            );
-
-            List<MultipartFile> files = new ArrayList<>();
-            MultipartFile mockFile = Mockito.mock(MultipartFile.class);
-            files.add(mockFile);
-
-            // 중복 이메일 및 닉네임 확인 설정
-            given(userRepository.findByEmail(user1.getEmail())).willReturn(Optional.empty());
-            given(userRepository.findByNickname(user1.getNickname())).willReturn(Optional.empty());
-
-            // 비밀번호 암호화 설정
-            given(passwordEncoder.encode("newPassword12!")).willReturn("encodedPassword");
-
-            // 사용자 저장 설정
-            given(userRepository.save(Mockito.any(User.class))).willReturn(user1);
-
-            // when
-            ApiResponse<String> actual = authService.signup(signupRequest, files);
-
-            // then
-            assertEquals(ApiResponseUserEnum.USER_CREATE_SUCCESS.getCode(), actual.getCode());
-            assertEquals(ApiResponseUserEnum.USER_CREATE_SUCCESS.getMessage(), actual.getMessage());
-            assertNull(actual.getData()); // API 응답에서 Data는 null로 예상됨
-
-            // 파일 업로드 서비스 호출 확인
-            Mockito.verify(attachmentUploadService).upload(
-                    ArgumentMatchers.eq(files),
-                    ArgumentMatchers.any(AuthUser.class),
-                    ArgumentMatchers.eq(user1.getId()),
-                    ArgumentMatchers.eq(AttachmentTargetType.PROFILE)
-            );
-        }
 
     @Test
-        @DisplayName("회원가입 실패 - 중복된 이메일")
-        void signup_duplicateEmail() {
-            // given
-            UserRequest.Signup signupRequest = new UserRequest.Signup(
-                    user1.getEmail(),
-                    "newPassword",
-                    user1.getNickname(),
-                    user1.getUserType().name(),
-                    user1.getUserRole().name(),
-                    user1.getProfileImage(),
-                    user1.getIntroduce(),
-                    user1.getHomeAddress(),
-                    user1.getGitAddress(),
-                    user1.getBlogAddress()
-            );
-            given(userRepository.findByEmail(user1.getEmail())).willReturn(Optional.of(user1));
+    @DisplayName("회원가입 성공")
+    void signup_success() {
+        // given
+        UserRequest.Signup signupRequest = new UserRequest.Signup(
+                "new@example.com",
+                "password123!",
+                "NewUser",
+                "INDIVIDUAL",
+                "ROLE_USER",
+                null,
+                "Introduce",
+                "HomeAddress",
+                "GitAddress",
+                "BlogAddress"
+        );
 
-            // when & then
-            assertThrows(UserException.class, () -> authService.signup(signupRequest, null));
-        }
+        given(userRepository.findByEmail(signupRequest.email())).willReturn(Optional.empty());
+        given(userRepository.findByNickname(signupRequest.nickname())).willReturn(Optional.empty());
+        given(passwordEncoder.encode(signupRequest.password())).willReturn("encodedPassword");
+        given(userRepository.save(any(User.class))).willReturn(mockUser);
+
+        // when
+        ApiResponse<String> response = authService.signup(signupRequest, null);
+
+        // then
+        assertEquals(ApiResponseUserEnum.USER_CREATE_SUCCESS.getCode(), response.getCode());
+        verify(userRepository).save(any(User.class));
     }
 
-    @Nested
-    class SigninTest {
-        @Test
-        @DisplayName("로그인 성공")
-        void signin_success() {
-            // given
-            UserRequest.Signin signinRequest = new UserRequest.Signin(user1.getEmail(), "password123");
-            given(userRepository.findByEmail(user1.getEmail())).willReturn(Optional.of(user1));
-            given(passwordEncoder.matches("password123", user1.getPassword())).willReturn(true);
+    @Test
+    @DisplayName("회원가입 실패 - 중복 이메일")
+    void signup_fail_duplicateEmail() {
+        // given
+        UserRequest.Signup signupRequest = new UserRequest.Signup(
+                "test@example.com",
+                "password123",
+                "TestUser",
+                "INDIVIDUAL",
+                "USER",
+                null,
+                "Introduce",
+                "HomeAddress",
+                "GitAddress",
+                "BlogAddress"
+        );
 
-            JwtUtilRequest.CreateToken createToken = new JwtUtilRequest.CreateToken(
-                    user1.getId(),
-                    user1.getEmail(),
-                    user1.getNickname(),
-                    user1.getUserType(),
-                    user1.getUserRole()
-            );
-            String expectedToken = "jwt_token";
-            given(jwtUtil.createToken(createToken)).willReturn(expectedToken);
+        given(userRepository.findByEmail(signupRequest.email())).willReturn(Optional.of(mockUser));
 
-            // when
-            ApiResponse<String> actual = authService.signin(signinRequest, response);
+        // when & then
+        UserException exception = assertThrows(UserException.class, () -> authService.signup(signupRequest, null));
+        assertEquals(ApiResponseUserEnum.USER_ALREADY_EXISTS, exception.getApiResponseEnum());
+    }
 
-            // then
-            assertEquals(ApiResponseUserEnum.USER_LOGIN_SUCCESS.getCode(), actual.getCode());
-            assertEquals(ApiResponseUserEnum.USER_LOGIN_SUCCESS.getMessage(), actual.getMessage());
-            assertEquals(expectedToken, actual.getData());
-            Mockito.verify(jwtUtil).addTokenToResponseHeader(expectedToken, response); // JWT가 헤더에 추가되었는지 확인
-        }
+    @Test
+    @DisplayName("로그인 성공")
+    void signin_success() {
+        // given
+        UserRequest.Signin signinRequest = new UserRequest.Signin(
+                "test@example.com",
+                "password123"
+        );
 
-        @Test
-        @DisplayName("로그인 실패 - 존재하지 않는 사용자")
-        void signin_userNotFound() {
-            // given
-            UserRequest.Signin signinRequest = new UserRequest.Signin(user1.getEmail(), "password123");
-            given(userRepository.findByEmail(user1.getEmail())).willReturn(Optional.empty());
+        String token = "jwt-token";
 
-            // when & then
-            assertThrows(UserException.class, () -> authService.signin(signinRequest, response));
-        }
+        given(userRepository.findByEmail(signinRequest.email())).willReturn(Optional.of(mockUser));
+        given(passwordEncoder.matches(signinRequest.password(), mockUser.getPassword())).willReturn(true);
+        given(jwtUtil.createToken(any(JwtUtilRequest.CreateToken.class))).willReturn(token);
 
-        @Test
-        @DisplayName("로그인 실패 - 비밀번호 불일치")
-        void signin_invalidPassword() {
-            // given
-            UserRequest.Signin signinRequest = new UserRequest.Signin(user1.getEmail(), "wrongPassword");
-            given(userRepository.findByEmail(user1.getEmail())).willReturn(Optional.of(user1));
-            given(passwordEncoder.matches("wrongPassword", user1.getPassword())).willReturn(false);
+        // when
+        ApiResponse<String> response = authService.signin(signinRequest, this.response);
 
-            // when & then
-            assertThrows(UserException.class, () -> authService.signin(signinRequest, response));
-        }
+        // then
+        assertEquals(ApiResponseUserEnum.USER_LOGIN_SUCCESS.getCode(), response.getCode());
+        assertEquals(token, response.getData());
+        verify(jwtUtil).addTokenToResponseHeader(eq(token), eq(this.response));
+    }
+
+    @Test
+    @DisplayName("로그인 실패 - 비밀번호 불일치")
+    void signin_fail_invalidPassword() {
+        // given
+        UserRequest.Signin signinRequest = new UserRequest.Signin(
+                "test@example.com",
+                "wrongPassword"
+        );
+
+        given(userRepository.findByEmail(signinRequest.email())).willReturn(Optional.of(mockUser));
+        given(passwordEncoder.matches(signinRequest.password(), mockUser.getPassword())).willReturn(false);
+
+        // when & then
+        UserException exception = assertThrows(UserException.class, () ->
+                authService.signin(signinRequest, this.response));
+
+        assertEquals(ApiResponseUserEnum.INVALID_PASSWORD, exception.getApiResponseEnum());
+    }
+
+    @Test
+    @DisplayName("로그인 실패 - 이메일 없음")
+    void signin_fail_userNotFound() {
+        // given
+        UserRequest.Signin signinRequest = new UserRequest.Signin(
+                "notfound@example.com",
+                "password123"
+        );
+
+        given(userRepository.findByEmail(signinRequest.email())).willReturn(Optional.empty());
+
+        // when & then
+        UserException exception = assertThrows(UserException.class, () ->
+                authService.signin(signinRequest, this.response));
+
+        assertEquals(ApiResponseUserEnum.USER_NOT_FOUND, exception.getApiResponseEnum());
     }
 }

@@ -1,21 +1,35 @@
 package com.sparta.doguin.domain.user.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sparta.doguin.domain.common.exception.UserException;
+import com.sparta.doguin.domain.common.response.ApiResponse;
+import com.sparta.doguin.domain.common.response.ApiResponseUserEnum;
+import com.sparta.doguin.domain.user.entity.User;
+import com.sparta.doguin.domain.user.enums.SocialProvider;
+import com.sparta.doguin.domain.user.enums.UserRole;
+import com.sparta.doguin.domain.user.enums.UserType;
 import com.sparta.doguin.domain.user.repository.UserRepository;
+import com.sparta.doguin.domain.user.service.strategy.SocialLoginStrategy;
+import com.sparta.doguin.domain.user.service.strategy.SocialLoginStrategyFactory;
 import com.sparta.doguin.security.JwtUtil;
+import com.sparta.doguin.security.dto.JwtUtilRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.web.client.RestTemplate;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpHeaders;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
+import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.*;
+
+@ExtendWith(MockitoExtension.class)
 class SocialLoginServiceTest {
 
     @Mock
@@ -25,94 +39,107 @@ class SocialLoginServiceTest {
     private JwtUtil jwtUtil;
 
     @Mock
-    private RestTemplate restTemplate;
+    private SocialLoginStrategyFactory strategyFactory;
+
+    @Mock
+    private SocialLoginStrategy strategy;
+
+    @Mock
+    private HttpServletResponse response;
 
     @InjectMocks
     private SocialLoginService socialLoginService;
 
+    private User mockUser;
+
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        mockUser = User.builder()
+                .email("test@example.com")
+                .nickname("TestUser")
+                .userType(UserType.INDIVIDUAL)
+                .userRole(UserRole.ROLE_USER)
+                .build();
     }
-
-//    @Test
-//    @DisplayName("기존 계정이 있는 사용자가 소셜 로그인으로 로그인 시도 시 비밀번호 필요 응답 반환")
-//    void socialLogin_ExistingUserEmail_PasswordRequiredResponse() throws JsonProcessingException {
-//        // given
-//        String provider = "naver";
-//        String code = "test-code";
-//        HttpServletResponse response = mock(HttpServletResponse.class);
-//        User existingUser = DataUtil.user1();
-//
-//        // Access Token 요청에 대한 RestTemplate 응답 Mock 설정
-//        String accessToken = "naver-access-token";
-//        when(restTemplate.postForObject(any(String.class), any(), eq(Map.class)))
-//                .thenReturn(Map.of("access_token", accessToken));
-//
-//        // UserRepository가 기존 사용자 반환
-//        when(userRepository.findByEmail(existingUser.getEmail())).thenReturn(Optional.of(existingUser));
-//
-//        // 네이버 사용자 정보 응답을 기존 사용자와 동일한 이메일로 Mock 설정
-//        String naverUserInfoResponse = "{ \"response\": { \"email\": \"" + existingUser.getEmail() + "\", \"nickname\": \"" + existingUser.getNickname() + "\" } }";
-//        when(restTemplate.exchange(any(String.class), eq(HttpMethod.GET), any(), eq(String.class)))
-//                .thenReturn(new ResponseEntity<>(naverUserInfoResponse, HttpStatus.OK));
-//
-//        // when
-//        ApiResponse<String> responseResult = socialLoginService.socialLogin(provider, code, response);
-//
-//        // then
-//        assertEquals("비밀번호가 필요합니다. 기존 계정과 연동하려면 비밀번호를 입력하세요.", responseResult.getMessage());
-//    }
-//
-//    @Test
-//    @DisplayName("신규 사용자가 소셜 로그인을 통해 회원가입")
-//    void socialLogin_NewUser_Signup() throws JsonProcessingException {
-//        // given
-//        String provider = "google";
-//        String code = "test-code";
-//        HttpServletResponse response = mock(HttpServletResponse.class);
-//        User newUser = DataUtil.user2();
-//
-//        // Access Token 요청에 대한 RestTemplate 응답 Mock 설정
-//        String accessToken = "google-access-token";
-//        when(restTemplate.postForObject(any(String.class), any(), eq(Map.class)))
-//                .thenReturn(Map.of("access_token", accessToken));
-//
-//        // UserRepository가 주어진 이메일에 해당하는 사용자를 찾지 못하도록 설정
-//        when(userRepository.findByEmail(newUser.getEmail())).thenReturn(Optional.empty());
-//
-//        // 새로운 사용자의 Google 사용자 정보 응답 Mock 설정
-//        when(restTemplate.exchange(any(String.class), eq(HttpMethod.GET), any(), eq(String.class)))
-//                .thenReturn(new ResponseEntity<>(mockGoogleUserInfoResponse(newUser.getEmail(), newUser.getNickname()), HttpStatus.OK));
-//
-//        // when
-//        ApiResponse<String> result = socialLoginService.socialLogin(provider, code, response);
-//
-//        // then
-//        assertThat(result.getMessage()).isEqualTo(ApiResponseUserEnum.USER_SOCIALOGIN_SUCCESS.getMessage());
-//        verify(userRepository, times(1)).save(any(User.class));
-//        verify(jwtUtil, times(1)).addTokenToResponseHeader(any(), eq(response));
-//    }
 
     @Test
-    @DisplayName("유효하지 않은 소셜 로그인 제공자를 입력했을 때 예외 처리")
-    void socialLogin_InvalidProvider_ExceptionThrown() {
+    @DisplayName("소셜 로그인 성공 - 기존 유저")
+    void socialLogin_existingUser() throws JsonProcessingException {
         // given
-        String provider = "invalidProvider";
+        String provider = "kakao";
         String code = "test-code";
-        HttpServletResponse response = mock(HttpServletResponse.class);
+        String accessToken = "test-access-token";
+        String jwtToken = "test-jwt-token";
+
+        given(strategyFactory.getStrategy(SocialProvider.KAKAO)).willReturn(strategy);
+        given(strategy.getAccessToken(eq(code), anyString())).willReturn(accessToken); // 수정된 부분
+        given(strategy.fetchUserInfo(accessToken)).willReturn(mockUser);
+        given(userRepository.findByEmail(mockUser.getEmail())).willReturn(Optional.of(mockUser));
+        given(jwtUtil.createToken(any(JwtUtilRequest.CreateToken.class))).willReturn(jwtToken);
 
         // when
-        UserException exception = assertThrows(UserException.class, () -> socialLoginService.socialLogin(provider, code, response));
+        ApiResponse<String> result = socialLoginService.socialLogin(provider, code, response);
 
         // then
-        assertEquals("제공하지 않는 소셜 로그인 방식입니다.", exception.getApiResponseEnum().getMessage());
+        assertEquals(ApiResponseUserEnum.USER_SOCIALOGIN_SUCCESS.getCode(), result.getCode());
+        assertEquals(jwtToken, result.getData());
+        verify(jwtUtil).addTokenToResponseHeader(jwtToken, response);
     }
 
-    /**
-     * 구글 사용자 정보 응답 Mock 데이터 생성 메서드
-     */
-    private String mockGoogleUserInfoResponse(String email, String nickname) {
-        return "{ \"email\": \"" + email + "\", \"name\": \"" + nickname + "\" }";
+    @Test
+    @DisplayName("소셜 로그인 성공 - 신규 유저 등록")
+    void socialLogin_newUser() throws JsonProcessingException {
+        // given
+        String provider = "google";
+        String code = "test-code";
+        String accessToken = "test-access-token";
+        String jwtToken = "new-jwt-token";
+
+        given(strategyFactory.getStrategy(SocialProvider.GOOGLE)).willReturn(strategy);
+        given(strategy.getAccessToken(eq(code), anyString())).willReturn(accessToken); // 수정된 부분
+        given(strategy.fetchUserInfo(accessToken)).willReturn(mockUser);
+        given(userRepository.findByEmail(mockUser.getEmail())).willReturn(Optional.empty());
+        given(jwtUtil.createToken(any(JwtUtilRequest.CreateToken.class))).willReturn(jwtToken);
+
+        // when
+        ApiResponse<String> result = socialLoginService.socialLogin(provider, code, response);
+
+        // then
+        assertEquals(ApiResponseUserEnum.USER_SOCIALOGIN_SUCCESS.getCode(), result.getCode());
+        assertEquals(jwtToken, result.getData());
+        verify(userRepository).save(any(User.class)); // 신규 유저 저장 확인
+        verify(jwtUtil).addTokenToResponseHeader(jwtToken, response);
+    }
+
+
+    @Test
+    @DisplayName("소셜 로그인 실패 - 제공하지 않는 소셜 로그인 방식")
+    void socialLogin_invalidProvider() {
+        // given
+        String provider = "invalid";
+        String code = "test-code";
+
+        // when & then
+        UserException exception = assertThrows(UserException.class, () ->
+                socialLoginService.socialLogin(provider, code, response));
+        assertEquals(ApiResponseUserEnum.INVALID_SOCIAL_PROVIDER.getMessage(), exception.getApiResponseEnum().getMessage());
+    }
+
+    @Test
+    @DisplayName("사용자 정보 가져오기 실패")
+    void fetchUserInfo_fail() throws JsonProcessingException {
+        // given
+        String provider = "github";
+        String code = "test-code";
+        String accessToken = "test-access-token";
+
+        given(strategyFactory.getStrategy(SocialProvider.GITHUB)).willReturn(strategy);
+        given(strategy.getAccessToken(eq(code), anyString())).willReturn(accessToken); // 수정된 부분
+        given(strategy.fetchUserInfo(accessToken)).willThrow(new UserException(ApiResponseUserEnum.FAILED_TO_FETCH_SOCIAL_USER_INFO));
+
+        // when & then
+        UserException exception = assertThrows(UserException.class, () ->
+                socialLoginService.socialLogin(provider, code, response));
+        assertEquals(ApiResponseUserEnum.FAILED_TO_FETCH_SOCIAL_USER_INFO.getMessage(), exception.getApiResponseEnum().getMessage());
     }
 }

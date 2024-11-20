@@ -148,4 +148,64 @@ public class FollowServiceTest {
             assertThrows(UserException.class, () -> followService.unfollow(user1.getId(), user2.getEmail()));
         }
     }
+
+    @Nested
+    class GetFollowStatsTest {
+
+        @Test
+        @DisplayName("나를 팔로우한 사람들의 수 조회 성공")
+        void getFollowedCount_success() {
+            // given
+            given(followRepository.findByFollowedId(user1.getId())).willReturn(List.of(new Follow(user2, user1)));
+
+            // when
+            long followedCount = followService.getFollowedCount(user1.getId());
+
+            // then
+            assertEquals(1, followedCount); // 나를 팔로우한 사람 수 확인
+        }
+
+        @Test
+        @DisplayName("내가 팔로우한 사람들의 수 조회 성공")
+        void getFollowerCount_success() {
+            // given
+            given(followRepository.findByFollowerId(user1.getId())).willReturn(List.of(new Follow(user1, user2)));
+
+            // when
+            long followerCount = followService.getFollowerCount(user1.getId());
+
+            // then
+            assertEquals(1, followerCount); // 내가 팔로우한 사람 수 확인
+        }
+
+        @Test
+        @DisplayName("나를 팔로우한 사용자 목록 조회 성공")
+        void getFollowerList_success() {
+            // given
+            Follow follow1 = new Follow(user2, user1);
+            given(followRepository.findByFollowedId(user1.getId())).willReturn(List.of(follow1));
+
+            // when
+            List<FollowResponse.Follow> actual = followService.getFollowerList(user1.getId());
+
+            // then
+            assertEquals(1, actual.size()); // 목록의 크기 확인
+            assertEquals(user2.getId(), actual.get(0).userId()); // userId 확인
+            assertEquals(user2.getEmail(), actual.get(0).email()); // email 확인
+        }
+
+        @Test
+        @DisplayName("나를 팔로우한 사용자 목록이 비었을 때 처리 성공")
+        void getFollowerList_empty() {
+            // given
+            given(followRepository.findByFollowedId(user1.getId())).willReturn(List.of());
+
+            // when
+            List<FollowResponse.Follow> actual = followService.getFollowerList(user1.getId());
+
+            // then
+            assertEquals(0, actual.size()); // 비어 있는 목록 확인
+        }
+    }
+
 }
