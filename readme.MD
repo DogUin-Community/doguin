@@ -81,10 +81,10 @@
 <img src="src/main/resources/image/portfolio.jpg" alt="portfolio" width="260" height="400">
 
 ### 채용/공고 화면
-<img src="src/main/resources/image/matchingCheck.jpg" alt="matchingCheck" width="400">
+<img src="src/main/resources/image/matchingCheck.jpg" alt="matchingCheck" width="500">
 
 ### 매칭 목록 화면
-<img src="src/main/resources/image/matchingGet.png" alt="matchingGet" width="400">
+<img src="src/main/resources/image/matchingGet.png" alt="matchingGet" width="500">
 
 # 🔫 아키텍쳐
 
