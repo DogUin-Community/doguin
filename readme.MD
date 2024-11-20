@@ -345,7 +345,6 @@ MSA 구조를 통해 시스템의 확장성과 안정성을 확보하고자 한 
 ## 😎 팀원 소개
 
 ---
-![team.png](src%2Fmain%2Fresources%2Fimage%2Fteam.png)
 
 <details>
 <summary>유태이(리더)</summary>
