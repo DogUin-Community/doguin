@@ -68,23 +68,23 @@
 ---
 
 ### 회원가입/로그인 화면
-<img src="src/main/resources/image/signup.jpg" alt="signup" width="300"> <img src="src/main/resources/image/login.jpg" alt="login" width="380">
+- <img src="src/main/resources/image/signup.jpg" alt="signup" width="300"> <img src="src/main/resources/image/login.jpg" alt="login" width="380">
 
 
 ### 모든 게시글 작성 화면
-<img src="src/main/resources/image/boardPost.jpg" alt="boardPost" width="400">
+- <img src="src/main/resources/image/boardPost.jpg" alt="boardPost" width="400">
 
 ### 외주 작성 화면
-<img src="src/main/resources/image/outsourcing.jpg" alt="outsourcing" width="260" height="400">
+- <img src="src/main/resources/image/outsourcing.jpg" alt="outsourcing" width="260" height="400">
 
 ### 포트폴리오 작성 화면
-<img src="src/main/resources/image/portfolio.jpg" alt="portfolio" width="260" height="400">
+- <img src="src/main/resources/image/portfolio.jpg" alt="portfolio" width="260" height="400">
 
 ### 채용/공고 화면
-<img src="src/main/resources/image/matchingCheck.jpg" alt="matchingCheck" width="500">
+- <img src="src/main/resources/image/matchingCheck.jpg" alt="matchingCheck" width="500">
 
 ### 매칭 목록 화면
-<img src="src/main/resources/image/matchingGet.png" alt="matchingGet" width="500">
+- <img src="src/main/resources/image/matchingGet.png" alt="matchingGet" width="500">
 
 # 🔫 아키텍쳐
 
