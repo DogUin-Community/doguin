@@ -67,7 +67,23 @@
 
 ---
 
-여기에 화면 캡쳐
+### 회원가입/로그인 화면
+![signup.jpg](src%2Fmain%2Fresources%2Fimage%2Fsignup.jpg) ![login.jpg](src%2Fmain%2Fresources%2Fimage%2Flogin.jpg)
+
+### 모든 게시글 작성 화면
+![boardPost.jpg](src%2Fmain%2Fresources%2Fimage%2FboardPost.jpg)
+
+### 외주 작성 화면
+![outsourcing.jpg](src%2Fmain%2Fresources%2Fimage%2Foutsourcing.jpg)
+
+### 포트폴리오 작성 화면
+![portfolio.jpg](src%2Fmain%2Fresources%2Fimage%2Fportfolio.jpg)
+
+### 채용/공고 화면
+![matchingCheck.jpg](src%2Fmain%2Fresources%2Fimage%2FmatchingCheck.jpg)
+
+### 매칭 목록 화면
+![matchingGet.png](src%2Fmain%2Fresources%2Fimage%2FmatchingGet.png)
 
 # 🔫 아키텍쳐
 
