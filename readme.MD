@@ -68,22 +68,23 @@
 ---
 
 ### 회원가입/로그인 화면
-![signup.jpg](src%2Fmain%2Fresources%2Fimage%2Fsignup.jpg) ![login.jpg](src%2Fmain%2Fresources%2Fimage%2Flogin.jpg)
+<img src="src/main/resources/image/signup.jpg" alt="signup" width="300"> <img src="src/main/resources/image/login.jpg" alt="login" width="380">
+
 
 ### 모든 게시글 작성 화면
-![boardPost.jpg](src%2Fmain%2Fresources%2Fimage%2FboardPost.jpg)
+<img src="src/main/resources/image/boardPost.jpg" alt="boardPost" width="400">
 
 ### 외주 작성 화면
-![outsourcing.jpg](src%2Fmain%2Fresources%2Fimage%2Foutsourcing.jpg)
+<img src="src/main/resources/image/outsourcing.jpg" alt="outsourcing" width="260" height="400">
 
 ### 포트폴리오 작성 화면
-![portfolio.jpg](src%2Fmain%2Fresources%2Fimage%2Fportfolio.jpg)
+<img src="src/main/resources/image/portfolio.jpg" alt="portfolio" width="260" height="400">
 
 ### 채용/공고 화면
-![matchingCheck.jpg](src%2Fmain%2Fresources%2Fimage%2FmatchingCheck.jpg)
+<img src="src/main/resources/image/matchingCheck.jpg" alt="matchingCheck" width="400">
 
 ### 매칭 목록 화면
-![matchingGet.png](src%2Fmain%2Fresources%2Fimage%2FmatchingGet.png)
+<img src="src/main/resources/image/matchingGet.png" alt="matchingGet" width="400">
 
 # 🔫 아키텍쳐
 
