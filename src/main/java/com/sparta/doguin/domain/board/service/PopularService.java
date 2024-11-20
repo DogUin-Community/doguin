@@ -78,10 +78,17 @@ public class PopularService {
                 Long totalView = board.getView();
                 board.changeTotalViewCount(totalView, todayView);
 
-                redisTemplate.delete(val);
+
             }
         }
         log.info("누적 조회수 업로드 완료");
+
+        if(keysToUpdate!=null){
+            for (String val : keysToUpdate) {
+                redisTemplate.delete(val);
+            }
+        }
+
     }
 
     /**
