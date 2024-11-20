@@ -14,6 +14,7 @@ import com.sparta.doguin.domain.matching.repository.MatchingRepository;
 import com.sparta.doguin.domain.user.enums.UserType;
 import com.sparta.doguin.security.AuthUser;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatService {
@@ -35,6 +37,8 @@ public class ChatService {
     //redis Pub/sub사용
     public ChatResponse.MessageResponse processSendMessage(Long userId, ChatRequest.MessageSendRequest messageDto) {
         ChatMessage savedMessage = saveMessage(messageDto.roomId(), userId, messageDto.content());
+
+        log.info("Saved message to be published: {}", savedMessage);
 
         // Redis에 메시지 발행
         redisTemplate.convertAndSend("chat", savedMessage);

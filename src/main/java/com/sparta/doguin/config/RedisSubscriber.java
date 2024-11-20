@@ -26,6 +26,7 @@ public class RedisSubscriber implements MessageListener {
 
             // 메시지를 ChatMessage 객체로 변환
             ChatMessage chatMessage = objectMapper.readValue(body, ChatMessage.class);
+            log.info("ChatMessage object: {}", chatMessage);
 
             // 해당 채팅방의 주제로 메시지 전송
             messagingTemplate.convertAndSend("/topic/chat/" + chatMessage.getRoomId(), chatMessage);
