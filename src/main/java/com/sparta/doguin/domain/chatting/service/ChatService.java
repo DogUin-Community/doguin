@@ -32,13 +32,12 @@ public class ChatService {
     private final SimpMessagingTemplate messagingTemplate;
 
 
-    // 메시지 전송 처리
+    //redis Pub/sub사용
     public ChatResponse.MessageResponse processSendMessage(Long userId, ChatRequest.MessageSendRequest messageDto) {
         ChatMessage savedMessage = saveMessage(messageDto.roomId(), userId, messageDto.content());
 
-//        redisTemplate.convertAndSend("/topic/chat/" + messageDto.roomId(), savedMessage);
-
-        messagingTemplate.convertAndSend("/topic/chat/" + messageDto.roomId(), savedMessage);
+        // Redis에 메시지 발행
+        redisTemplate.convertAndSend("chat", savedMessage);
 
         return new ChatResponse.MessageResponse(
                 savedMessage.getId(), savedMessage.getRoomId(), userId, savedMessage.getContent()

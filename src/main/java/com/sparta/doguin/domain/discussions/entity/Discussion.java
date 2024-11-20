@@ -19,8 +19,7 @@ import java.util.Set;
         name = "discussion",
         indexes = {
                 @Index(name = "idx_title", columnList = "title"),
-                @Index(name = "idx_content", columnList = "content"),
-                @Index(name = "idx_nickname", columnList = "nickname")
+                @Index(name = "idx_content", columnList = "content")
         }
 )
 public class Discussion extends Timestamped {
