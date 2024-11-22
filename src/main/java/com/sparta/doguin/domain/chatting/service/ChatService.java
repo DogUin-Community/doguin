@@ -19,6 +19,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -65,6 +66,7 @@ public class ChatService {
     }
 
     // 채팅방 삭제
+    @Transactional
     public void deleteRoom(String roomId) {
         chatRoomRepository.deleteByRoomId(roomId);
         chatMessageRepository.deleteAll(chatMessageRepository.findByRoomId(roomId));
